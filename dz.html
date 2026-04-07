@@ -769,7 +769,7 @@
             return { rarity, name: list[idx].name, img: list[idx].img, fallback: list[idx].fallback, index: idx };
         }
         function drawSingle() {
-            if (gameData.coins < 10) { showMessage('蛋币不足！请先答题获取蛋币', 'error'); return; }
+            if (gameData.coins < 10) { showResult('💸', '蛋币不足', `当前蛋币: ${gameData.coins}`, '需要 10 蛋币', '请先答题获取蛋币'); return; }
             gameData.coins -= 10;
             const skin = getRandomSkin();
             addSkinToCollection(skin);
@@ -780,7 +780,7 @@
             showDrawAnimation([skin], 'single');
         }
         function drawTen() {
-            if (gameData.coins < 90) { showMessage('蛋币不足！需要90蛋币', 'error'); return; }
+            if (gameData.coins < 90) { showResult('💸', '蛋币不足', `当前蛋币: ${gameData.coins}`, '需要 90 蛋币', '请先答题获取蛋币'); return; }
             gameData.coins -= 90;
             const results = [];
             for (let i = 0; i < 10; i++) {
