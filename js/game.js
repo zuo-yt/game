@@ -366,22 +366,8 @@ function startSpeaking() {
     btn.classList.add('recording');
     btn.textContent = '🔴 录音中...';
     const isWechat = /MicroMessenger/i.test(navigator.userAgent);
-    if (isWechat) {
-        playWordSound();
-        setTimeout(() => {
-            btn.classList.remove('recording');
-            btn.textContent = '🎤 开始朗读';
-            document.getElementById('speechResult').className = 'speech-result success';
-            document.getElementById('speechResult').textContent = '✅ 朗读正确！';
-            gameData.coins += 8;
-            saveGameData();
-            updateDisplay();
-            setTimeout(nextEnglishQuestion, 1500);
-        }, 3000);
-        return;
-    }
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        playWordSound();
+    // 微信环境和不支持环境：不朗读单词，直接模拟录制成功
+    if (isWechat || (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window))) {
         setTimeout(() => {
             btn.classList.remove('recording');
             btn.textContent = '🎤 开始朗读';
@@ -731,7 +717,7 @@ function confirmExchange() {
     updateExchangeDisplay();
     renderGiftList();
     closeConfirmExchange();
-    closeExchangeModal();
+    // 不关闭礼品列表弹窗，用户关闭结果弹窗后返回礼品列表
     showResult('🎁', '兑换成功！', `兑换: ${pendingGift.name}`, `消耗 ${pendingGift.charmCost} 魅力值`, '请在现实中领取礼品~');
     pendingGift = null;
 }
