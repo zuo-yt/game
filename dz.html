@@ -303,6 +303,23 @@
         </div>
     </div>
 
+    <!-- 兑换确认弹窗 -->
+    <div class="quiz-modal" id="confirmExchangeModal">
+        <div class="quiz-content" style="max-width: 350px; text-align: center;">
+            <span class="close-btn" onclick="closeConfirmExchange()">&times;</span>
+            <div class="quiz-header"><h2>⚠️ 确认兑换</h2></div>
+            <div style="margin: 20px 0; font-size: 16px; color: #333;">
+                <div id="confirmGiftIcon" style="font-size: 50px; margin-bottom: 15px;"></div>
+                <div>确定兑换 <strong id="confirmGiftName"></strong> 吗？</div>
+                <div style="margin-top: 10px; color: #c026d3;">消耗 <strong id="confirmCharmCost"></strong> 魅力值</div>
+            </div>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button onclick="closeConfirmExchange()" style="padding: 12px 30px; background: #e9ecef; color: #333; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">取消</button>
+                <button onclick="confirmExchange()" style="padding: 12px 30px; background: linear-gradient(135deg, #e879f9, #c026d3); color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">确认兑换</button>
+            </div>
+        </div>
+    </div>
+
     <div class="result-modal" id="resultModal"><div class="result-content"><div class="result-icon" id="resultIcon">🎉</div><div class="result-title" id="resultTitle">完成！</div><div class="result-stats" id="resultStats"></div><div class="result-reward" id="resultReward">+100 蛋币</div><div id="resultBonus" style="display:none;"></div><button class="result-btn" onclick="closeResultModal()">确定</button></div></div>
 
     <div class="draw-overlay" id="drawOverlay"></div>
@@ -992,19 +1009,37 @@
                 container.appendChild(item);
             });
         }
+        // 待兑换的礼品信息
+        let pendingGift = null;
+
         function exchangeGift(name, price) {
             const yuan = Math.floor(gameData.charm / 100);
             if (yuan < price) {
                 showMessage('魅力值不足，无法兑换', 'error');
                 return;
             }
-            const charmCost = price * 100;
-            gameData.charm -= charmCost;
+            // 显示确认弹窗
+            pendingGift = { name, price, charmCost: price * 100 };
+            const gift = giftList.find(g => g.name === name);
+            document.getElementById('confirmGiftIcon').textContent = gift ? gift.icon : '🎁';
+            document.getElementById('confirmGiftName').textContent = name;
+            document.getElementById('confirmCharmCost').textContent = pendingGift.charmCost;
+            document.getElementById('confirmExchangeModal').classList.add('active');
+        }
+        function confirmExchange() {
+            if (!pendingGift) return;
+            gameData.charm -= pendingGift.charmCost;
             saveGameData();
             updateDisplay();
             updateExchangeDisplay();
             renderGiftList();
-            showResult('🎁', '兑换成功！', `兑换: ${name}`, `消耗 ${charmCost} 魅力值`, '请在现实中领取礼品~');
+            closeConfirmExchange();
+            showResult('🎁', '兑换成功！', `兑换: ${pendingGift.name}`, `消耗 ${pendingGift.charmCost} 魅力值`, '请在现实中领取礼品~');
+            pendingGift = null;
+        }
+        function closeConfirmExchange() {
+            document.getElementById('confirmExchangeModal').classList.remove('active');
+            pendingGift = null;
         }
 
         init();
