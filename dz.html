@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蛋仔派对皮肤盲盒</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; padding: 20px; overflow-x: hidden; }
+        .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .star { position: absolute; width: 3px; height: 3px; background: white; border-radius: 50%; animation: twinkle 2s infinite alternate; }
+        @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; } }
+        .container { max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 30px; padding: 40px; position: relative; z-index: 1; }
+        .game-title { text-align: center; margin-bottom: 30px; }
+        .game-title h1 { font-size: 32px; color: #ff6b6b; }
+        .game-title p { color: #666; font-size: 14px; margin-top: 10px; }
+        .coin-section { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); border-radius: 20px; margin-bottom: 25px; }
+        .coin-display { display: flex; align-items: center; gap: 12px; }
+        .coin-icon { width: 45px; height: 45px; background: linear-gradient(135deg, #ffd700, #ffb347); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; animation: bounce 1s infinite; }
+        @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .coin-amount { font-size: 28px; font-weight: bold; color: #333; }
+        .coin-label { font-size: 13px; color: #666; }
+        .charm-section { display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 15px; }
+        .charm-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #e879f9, #c026d3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; animation: charmPulse 2s infinite; }
+        @keyframes charmPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(192,38,211,0.3); } 50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(192,38,211,0.6); } }
+        .charm-amount { font-size: 24px; font-weight: bold; color: #c026d3; }
+        .charm-label { font-size: 12px; color: #666; }
+        .quiz-entry { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .quiz-btn { padding: 20px; border: none; border-radius: 15px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.3s; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .quiz-btn:hover { transform: translateY(-3px); }
+        .quiz-btn.math { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .quiz-btn.chinese { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .quiz-btn.english { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .quiz-btn .icon { font-size: 30px; display: block; margin-bottom: 8px; }
+        .quiz-btn .reward { font-size: 11px; opacity: 0.9; margin-top: 5px; }
+        .draw-section { text-align: center; margin-bottom: 30px; }
+        .draw-buttons { display: flex; gap: 20px; justify-content: center; }
+        .draw-btn { padding: 20px 40px; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.3s; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+        .draw-btn:hover:not(:disabled) { transform: translateY(-3px); }
+        .draw-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .draw-btn.single { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .draw-btn.ten { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .draw-btn .price { font-size: 12px; opacity: 0.9; display: block; margin-top: 5px; }
+        .result-section { margin-bottom: 30px; padding: 25px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 20px; min-height: 200px; }
+        .result-title { font-size: 18px; color: #333; margin-bottom: 15px; text-align: center; }
+        .result-boxes { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+
+        /* 卡牌样式 - 修复翻转 */
+        .box-card { width: 130px; height: 180px; perspective: 1000px; }
+        .box-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s ease-out; transform-style: preserve-3d; }
+        .box-card.opened .box-inner { transform: rotateY(180deg); }
+        .box-front, .box-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; overflow: hidden; }
+        .box-front { background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; }
+        .box-front::before { content: '?'; font-size: 80px; color: rgba(255,255,255,0.3); font-weight: bold; }
+        .box-front::after { content: ''; position: absolute; inset: 8px; border: 2px solid rgba(255,255,255,0.3); border-radius: 8px; }
+        .box-back { transform: rotateY(180deg); position: relative; }
+        .rarity-c { background: linear-gradient(180deg, #e0e0e0, #9e9e9e); }
+        .rarity-b { background: linear-gradient(180deg, #81c784, #43a047); }
+        .rarity-a { background: linear-gradient(180deg, #64b5f6, #1e88e5); }
+        .rarity-s { background: linear-gradient(180deg, #ba68c8, #8e24aa); }
+        .rarity-ss { background: linear-gradient(180deg, #ffd54f, #ff8f00); animation: goldGlow 1s infinite alternate; }
+        .rarity-sss { background: linear-gradient(180deg, #ff5252, #d50000 50%, #ffd700); animation: sssGlow 0.5s infinite alternate; }
+        @keyframes goldGlow { from { box-shadow: 0 0 15px rgba(255,215,0,0.5); } to { box-shadow: 0 0 30px rgba(255,215,0,1); } }
+        @keyframes sssGlow { from { box-shadow: 0 0 20px rgba(255,82,82,0.5); } to { box-shadow: 0 0 40px rgba(255,215,0,1); } }
+        .skin-image { width: 100%; height: 100%; object-fit: cover; }
+        .skin-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+        .rarity-badge { position: absolute; top: 8px; left: 8px; padding: 3px 10px; font-size: 11px; font-weight: bold; border-radius: 6px; z-index: 10; }
+        .rarity-badge.c { background: rgba(255,255,255,0.9); color: #616161; }
+        .rarity-badge.b { background: rgba(255,255,255,0.9); color: #2e7d32; }
+        .rarity-badge.a { background: rgba(255,255,255,0.9); color: #1565c0; }
+        .rarity-badge.s { background: rgba(255,255,255,0.9); color: #7b1fa2; }
+        .rarity-badge.ss { background: #ff6f00; color: white; }
+        .rarity-badge.sss { background: linear-gradient(90deg, #ff5252, #ffd700); color: white; animation: badgeGlow 1s infinite alternate; }
+        @keyframes badgeGlow { from { box-shadow: 0 0 5px #ffd700; } to { box-shadow: 0 0 15px #ffd700; } }
+        .skin-name-bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 25px 8px 8px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; font-size: 11px; font-weight: bold; text-align: center; }
+
+        .stats-section { margin-bottom: 25px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+        .stat-card { padding: 12px 5px; border-radius: 12px; text-align: center; }
+        .stat-card.c { background: linear-gradient(180deg, #e0e0e0, #9e9e9e); color: #333; }
+        .stat-card.b { background: linear-gradient(180deg, #81c784, #43a047); color: white; }
+        .stat-card.a { background: linear-gradient(180deg, #64b5f6, #1e88e5); color: white; }
+        .stat-card.s { background: linear-gradient(180deg, #ba68c8, #8e24aa); color: white; }
+        .stat-card.ss { background: linear-gradient(180deg, #ffd54f, #ff8f00); color: #333; }
+        .stat-card.sss { background: linear-gradient(180deg, #ff5252, #d50000); color: white; }
+        .stat-label { font-size: 8px; font-weight: bold; }
+        .stat-count { font-size: 18px; font-weight: bold; margin-top: 3px; }
+        .stat-percent { font-size: 9px; opacity: 0.7; }
+        .section-header { display: flex; justify-content: space-between; cursor: pointer; padding: 15px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; color: white; margin-bottom: 15px; }
+        .collection-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+        .collection-item { padding: 10px 5px; border-radius: 10px; text-align: center; font-size: 10px; background: #f8f9fa; color: #adb5bd; }
+        .collection-item.collected { color: #333; }
+        .collection-item.collected.c { background: linear-gradient(180deg, #e0e0e0, #9e9e9e); color: #333; }
+        .collection-item.collected.b { background: linear-gradient(180deg, #81c784, #43a047); color: white; }
+        .collection-item.collected.a { background: linear-gradient(180deg, #64b5f6, #1e88e5); color: white; }
+        .collection-item.collected.s { background: linear-gradient(180deg, #ba68c8, #8e24aa); color: white; }
+        .collection-item.collected.ss { background: linear-gradient(180deg, #ffd54f, #ff8f00); color: #333; }
+        .collection-item.collected.sss { background: linear-gradient(180deg, #ff5252, #d50000); color: white; }
+        .item-icon { font-size: 20px; margin-bottom: 3px; }
+        .item-name { font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .hidden { display: none !important; }
+        .message { padding: 12px 20px; margin: 15px 0; border-radius: 12px; text-align: center; font-size: 14px; font-weight: bold; }
+        .message.success { background: linear-gradient(135deg, #a8e6cf, #56ab91); color: white; }
+        .message.error { background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: white; }
+
+        /* 弹窗 */
+        .quiz-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .quiz-modal.active { display: flex; }
+        .quiz-content { background: white; border-radius: 25px; padding: 30px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #999; }
+        .close-btn:hover { color: #ff6b6b; }
+        .quiz-header { text-align: center; margin-bottom: 25px; }
+        .quiz-header h2 { font-size: 24px; color: #333; margin-bottom: 10px; }
+        .quiz-timer { font-size: 32px; font-weight: bold; color: #ff6b6b; }
+        .quiz-progress { font-size: 14px; color: #666; margin-top: 5px; }
+        .math-question { font-size: 48px; font-weight: bold; color: #333; margin: 30px 0; padding: 30px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 20px; text-align: center; }
+        .math-input { width: 150px; height: 60px; font-size: 32px; text-align: center; border: 3px solid #667eea; border-radius: 15px; outline: none; }
+        .math-input:focus { border-color: #764ba2; box-shadow: 0 0 20px rgba(102,126,234,0.3); }
+        .math-submit { margin-top: 20px; padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; cursor: pointer; }
+        .math-stats { display: flex; justify-content: center; gap: 40px; margin-top: 25px; }
+        .chinese-character { font-size: 80px; color: #333; margin: 20px 0; text-align: center; }
+        .pinyin-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .pinyin-option { padding: 20px; font-size: 24px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border: 2px solid #ddd; border-radius: 15px; cursor: pointer; transition: all 0.3s; }
+        .pinyin-option:hover { border-color: #f5576c; background: linear-gradient(135deg, #fff5f5, #ffe0e0); }
+        .pinyin-option.correct { background: linear-gradient(135deg, #d4edda, #c3e6cb); border-color: #28a745; }
+        .pinyin-option.wrong { background: linear-gradient(135deg, #f8d7da, #f5c6cb); border-color: #dc3545; }
+        .english-word { font-size: 48px; font-weight: bold; color: #333; margin: 20px 0; text-align: center; }
+        .english-meaning { font-size: 18px; color: #666; margin-bottom: 20px; text-align: center; }
+        .speak-btn { padding: 20px 40px; font-size: 20px; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; border: none; border-radius: 15px; cursor: pointer; margin: 10px; transition: all 0.3s; }
+        .speak-btn:hover { transform: scale(1.05); }
+        .speak-btn.listen-btn { background: linear-gradient(135deg, #a8e6cf, #56ab91); font-size: 18px; padding: 15px 30px; }
+        .speech-result { margin-top: 20px; padding: 15px; font-size: 18px; border-radius: 10px; text-align: center; }
+        .speech-result.success { background: #d4edda; color: #155724; }
+        .speech-result.fail { background: #f8d7da; color: #721c24; }
+        .result-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1100; justify-content: center; align-items: center; padding: 20px; }
+        .result-modal.active { display: flex; }
+        .result-content { background: white; border-radius: 25px; padding: 40px; text-align: center; max-width: 400px; }
+        .result-icon { font-size: 60px; margin-bottom: 20px; }
+        .result-title { font-size: 28px; font-weight: bold; color: #333; margin-bottom: 15px; }
+        .result-stats { font-size: 16px; color: #666; margin-bottom: 20px; }
+        .result-reward { font-size: 24px; font-weight: bold; color: #ffd700; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); margin-bottom: 25px; }
+        .result-btn { padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: white; border: none; border-radius: 15px; cursor: pointer; }
+
+        /* 抽卡动画遮罩 */
+        .draw-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; }
+        .draw-overlay.active { display: flex; }
+        .draw-card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; padding: 20px; }
+        .draw-hint { position: fixed; bottom: 30px; color: rgba(255,255,255,0.6); font-size: 14px; cursor: pointer; }
+        .close-draw-btn { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); padding: 15px 50px; background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(255,107,107,0.4); transition: all 0.3s; opacity: 0; pointer-events: none; }
+        .close-draw-btn.show { opacity: 1; pointer-events: auto; }
+        .close-draw-btn:hover { transform: translateX(-50%) scale(1.05); box-shadow: 0 8px 30px rgba(255,107,107,0.6); }
+
+        /* 抽卡卡牌样式 */
+        .draw-card { width: 140px; height: 195px; perspective: 1000px; }
+        .draw-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .draw-card.opened .draw-card-inner { transform: rotateY(180deg); }
+        .draw-card-front, .draw-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; overflow: hidden; }
+        .draw-card-front { background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; }
+        .draw-card-front::before { content: '?'; font-size: 80px; color: rgba(255,255,255,0.3); font-weight: bold; }
+        .draw-card-back { transform: rotateY(180deg); position: relative; }
+
+        /* 粒子效果 */
+        .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: particleFly 1s ease-out forwards; }
+        @keyframes particleFly { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
+
+        /* SS级光束特效 */
+        .ss-light-beam { position: fixed; width: 8px; height: 100vh; background: linear-gradient(to bottom, rgba(255,215,0,0.9), rgba(255,143,0,0.6), transparent); pointer-events: none; z-index: 10001; animation: beamFall 1.5s ease-out forwards; transform-origin: top; }
+        @keyframes beamFall { 0% { opacity: 0; transform: scaleY(0); } 20% { opacity: 1; transform: scaleY(0.3); } 100% { opacity: 0; transform: scaleY(1); } }
+        .ss-star { position: fixed; width: 20px; height: 20px; background: radial-gradient(circle, #ffd700 0%, transparent 70%); border-radius: 50%; pointer-events: none; z-index: 10001; animation: starFlash 2s ease-out forwards; }
+        @keyframes starFlash { 0% { transform: scale(0) rotate(0deg); opacity: 1; } 50% { transform: scale(1.5) rotate(180deg); opacity: 0.8; } 100% { transform: scale(0) rotate(360deg); opacity: 0; } }
+
+        /* SSS级全屏闪光 */
+        .sss-flash { position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(255,82,82,0.4) 0%, rgba(255,215,0,0.2) 30%, transparent 70%); pointer-events: none; z-index: 10001; animation: flashPulse 0.8s ease-out forwards; }
+        @keyframes flashPulse { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; } 100% { opacity: 0; transform: scale(2); } }
+
+        /* 响应式布局 - 手机适配 */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 20px 15px; border-radius: 20px; }
+            .game-title h1 { font-size: 20px; }
+            .game-title p { font-size: 12px; }
+            .coin-section { flex-direction: column; gap: 15px; padding: 15px; }
+            .coin-display, .charm-section { width: 100%; justify-content: center; }
+            .coin-icon { width: 35px; height: 35px; font-size: 18px; }
+            .coin-amount { font-size: 20px; }
+            .charm-icon { width: 30px; height: 30px; font-size: 14px; }
+            .charm-amount { font-size: 18px; }
+            .quiz-entry { grid-template-columns: 1fr; gap: 10px; }
+            .quiz-btn { padding: 15px; font-size: 13px; }
+            .quiz-btn .icon { font-size: 24px; }
+            .quiz-btn .reward { font-size: 10px; }
+            .draw-buttons { flex-direction: column; gap: 10px; }
+            .draw-btn { width: 100%; padding: 15px; font-size: 16px; }
+            .result-section { padding: 15px; min-height: 120px; }
+            .result-title { font-size: 14px; }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .stat-card { padding: 8px 3px; }
+            .stat-count { font-size: 14px; }
+            .stat-percent { font-size: 8px; }
+            .section-header { padding: 12px 15px; font-size: 14px; }
+            .collection-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+            .collection-item { padding: 6px 3px; }
+            .item-icon { font-size: 16px; }
+            .item-name { font-size: 8px; }
+            .draw-card { width: 100px; height: 140px; }
+            .draw-card-front::before { font-size: 50px; }
+            .skin-fallback { font-size: 40px; }
+            .rarity-badge { font-size: 9px; padding: 2px 6px; }
+            .skin-name-bottom { font-size: 9px; padding: 15px 5px 5px; }
+            .draw-card-container { gap: 10px; }
+            .quiz-content { padding: 20px 15px; border-radius: 15px; }
+            .quiz-header h2 { font-size: 18px; }
+            .math-question { font-size: 32px; padding: 20px; }
+            .math-input { width: 100px; height: 45px; font-size: 24px; }
+            .chinese-character { font-size: 50px; }
+            .pinyin-option { padding: 12px; font-size: 18px; }
+            .english-word { font-size: 32px; }
+            .speak-btn { padding: 12px 20px; font-size: 14px; }
+            .result-content { padding: 20px; }
+            .result-icon { font-size: 40px; }
+            .result-title { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="container">
+        <div class="game-title"><h1>🥚 蛋仔派对皮肤盲盒</h1><p>答题获取蛋币，收集30款精美皮肤</p></div>
+        <div class="coin-section"><div class="coin-display"><div class="coin-icon">💰</div><div><div class="coin-amount" id="coinAmount">0</div><div class="coin-label">蛋币余额</div></div></div><div class="charm-section"><div class="charm-icon">💎</div><div><div class="charm-amount" id="charmAmount">0</div><div class="charm-label">魅力值</div></div></div></div>
+        <div class="quiz-entry">
+            <button class="quiz-btn math" onclick="startMathQuiz()"><span class="icon">🔢</span><span>数学挑战</span><span class="reward">满分+900蛋币<br>⚡5分钟×3</span></button>
+            <button class="quiz-btn chinese" onclick="startChineseQuiz()"><span class="icon">📖</span><span>语文挑战</span><span class="reward">一年级生字<br>每题+5蛋币</span></button>
+            <button class="quiz-btn english" onclick="startEnglishQuiz()"><span class="icon">🔤</span><span>英语挑战</span><span class="reward">小学词汇<br>每题+8蛋币</span></button>
+        </div>
+        <div class="draw-section"><div class="draw-buttons"><button class="draw-btn single" onclick="drawSingle()">单抽 x1<span class="price">10 蛋币</span></button><button class="draw-btn ten" onclick="drawTen()">十连抽 x10<span class="price">90 蛋币</span></button></div></div>
+        <div class="result-section"><h3 class="result-title">✨ 抽奖结果</h3><div class="result-boxes" id="resultBoxes"><div style="color:#999;padding:40px;">答题获取蛋币后可抽取皮肤</div></div></div>
+        <div class="stats-section"><div class="stats-grid">
+            <div class="stat-card c"><div class="stat-label">C (1魅力)</div><div class="stat-count" id="cCount">0</div><div class="stat-percent" id="cPercent">0%</div></div>
+            <div class="stat-card b"><div class="stat-label">B (5魅力)</div><div class="stat-count" id="bCount">0</div><div class="stat-percent" id="bPercent">0%</div></div>
+            <div class="stat-card a"><div class="stat-label">A (20魅力)</div><div class="stat-count" id="aCount">0</div><div class="stat-percent" id="aPercent">0%</div></div>
+            <div class="stat-card s"><div class="stat-label">S (100魅力)</div><div class="stat-count" id="sCount">0</div><div class="stat-percent" id="sPercent">0%</div></div>
+            <div class="stat-card ss"><div class="stat-label">SS (500魅力)</div><div class="stat-count" id="ssCount">0</div><div class="stat-percent" id="ssPercent">0%</div></div>
+            <div class="stat-card sss"><div class="stat-label">SSS (2000)</div><div class="stat-count" id="sssCount">0</div><div class="stat-percent" id="sssPercent">0%</div></div>
+        </div></div>
+        <div class="section-header" onclick="toggleSection('collectionContent')"><span>🎨 皮肤收集 (<span id="collectedCount">0</span>/30) | 魅力: <span id="charmDisplay">0</span></span><span>▼</span></div>
+        <div class="collection-grid" id="collectionContent"></div>
+    </div>
+
+    <div class="quiz-modal" id="mathModal"><div class="quiz-content"><span class="close-btn" onclick="closeMathQuiz()">&times;</span>
+        <div class="quiz-header"><h2>🔢 数学挑战</h2><div class="quiz-timer" id="mathTimer">10:00</div><div class="quiz-progress">第 <span id="mathCurrent">1</span>/100 题</div></div>
+        <div style="text-align:center;"><div class="math-question" id="mathQuestion">5 + 3 = ?</div><input type="number" class="math-input" id="mathInput" placeholder="?" onkeypress="if(event.key==='Enter')submitMathAnswer()"><button class="math-submit" onclick="submitMathAnswer()">提交</button>
+        <div class="math-stats"><div><div style="font-size:28px;font-weight:bold;color:#667eea;" id="mathCorrect">0</div><div style="font-size:12px;color:#666;">正确</div></div><div><div style="font-size:28px;font-weight:bold;color:#ff6b6b;" id="mathWrong">0</div><div style="font-size:12px;color:#666;">错误</div></div></div></div>
+    </div></div>
+
+    <div class="quiz-modal" id="chineseModal"><div class="quiz-content"><span class="close-btn" onclick="closeChineseQuiz()">&times;</span>
+        <div class="quiz-header"><h2>📖 语文挑战</h2><div class="quiz-progress">第 <span id="chineseCurrent">1</span> 题</div></div>
+        <div style="text-align:center;"><div style="font-size:20px;color:#666;">请选择正确的拼音</div><div class="chinese-character" id="chineseChar">大</div><div class="pinyin-options" id="pinyinOptions"></div></div>
+    </div></div>
+
+    <div class="quiz-modal" id="englishModal"><div class="quiz-content"><span class="close-btn" onclick="closeEnglishQuiz()">&times;</span>
+        <div class="quiz-header"><h2>🔤 英语挑战</h2><div class="quiz-progress">第 <span id="englishCurrent">1</span> 题</div></div>
+        <div style="text-align:center;"><div class="english-word" id="englishWord">apple</div><div class="english-meaning" id="englishMeaning">苹果</div><div style="margin:15px 0;"><button class="speak-btn listen-btn" onclick="playWordSound()">🔊 听发音</button></div><button class="speak-btn" id="speakBtn" onclick="startSpeaking()">🎤 开始朗读</button><div class="speech-result" id="speechResult"></div></div>
+    </div></div>
+
+    <div class="result-modal" id="resultModal"><div class="result-content"><div class="result-icon" id="resultIcon">🎉</div><div class="result-title" id="resultTitle">完成！</div><div class="result-stats" id="resultStats"></div><div class="result-reward" id="resultReward">+100 蛋币</div><div id="resultBonus" style="display:none;"></div><button class="result-btn" onclick="closeResultModal()">确定</button></div></div>
+
+    <div class="draw-overlay" id="drawOverlay"></div>
+
+    <script>
+        // ===== 皮肤数据 =====
+        const skins = {
+            c: [
+                { name: '小黄蛋', img: 'https://img.52poke.com/uploads/spirit/025.png', fallback: '🟡' },
+                { name: '小蓝蛋', img: 'https://img.52poke.com/uploads/spirit/133.png', fallback: '🔵' },
+                { name: '小粉蛋', img: 'https://img.52poke.com/uploads/spirit/035.png', fallback: '🩷' },
+                { name: '小绿蛋', img: 'https://img.52poke.com/uploads/spirit/001.png', fallback: '🟢' },
+                { name: '小橙蛋', img: 'https://img.52poke.com/uploads/spirit/004.png', fallback: '🟠' }
+            ],
+            b: [
+                { name: '波波蛋', img: 'https://img.52poke.com/uploads/spirit/054.png', fallback: '🌊' },
+                { name: '泡泡蛋', img: 'https://img.52poke.com/uploads/spirit/120.png', fallback: '🫧' },
+                { name: '甜甜蛋', img: 'https://img.52poke.com/uploads/spirit/183.png', fallback: '🍭' },
+                { name: '闪闪蛋', img: 'https://img.52poke.com/uploads/spirit/025-f.png', fallback: '✨' },
+                { name: '暖暖蛋', img: 'https://img.52poke.com/uploads/spirit/037.png', fallback: '☀️' }
+            ],
+            a: [
+                { name: '滑板蛋', img: 'https://img.52poke.com/uploads/spirit/123.png', fallback: '🛹' },
+                { name: '耳机蛋', img: 'https://img.52poke.com/uploads/spirit/035-f.png', fallback: '🎧' },
+                { name: '帽子蛋', img: 'https://img.52poke.com/uploads/spirit/395.png', fallback: '🧢' },
+                { name: '眼镜蛋', img: 'https://img.52poke.com/uploads/spirit/065.png', fallback: '🕶️' },
+                { name: '背包蛋', img: 'https://img.52poke.com/uploads/spirit/282.png', fallback: '🎒' }
+            ],
+            s: [
+                { name: '小丑蛋仔', img: 'https://img.52poke.com/uploads/spirit/123-f.png', fallback: '🤡' },
+                { name: '忍者蛋仔', img: 'https://img.52poke.com/uploads/spirit/065-f.png', fallback: '🥷' },
+                { name: '魔法蛋仔', img: 'https://img.52poke.com/uploads/spirit/063.png', fallback: '🪄' },
+                { name: '骑士蛋仔', img: 'https://img.52poke.com/uploads/spirit/227.png', fallback: '🛡️' },
+                { name: '宇航蛋仔', img: 'https://img.52poke.com/uploads/spirit/334.png', fallback: '🧑‍🚀' }
+            ],
+            ss: [
+                { name: '凤凰蛋仔', img: 'https://img.52poke.com/uploads/spirit/146.png', fallback: '🔥' },
+                { name: '龙蛋仔', img: 'https://img.52poke.com/uploads/spirit/149.png', fallback: '🐉' },
+                { name: '独角兽', img: 'https://img.52poke.com/uploads/spirit/245.png', fallback: '🦄' },
+                { name: '冰雪女王', img: 'https://img.52poke.com/uploads/spirit/144.png', fallback: '❄️' },
+                { name: '雷霆蛋仔', img: 'https://img.52poke.com/uploads/spirit/145.png', fallback: '⚡' }
+            ],
+            sss: [
+                { name: '银河王者', img: 'https://img.52poke.com/uploads/spirit/150.png', fallback: '🌌' },
+                { name: '彩虹传说', img: 'https://img.52poke.com/uploads/spirit/151.png', fallback: '🌈' },
+                { name: '钻石皇冠', img: 'https://img.52poke.com/uploads/spirit/249.png', fallback: '💎' },
+                { name: '天使蛋仔', img: 'https://img.52poke.com/uploads/spirit/250.png', fallback: '👼' },
+                { name: '恶魔蛋仔', img: 'https://img.52poke.com/uploads/spirit/248.png', fallback: '😈' }
+            ]
+        };
+        const rarityOrder = ['c', 'b', 'a', 's', 'ss', 'sss'];
+
+        // ===== 魅力值定义 =====
+        const charmValues = { c: 1, b: 5, a: 20, s: 100, ss: 500, sss: 2000 };
+
+        // ===== 小学一年级完整生字表（约300字）=====
+        const pinyinData = {
+            // 上册
+            '一': 'yī', '二': 'èr', '三': 'sān', '四': 'sì', '五': 'wǔ', '六': 'liù', '七': 'qī', '八': 'bā', '九': 'jiǔ', '十': 'shí',
+            '上': 'shàng', '下': 'xià', '大': 'dà', '小': 'xiǎo', '多': 'duō', '少': 'shǎo', '左': 'zuǒ', '右': 'yòu', '早': 'zǎo', '书': 'shū',
+            '人': 'rén', '口': 'kǒu', '手': 'shǒu', '足': 'zú', '耳': 'ěr', '目': 'mù', '山': 'shān', '水': 'shuǐ', '火': 'huǒ', '土': 'tǔ',
+            '日': 'rì', '月': 'yuè', '田': 'tián', '禾': 'hé', '竹': 'zhú', '石': 'shí', '刀': 'dāo', '力': 'lì', '米': 'mǐ', '豆': 'dòu',
+            '天': 'tiān', '地': 'dì', '花': 'huā', '草': 'cǎo', '树': 'shù', '木': 'mù', '叶': 'yè', '云': 'yún', '风': 'fēng', '雨': 'yǔ',
+            '鸟': 'niǎo', '虫': 'chóng', '鱼': 'yú', '马': 'mǎ', '牛': 'niú', '羊': 'yáng', '犬': 'quǎn', '皮': 'pí', '毛': 'máo', '牙': 'yá',
+            '我': 'wǒ', '你': 'nǐ', '他': 'tā', '她': 'tā', '们': 'men', '是': 'shì', '的': 'de', '有': 'yǒu', '在': 'zài', '不': 'bù',
+            '了': 'le', '也': 'yě', '就': 'jiù', '都': 'dōu', '会': 'huì', '能': 'néng', '说': 'shuō', '听': 'tīng', '看': 'kàn', '想': 'xiǎng',
+            '来': 'lái', '去': 'qù', '出': 'chū', '入': 'rù', '开': 'kāi', '关': 'guān', '坐': 'zuò', '立': 'lì', '走': 'zǒu', '跑': 'pǎo',
+            '爸': 'bà', '妈': 'mā', '爷': 'yé', '奶': 'nǎi', '哥': 'gē', '弟': 'dì', '姐': 'jiě', '妹': 'mèi', '老': 'lǎo', '师': 'shī',
+            '学': 'xué', '生': 'shēng', '校': 'xiào', '班': 'bān', '同': 'tóng', '友': 'yǒu', '字': 'zì', '词': 'cí', '句': 'jù', '文': 'wén',
+            '白': 'bái', '红': 'hóng', '黄': 'huáng', '蓝': 'lán', '绿': 'lǜ', '黑': 'hēi', '灰': 'huī', '金': 'jīn', '银': 'yín', '彩': 'cǎi',
+            '春': 'chūn', '夏': 'xià', '秋': 'qiū', '冬': 'dōng', '东': 'dōng', '西': 'xī', '南': 'nán', '北': 'běi', '前': 'qián', '后': 'hòu',
+            '里': 'lǐ', '外': 'wài', '高': 'gāo', '低': 'dī', '长': 'cháng', '短': 'duǎn', '宽': 'kuān', '窄': 'zhǎi', '厚': 'hòu', '薄': 'báo',
+            '正': 'zhèng', '反': 'fǎn', '对': 'duì', '错': 'cuò', '真': 'zhēn', '假': 'jiǎ', '好': 'hǎo', '坏': 'huài', '新': 'xīn', '旧': 'jiù',
+            '快': 'kuài', '慢': 'màn', '冷': 'lěng', '热': 'rè', '明': 'míng', '暗': 'àn', '干': 'gān', '净': 'jìng', '脏': 'zāng', '乱': 'luàn',
+            // 下册
+            '飞': 'fēi', '机': 'jī', '车': 'chē', '船': 'chuán', '路': 'lù', '桥': 'qiáo', '灯': 'dēng', '塔': 'tǎ', '城': 'chéng', '村': 'cūn',
+            '家': 'jiā', '门': 'mén', '窗': 'chuāng', '房': 'fáng', '屋': 'wū', '床': 'chuáng', '桌': 'zhuō', '椅': 'yǐ', '柜': 'guì', '箱': 'xiāng',
+            '衣': 'yī', '服': 'fu', '鞋': 'xié', '帽': 'mào', '袜': 'wà', '巾': 'jīn', '被': 'bèi', '枕': 'zhěn', '席': 'xí', '毯': 'tǎn',
+            '饭': 'fàn', '菜': 'cài', '肉': 'ròu', '蛋': 'dàn', '汤': 'tāng', '面': 'miàn', '包': 'bāo', '饼': 'bǐng', '果': 'guǒ', '瓜': 'guā',
+            '桃': 'táo', '梨': 'lí', '杏': 'xìng', '李': 'lǐ', '橘': 'jú', '苹': 'píng', '葡': 'pú', '萄': 'táo', '萝': 'luó', '卜': 'bo',
+            '茄': 'qié', '椒': 'jiāo', '葱': 'cōng', '蒜': 'suàn', '姜': 'jiāng', '盐': 'yán', '油': 'yóu', '酱': 'jiàng', '醋': 'cù', '茶': 'chá',
+            '杯': 'bēi', '瓶': 'píng', '碗': 'wǎn', '盘': 'pán', '筷': 'kuài', '勺': 'sháo', '叉': 'chā', '刀': 'dāo', '壶': 'hú', '盆': 'pén',
+            '猫': 'māo', '狗': 'gǒu', '猪': 'zhū', '鸡': 'jī', '鸭': 'yā', '鹅': 'é', '兔': 'tù', '虎': 'hǔ', '狮': 'shī', '象': 'xiàng',
+            '猴': 'hóu', '鹿': 'lù', '熊': 'xióng', '狼': 'láng', '鼠': 'shǔ', '蛇': 'shé', '蛙': 'wā', '龟': 'guī', '鹤': 'hè', '鹰': 'yīng',
+            '燕': 'yàn', '鸦': 'yā', '鹊': 'què', '蝶': 'dié', '蜂': 'fēng', '蚁': 'yǐ', '龙': 'lóng', '凤': 'fèng', '麒': 'qí', '麟': 'lín',
+            '球': 'qiú', '拍': 'pāi', '跑': 'pǎo', '跳': 'tiào', '踢': 'tī', '打': 'dǎ', '拔': 'bá', '拍': 'pāi', '画': 'huà', '写': 'xiě',
+            '读': 'dú', '背': 'bèi', '唱': 'chàng', '跳': 'tiào', '玩': 'wán', '乐': 'lè', '笑': 'xiào', '哭': 'kū', '闹': 'nào', '静': 'jìng',
+            '星': 'xīng', '亮': 'liàng', '阳': 'yáng', '光': 'guāng', '空': 'kōng', '气': 'qì', '清': 'qīng', '洁': 'jié', '美': 'měi', '丽': 'lì',
+            '爱': 'ài', '情': 'qíng', '心': 'xīn', '思': 'sī', '念': 'niàn', '记': 'jì', '忘': 'wàng', '知': 'zhī', '识': 'shí', '懂': 'dǒng',
+            '事': 'shì', '物': 'wù', '品': 'pǐn', '样': 'yàng', '样': 'yàng', '种': 'zhǒng', '类': 'lèi', '群': 'qún', '众': 'zhòng', '个': 'gè',
+            '只': 'zhī', '条': 'tiáo', '头': 'tóu', '尾': 'wěi', '身': 'shēn', '体': 'tǐ', '脸': 'liǎn', '眼': 'yǎn', '鼻': 'bí', '舌': 'shé'
+        };
+
+        // ===== 小学英语完整词汇表（约500词）=====
+        const englishWordBank = [
+            // 一年级
+            { word: 'apple', meaning: '苹果' }, { word: 'banana', meaning: '香蕉' }, { word: 'cat', meaning: '猫' }, { word: 'dog', meaning: '狗' },
+            { word: 'egg', meaning: '蛋' }, { word: 'fish', meaning: '鱼' }, { word: 'girl', meaning: '女孩' }, { word: 'boy', meaning: '男孩' },
+            { word: 'hand', meaning: '手' }, { word: 'ice', meaning: '冰' }, { word: 'jump', meaning: '跳' }, { word: 'kite', meaning: '风筝' },
+            { word: 'lion', meaning: '狮子' }, { word: 'milk', meaning: '牛奶' }, { word: 'nose', meaning: '鼻子' }, { word: 'orange', meaning: '橙子' },
+            { word: 'pig', meaning: '猪' }, { word: 'queen', meaning: '女王' }, { word: 'rabbit', meaning: '兔子' }, { word: 'sun', meaning: '太阳' },
+            { word: 'tree', meaning: '树' }, { word: 'umbrella', meaning: '雨伞' }, { word: 'violin', meaning: '小提琴' }, { word: 'water', meaning: '水' },
+            { word: 'box', meaning: '盒子' }, { word: 'yellow', meaning: '黄色' }, { word: 'zoo', meaning: '动物园' }, { word: 'book', meaning: '书' },
+            { word: 'car', meaning: '汽车' }, { word: 'door', meaning: '门' }, { word: 'eye', meaning: '眼睛' }, { word: 'food', meaning: '食物' },
+            // 二年级
+            { word: 'happy', meaning: '开心的' }, { word: 'sad', meaning: '伤心的' }, { word: 'angry', meaning: '生气的' }, { word: 'tired', meaning: '累的' },
+            { word: 'hungry', meaning: '饿的' }, { word: 'thirsty', meaning: '渴的' }, { word: 'hot', meaning: '热的' }, { word: 'cold', meaning: '冷的' },
+            { word: 'big', meaning: '大的' }, { word: 'small', meaning: '小的' }, { word: 'tall', meaning: '高的' }, { word: 'short', meaning: '矮的' },
+            { word: 'long', meaning: '长的' }, { word: 'new', meaning: '新的' }, { word: 'old', meaning: '旧的' }, { word: 'young', meaning: '年轻的' },
+            { word: 'red', meaning: '红色' }, { word: 'blue', meaning: '蓝色' }, { word: 'green', meaning: '绿色' }, { word: 'white', meaning: '白色' },
+            { word: 'black', meaning: '黑色' }, { word: 'pink', meaning: '粉色' }, { word: 'purple', meaning: '紫色' }, { word: 'brown', meaning: '棕色' },
+            { word: 'family', meaning: '家庭' }, { word: 'mother', meaning: '妈妈' }, { word: 'father', meaning: '爸爸' }, { word: 'sister', meaning: '姐妹' },
+            { word: 'brother', meaning: '兄弟' }, { word: 'grandma', meaning: '奶奶' }, { word: 'grandpa', meaning: '爷爷' }, { word: 'friend', meaning: '朋友' },
+            // 三年级
+            { word: 'teacher', meaning: '老师' }, { word: 'student', meaning: '学生' }, { word: 'school', meaning: '学校' }, { word: 'classroom', meaning: '教室' },
+            { word: 'desk', meaning: '课桌' }, { word: 'chair', meaning: '椅子' }, { word: 'pencil', meaning: '铅笔' }, { word: 'ruler', meaning: '尺子' },
+            { word: 'eraser', meaning: '橡皮' }, { word: 'pen', meaning: '钢笔' }, { word: 'bag', meaning: '书包' }, { word: 'window', meaning: '窗户' },
+            { word: 'morning', meaning: '早晨' }, { word: 'afternoon', meaning: '下午' }, { word: 'evening', meaning: '晚上' }, { word: 'night', meaning: '夜晚' },
+            { word: 'today', meaning: '今天' }, { word: 'tomorrow', meaning: '明天' }, { word: 'yesterday', meaning: '昨天' }, { word: 'week', meaning: '周' },
+            { word: 'month', meaning: '月' }, { word: 'year', meaning: '年' }, { word: 'spring', meaning: '春天' }, { word: 'summer', meaning: '夏天' },
+            { word: 'autumn', meaning: '秋天' }, { word: 'winter', meaning: '冬天' }, { word: 'sunny', meaning: '晴朗的' }, { word: 'rainy', meaning: '下雨的' },
+            { word: 'cloudy', meaning: '多云的' }, { word: 'windy', meaning: '有风的' }, { word: 'snowy', meaning: '下雪的' }, { word: 'weather', meaning: '天气' },
+            // 四年级
+            { word: 'breakfast', meaning: '早餐' }, { word: 'lunch', meaning: '午餐' }, { word: 'dinner', meaning: '晚餐' }, { word: 'rice', meaning: '米饭' },
+            { word: 'bread', meaning: '面包' }, { word: 'cake', meaning: '蛋糕' }, { word: 'noodle', meaning: '面条' }, { word: 'chicken', meaning: '鸡肉' },
+            { word: 'beef', meaning: '牛肉' }, { word: 'vegetable', meaning: '蔬菜' }, { word: 'tomato', meaning: '番茄' }, { word: 'potato', meaning: '土豆' },
+            { word: 'candy', meaning: '糖果' }, { word: 'juice', meaning: '果汁' }, { word: 'coffee', meaning: '咖啡' }, { word: 'tea', meaning: '茶' },
+            { word: 'bedroom', meaning: '卧室' }, { word: 'living room', meaning: '客厅' }, { word: 'kitchen', meaning: '厨房' }, { word: 'bathroom', meaning: '浴室' },
+            { word: 'sofa', meaning: '沙发' }, { word: 'table', meaning: '桌子' }, { word: 'phone', meaning: '电话' }, { word: 'TV', meaning: '电视' },
+            { word: 'computer', meaning: '电脑' }, { word: 'clock', meaning: '时钟' }, { word: 'lamp', meaning: '灯' }, { word: 'picture', meaning: '图片' },
+            { word: 'bed', meaning: '床' }, { word: 'wall', meaning: '墙' }, { word: 'floor', meaning: '地板' }, { word: 'door', meaning: '门' },
+            // 五年级
+            { word: 'Monday', meaning: '星期一' }, { word: 'Tuesday', meaning: '星期二' }, { word: 'Wednesday', meaning: '星期三' }, { word: 'Thursday', meaning: '星期四' },
+            { word: 'Friday', meaning: '星期五' }, { word: 'Saturday', meaning: '星期六' }, { word: 'Sunday', meaning: '星期日' }, { word: 'weekend', meaning: '周末' },
+            { word: 'math', meaning: '数学' }, { word: 'English', meaning: '英语' }, { word: 'Chinese', meaning: '语文' }, { word: 'music', meaning: '音乐' },
+            { word: 'art', meaning: '美术' }, { word: 'PE', meaning: '体育' }, { word: 'science', meaning: '科学' }, { word: 'computer', meaning: '电脑课' },
+            { word: 'read', meaning: '读' }, { word: 'write', meaning: '写' }, { word: 'speak', meaning: '说' }, { word: 'listen', meaning: '听' },
+            { word: 'sing', meaning: '唱' }, { word: 'dance', meaning: '跳舞' }, { word: 'draw', meaning: '画' }, { word: 'swim', meaning: '游泳' },
+            { word: 'run', meaning: '跑' }, { word: 'walk', meaning: '走' }, { word: 'fly', meaning: '飞' }, { word: 'sleep', meaning: '睡觉' },
+            { word: 'cook', meaning: '做饭' }, { word: 'clean', meaning: '打扫' }, { word: 'wash', meaning: '洗' }, { word: 'study', meaning: '学习' },
+            // 六年级
+            { word: 'hospital', meaning: '医院' }, { word: 'cinema', meaning: '电影院' }, { word: 'library', meaning: '图书馆' }, { word: 'park', meaning: '公园' },
+            { word: 'museum', meaning: '博物馆' }, { word: 'store', meaning: '商店' }, { word: 'restaurant', meaning: '餐厅' }, { word: 'hotel', meaning: '酒店' },
+            { word: 'station', meaning: '车站' }, { word: 'airport', meaning: '机场' }, { word: 'bridge', meaning: '桥' }, { word: 'river', meaning: '河' },
+            { word: 'mountain', meaning: '山' }, { word: 'forest', meaning: '森林' }, { word: 'lake', meaning: '湖' }, { word: 'island', meaning: '岛' },
+            { word: 'country', meaning: '国家' }, { word: 'city', meaning: '城市' }, { word: 'village', meaning: '村庄' }, { word: 'street', meaning: '街道' },
+            { word: 'doctor', meaning: '医生' }, { word: 'nurse', meaning: '护士' }, { word: 'driver', meaning: '司机' }, { word: 'farmer', meaning: '农民' },
+            { word: 'worker', meaning: '工人' }, { word: 'pilot', meaning: '飞行员' }, { word: 'police', meaning: '警察' }, { word: 'scientist', meaning: '科学家' },
+            { word: 'artist', meaning: '艺术家' }, { word: 'singer', meaning: '歌手' }, { word: 'writer', meaning: '作家' }, { word: 'dancer', meaning: '舞者' }
+        ];
+
+        // 游戏数据
+        let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0 };
+        let mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, timer: null, timeLeft: 600 };
+        let chineseIndex = 0;
+        let chineseCorrect = 0; // 语文答对计数
+        let englishIndex = 0;
+
+        // ===== 初始化 =====
+        function init() {
+            createStars();
+            loadGameData();
+            updateDisplay();
+            updateCollection();
+            updateStats();
+        }
+        function createStars() {
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                document.getElementById('stars').appendChild(star);
+            }
+        }
+        function loadGameData() { const s = localStorage.getItem('eggPartyGame'); if (s) gameData = JSON.parse(s); }
+        function saveGameData() { localStorage.setItem('eggPartyGame', JSON.stringify(gameData)); }
+        function updateDisplay() { document.getElementById('coinAmount').textContent = gameData.coins; document.getElementById('charmAmount').textContent = gameData.charm; }
+
+        // ===== 数学题 =====
+        function startMathQuiz() {
+            mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, timer: null, timeLeft: 600 };
+            for (let i = 0; i < 100; i++) {
+                let a, b, op, ans;
+                do {
+                    a = Math.floor(Math.random() * 20);
+                    b = Math.floor(Math.random() * 20);
+                    op = Math.random() > 0.5 ? '+' : '-';
+                    if (op === '+') ans = a + b;
+                    else { if (a < b) [a, b] = [b, a]; ans = a - b; }
+                } while (ans > 20 || ans < 0);
+                mathData.questions.push({ a, b, op, ans });
+            }
+            document.getElementById('mathModal').classList.add('active');
+            document.getElementById('mathCorrect').textContent = '0';
+            document.getElementById('mathWrong').textContent = '0';
+            showMathQuestion();
+            startMathTimer();
+        }
+        function showMathQuestion() {
+            const q = mathData.questions[mathData.currentIndex];
+            document.getElementById('mathQuestion').textContent = `${q.a} ${q.op} ${q.b} = ?`;
+            document.getElementById('mathCurrent').textContent = mathData.currentIndex + 1;
+            document.getElementById('mathInput').value = '';
+            document.getElementById('mathInput').focus();
+        }
+        function submitMathAnswer() {
+            const ans = parseInt(document.getElementById('mathInput').value);
+            if (isNaN(ans)) return;
+            const q = mathData.questions[mathData.currentIndex];
+            if (ans === q.ans) { mathData.correct++; document.getElementById('mathCorrect').textContent = mathData.correct; }
+            else { mathData.wrong++; document.getElementById('mathWrong').textContent = mathData.wrong; }
+            mathData.currentIndex++;
+            if (mathData.currentIndex >= 100 || mathData.timeLeft <= 0) finishMathQuiz();
+            else showMathQuestion();
+        }
+        function startMathTimer() {
+            updateMathTimerDisplay();
+            mathData.timer = setInterval(() => { mathData.timeLeft--; updateMathTimerDisplay(); if (mathData.timeLeft <= 0) finishMathQuiz(); }, 1000);
+        }
+        function updateMathTimerDisplay() { const m = Math.floor(mathData.timeLeft / 60), s = mathData.timeLeft % 60; document.getElementById('mathTimer').textContent = `${m}:${s.toString().padStart(2, '0')}`; }
+        function finishMathQuiz() {
+            clearInterval(mathData.timer);
+            document.getElementById('mathModal').classList.remove('active');
+            const timeUsed = 600 - mathData.timeLeft;
+            let mult = 1, bonus = '';
+            if (timeUsed <= 300) { mult = 3; bonus = '⚡ 极速完成！×3倍奖励'; }
+            else if (timeUsed <= 360) { mult = 2; bonus = '🚀 快速完成！×2倍奖励'; }
+            else if (timeUsed <= 420) { mult = 1.5; bonus = '✨ 良好速度！×1.5倍奖励'; }
+            else if (timeUsed <= 480) { mult = 1.2; bonus = '👍 按时完成！×1.2倍奖励'; }
+            else bonus = `⏱️ 用时: ${Math.floor(timeUsed/60)}分${timeUsed%60}秒`;
+            let base = 0, title = '', icon = '';
+            if (mathData.correct === 100) { base = 300; title = '满分！天才数学家！'; icon = '🏆'; }
+            else if (mathData.correct >= 95) { base = 200; title = '太棒了！接近满分！'; icon = '🎉'; }
+            else if (mathData.correct >= 80) { base = 150; title = '优秀！数学高手！'; icon = '👍'; }
+            else if (mathData.correct >= 60) { base = 100; title = '不错！继续加油！'; icon = '💪'; }
+            else if (mathData.correct >= 40) { base = 50; title = '还需努力！'; icon = '📚'; }
+            else { base = 20; title = '下次加油！'; icon = '✏️'; }
+            const final = Math.floor(base * mult);
+            gameData.coins += final;
+            saveGameData();
+            updateDisplay();
+            showResult(icon, title, `正确 ${mathData.correct}/100 题`, `+${final} 蛋币`, bonus);
+        }
+        function closeMathQuiz() { clearInterval(mathData.timer); document.getElementById('mathModal').classList.remove('active'); }
+
+        // ===== 语文题 =====
+        function startChineseQuiz() { chineseIndex = 0; chineseCorrect = 0; document.getElementById('chineseModal').classList.add('active'); showChineseQuestion(); }
+        function showChineseQuestion() {
+            const chars = Object.keys(pinyinData);
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            const correctPinyin = pinyinData[char];
+            const allPinyins = Object.values(pinyinData).filter(p => p !== correctPinyin);
+            const wrongOptions = [];
+            while (wrongOptions.length < 3) {
+                const w = allPinyins[Math.floor(Math.random() * allPinyins.length)];
+                if (!wrongOptions.includes(w)) wrongOptions.push(w);
+            }
+            document.getElementById('chineseChar').textContent = char;
+            document.getElementById('chineseCurrent').textContent = chineseIndex + 1;
+            const opts = [correctPinyin, ...wrongOptions].sort(() => Math.random() - 0.5);
+            const container = document.getElementById('pinyinOptions');
+            container.innerHTML = '';
+            opts.forEach(o => {
+                const btn = document.createElement('div');
+                btn.className = 'pinyin-option';
+                btn.textContent = o;
+                btn.onclick = () => selectPinyin(o, correctPinyin, btn);
+                container.appendChild(btn);
+            });
+        }
+        function selectPinyin(sel, correct, btn) {
+            document.querySelectorAll('.pinyin-option').forEach(o => o.style.pointerEvents = 'none');
+            if (sel === correct) { btn.classList.add('correct'); gameData.coins += 5; chineseCorrect++; saveGameData(); updateDisplay(); }
+            else { btn.classList.add('wrong'); document.querySelectorAll('.pinyin-option').forEach(o => { if (o.textContent === correct) o.classList.add('correct'); }); }
+            setTimeout(() => {
+                chineseIndex++;
+                if (chineseIndex < 10) showChineseQuestion();
+                else {
+                    closeChineseQuiz();
+                    const totalReward = chineseCorrect * 5 + 50;
+                    const bonus = chineseCorrect === 10 ? '🎉 全部答对！' : `答对 ${chineseCorrect}/10 题`;
+                    showResult('📖', '语文挑战完成！', `完成10道题目`, `+${totalReward} 蛋币`, bonus);
+                    gameData.coins += 50;
+                    saveGameData();
+                    updateDisplay();
+                }
+            }, 1000);
+        }
+        function closeChineseQuiz() { document.getElementById('chineseModal').classList.remove('active'); }
+
+        // ===== 英语题 =====
+        function startEnglishQuiz() { englishIndex = 0; document.getElementById('englishModal').classList.add('active'); showEnglishQuestion(); }
+        function showEnglishQuestion() {
+            const data = englishWordBank[Math.floor(Math.random() * englishWordBank.length)];
+            document.getElementById('englishWord').textContent = data.word;
+            document.getElementById('englishMeaning').textContent = data.meaning;
+            document.getElementById('englishCurrent').textContent = englishIndex + 1;
+            document.getElementById('speechResult').innerHTML = '';
+            document.getElementById('speakBtn').classList.remove('recording');
+            document.getElementById('speakBtn').textContent = '🎤 开始朗读';
+            window.currentEnglishWord = data.word;
+        }
+        function playWordSound() {
+            const utterance = new SpeechSynthesisUtterance(window.currentEnglishWord);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+        }
+        function startSpeaking() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                playWordSound();
+                setTimeout(() => {
+                    document.getElementById('speechResult').className = 'speech-result success';
+                    document.getElementById('speechResult').textContent = '✅ 朗读正确！';
+                    gameData.coins += 8;
+                    saveGameData();
+                    updateDisplay();
+                    setTimeout(nextEnglishQuestion, 1500);
+                }, 2000);
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            const btn = document.getElementById('speakBtn');
+            btn.classList.add('recording');
+            btn.textContent = '🔴 录音中...';
+            recognition.onresult = (e) => {
+                const spoken = e.results[0][0].transcript.toLowerCase();
+                const expected = window.currentEnglishWord.toLowerCase();
+                btn.classList.remove('recording');
+                btn.textContent = '🎤 开始朗读';
+                const res = document.getElementById('speechResult');
+                if (spoken.includes(expected) || levenshteinDistance(spoken, expected) <= 2) { res.className = 'speech-result success'; res.textContent = `✅ 正确！你说了: "${spoken}"`; gameData.coins += 8; saveGameData(); updateDisplay(); }
+                else { res.className = 'speech-result fail'; res.textContent = `❌ 你说了: "${spoken}"，应为: "${expected}"`; }
+                setTimeout(nextEnglishQuestion, 1500);
+            };
+            recognition.onerror = () => { btn.classList.remove('recording'); btn.textContent = '🎤 开始朗读'; document.getElementById('speechResult').className = 'speech-result fail'; document.getElementById('speechResult').textContent = '⚠️ 识别失败，请重试'; };
+            recognition.start();
+        }
+        function levenshteinDistance(a, b) {
+            const m = []; for (let i = 0; i <= b.length; i++) m[i] = [i]; for (let j = 0; j <= a.length; j++) m[0][j] = j;
+            for (let i = 1; i <= b.length; i++) for (let j = 1; j <= a.length; j++) m[i][j] = b[i-1] === a[j-1] ? m[i-1][j-1] : Math.min(m[i-1][j-1]+1, m[i][j-1]+1, m[i-1][j]+1);
+            return m[b.length][a.length];
+        }
+        function nextEnglishQuestion() { englishIndex++; if (englishIndex < 10) showEnglishQuestion(); else { closeEnglishQuiz(); showResult('🔤', '英语挑战完成！', '完成10道题目', '+50 蛋币', ''); gameData.coins += 50; saveGameData(); updateDisplay(); } }
+        function closeEnglishQuiz() { document.getElementById('englishModal').classList.remove('active'); }
+
+        // ===== 结果弹窗 =====
+        function showResult(icon, title, stats, reward, bonus) {
+            document.getElementById('resultIcon').textContent = icon;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultStats').textContent = stats;
+            document.getElementById('resultReward').textContent = reward;
+            const b = document.getElementById('resultBonus');
+            if (bonus) { b.textContent = bonus; b.style.display = 'block'; } else b.style.display = 'none';
+            document.getElementById('resultModal').classList.add('active');
+        }
+        function closeResultModal() { document.getElementById('resultModal').classList.remove('active'); }
+
+        // ===== 抽奖系统 =====
+        function getRandomSkin() {
+            const rand = Math.random() * 100;
+            let rarity;
+            if (rand < 0.5) rarity = 'sss';
+            else if (rand < 2.5) rarity = 'ss';
+            else if (rand < 10.5) rarity = 's';
+            else if (rand < 25.5) rarity = 'a';
+            else if (rand < 55.5) rarity = 'b';
+            else rarity = 'c';
+            const list = skins[rarity];
+            const idx = Math.floor(Math.random() * list.length);
+            return { rarity, name: list[idx].name, img: list[idx].img, fallback: list[idx].fallback, index: idx };
+        }
+        function drawSingle() {
+            if (gameData.coins < 10) { showMessage('蛋币不足！请先答题获取蛋币', 'error'); return; }
+            gameData.coins -= 10;
+            const skin = getRandomSkin();
+            addSkinToCollection(skin);
+            gameData.stats[skin.rarity]++;
+            gameData.totalDraws++;
+            saveGameData();
+            updateDisplay();
+            showDrawAnimation([skin]);
+        }
+        function drawTen() {
+            if (gameData.coins < 90) { showMessage('蛋币不足！需要90蛋币', 'error'); return; }
+            gameData.coins -= 90;
+            const results = [];
+            for (let i = 0; i < 10; i++) {
+                const skin = getRandomSkin();
+                results.push(skin);
+                addSkinToCollection(skin);
+                gameData.stats[skin.rarity]++;
+                gameData.totalDraws++;
+            }
+            saveGameData();
+            updateDisplay();
+            showDrawAnimation(results);
+        }
+        function addSkinToCollection(skin) {
+            const key = `${skin.rarity}_${skin.index}`;
+            if (!gameData.collected[key]) {
+                gameData.collected[key] = { ...skin, count: 0 };
+            }
+            gameData.collected[key].count++;
+            // 每次获得卡牌都增加魅力值
+            gameData.charm += charmValues[skin.rarity];
+        }
+
+        // ===== 抽卡动画 =====
+        function showDrawAnimation(skinList) {
+            const overlay = document.getElementById('drawOverlay');
+            overlay.innerHTML = '';
+            overlay.classList.add('active');
+
+            const container = document.createElement('div');
+            container.className = 'draw-card-container';
+            overlay.appendChild(container);
+
+            // 关闭按钮
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-draw-btn';
+            closeBtn.textContent = '✕ 关闭';
+            closeBtn.onclick = (e) => {
+                e.stopPropagation();
+                overlay.classList.remove('active');
+                updateCollection();
+                updateStats();
+            };
+            overlay.appendChild(closeBtn);
+
+            // 依次创建卡牌并翻转
+            let lastIndex = skinList.length - 1;
+            skinList.forEach((skin, i) => {
+                setTimeout(() => {
+                    const card = document.createElement('div');
+                    card.className = 'draw-card';
+                    const rarityUpper = skin.rarity.toUpperCase();
+
+                    card.innerHTML = `
+                        <div class="draw-card-inner">
+                            <div class="draw-card-front"></div>
+                            <div class="draw-card-back rarity-${skin.rarity}">
+                                <div class="rarity-badge ${skin.rarity}">${rarityUpper}</div>
+                                <img src="${skin.img}" class="skin-image" onerror="this.outerHTML='<div class=\\'skin-fallback rarity-${skin.rarity}\\'>${skin.fallback}</div>'">
+                                <div class="skin-name-bottom">${skin.name}</div>
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+
+                    // 延迟翻转
+                    setTimeout(() => {
+                        card.classList.add('opened');
+                        if (skin.rarity === 'sss') {
+                            createParticles(card, skin.rarity);
+                            createSSSFlash();
+                        } else if (skin.rarity === 'ss') {
+                            createParticles(card, skin.rarity);
+                            createSSLightBeams();
+                        }
+                        // 最后一张卡翻转后显示关闭按钮
+                        if (i === lastIndex) {
+                            setTimeout(() => closeBtn.classList.add('show'), 500);
+                        }
+                    }, 100);
+
+                }, i * 300);
+            });
+        }
+
+        function createParticles(card, rarity) {
+            const colors = rarity === 'sss' ? ['#ff5252', '#ffd700', '#ff6b6b'] : ['#ffd700', '#ff8f00'];
+            const count = rarity === 'sss' ? 30 : 15;
+
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    const size = 4 + Math.random() * 6;
+                    const angle = (360 / count) * i;
+                    const distance = 80 + Math.random() * 60;
+
+                    particle.style.cssText = `
+                        width: ${size}px;
+                        height: ${size}px;
+                        background: ${colors[Math.floor(Math.random() * colors.length)]};
+                        left: 50%;
+                        top: 50%;
+                        --tx: ${Math.cos(angle * Math.PI / 180) * distance}px;
+                        --ty: ${Math.sin(angle * Math.PI / 180) * distance}px;
+                    `;
+
+                    card.appendChild(particle);
+                    setTimeout(() => particle.remove(), 1000);
+                }, i * 20);
+            }
+        }
+
+        // SS级全屏光束特效
+        function createSSLightBeams() {
+            const overlay = document.getElementById('drawOverlay');
+            // 金色光束从天而降
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const beam = document.createElement('div');
+                    beam.className = 'ss-light-beam';
+                    beam.style.left = (Math.random() * 100) + '%';
+                    beam.style.animationDelay = (Math.random() * 0.3) + 's';
+                    overlay.appendChild(beam);
+                    setTimeout(() => beam.remove(), 2000);
+                }, i * 100);
+            }
+            // 星星闪烁
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'ss-star';
+                    star.style.left = (Math.random() * 100) + '%';
+                    star.style.top = (Math.random() * 100) + '%';
+                    star.style.animationDelay = (Math.random() * 0.5) + 's';
+                    overlay.appendChild(star);
+                    setTimeout(() => star.remove(), 2500);
+                }, i * 80);
+            }
+        }
+
+        // SSS级全屏闪光特效
+        function createSSSFlash() {
+            const overlay = document.getElementById('drawOverlay');
+            // 全屏闪光
+            const flash = document.createElement('div');
+            flash.className = 'sss-flash';
+            overlay.appendChild(flash);
+            setTimeout(() => flash.remove(), 800);
+
+            // 多次闪光增强效果
+            setTimeout(() => {
+                const flash2 = document.createElement('div');
+                flash2.className = 'sss-flash';
+                flash2.style.background = 'radial-gradient(circle at center, rgba(255,215,0,0.5) 0%, rgba(255,82,82,0.3) 40%, transparent 80%)';
+                overlay.appendChild(flash2);
+                setTimeout(() => flash2.remove(), 800);
+            }, 300);
+        }
+
+        function updateCollection() {
+            const container = document.getElementById('collectionContent');
+            container.innerHTML = '';
+            let count = 0;
+            rarityOrder.forEach(rarity => {
+                skins[rarity].forEach((skin, index) => {
+                    const key = `${rarity}_${index}`;
+                    const item = document.createElement('div');
+                    item.className = 'collection-item';
+                    if (gameData.collected[key]) {
+                        item.classList.add('collected', rarity);
+                        item.innerHTML = `<div class="item-icon">${skin.fallback}</div><div class="item-name">${skin.name}</div>`;
+                        count++;
+                    } else {
+                        item.innerHTML = `<div class="item-icon">❓</div><div class="item-name">未获得</div>`;
+                    }
+                    container.appendChild(item);
+                });
+            });
+            document.getElementById('collectedCount').textContent = count;
+            document.getElementById('charmDisplay').textContent = gameData.charm;
+        }
+
+        function updateStats() {
+            rarityOrder.forEach(rarity => {
+                const c = gameData.stats[rarity];
+                const p = gameData.totalDraws > 0 ? ((c / gameData.totalDraws) * 100).toFixed(1) : 0;
+                document.getElementById(`${rarity}Count`).textContent = c;
+                document.getElementById(`${rarity}Percent`).textContent = `${p}%`;
+            });
+        }
+
+        function toggleSection(id) { document.getElementById(id).classList.toggle('hidden'); }
+        function showMessage(text, type) {
+            const existing = document.querySelector('.message');
+            if (existing) existing.remove();
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.textContent = text;
+            document.querySelector('.container').insertBefore(msg, document.querySelector('.quiz-entry'));
+            setTimeout(() => msg.remove(), 2000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
