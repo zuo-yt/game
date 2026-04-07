@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o D:/flash/game/assets/skins/c/1.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E261.png\" --max-time 10)",
+      "Bash(curl -s -o assets/skins/c/1.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E261.png\")",
+      "Bash(curl -s -o assets/skins/c/2.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E060.png\")",
+      "Bash(curl -s -o assets/skins/c/3.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E05A.png\")",
+      "Bash(curl -s -o assets/skins/c/4.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E053.png\")",
+      "Bash(curl -s -o assets/skins/c/5.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E063.png\")",
+      "Bash(curl -s -o assets/skins/b/1.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E07B.png\")",
+      "Bash(curl -s -o assets/skins/b/2.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E0A0.png\")",
+      "Bash(curl -s -o assets/skins/b/3.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E11B.png\")",
+      "Bash(curl -s -o assets/skins/b/4.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E055.png\")",
+      "Bash(curl -s -o assets/skins/b/5.png \"https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/E093.png\")"
+    ]
+  }
+}

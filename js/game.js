@@ -365,35 +365,34 @@ function startSpeaking() {
     const btn = document.getElementById('speakBtn');
     btn.classList.add('recording');
     btn.textContent = '🔴 录音中...';
-    const isWechat = /MicroMessenger/i.test(navigator.userAgent);
-    // 微信环境和不支持环境：不朗读单词，直接模拟录制成功
-    if (isWechat || (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window))) {
+    const hasSpeechAPI = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+
+    // 不支持语音识别的环境
+    if (!hasSpeechAPI) {
         setTimeout(() => {
             btn.classList.remove('recording');
             btn.textContent = '🎤 开始朗读';
-            document.getElementById('speechResult').className = 'speech-result success';
-            document.getElementById('speechResult').textContent = '✅ 朗读正确！';
-            gameData.coins += 8;
-            saveGameData();
-            updateDisplay();
-            setTimeout(nextEnglishQuestion, 1500);
-        }, 2000);
+            const res = document.getElementById('speechResult');
+            res.className = 'speech-result fail';
+            res.textContent = '⚠️ 当前浏览器不支持语音识别，请使用其他浏览器';
+        }, 1000);
         return;
     }
+
+    // 支持语音识别：进行真实校验
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
     let fallbackTimer = setTimeout(() => {
         recognition.stop();
         btn.classList.remove('recording');
         btn.textContent = '🎤 开始朗读';
-        document.getElementById('speechResult').className = 'speech-result success';
-        document.getElementById('speechResult').textContent = '✅ 朗读正确！';
-        gameData.coins += 8;
-        saveGameData();
-        updateDisplay();
-        setTimeout(nextEnglishQuestion, 1500);
+        document.getElementById('speechResult').className = 'speech-result fail';
+        document.getElementById('speechResult').textContent = '⚠️ 识别超时，请重试';
     }, 8000);
+
     recognition.onresult = (e) => {
         clearTimeout(fallbackTimer);
         const spoken = e.results[0][0].transcript.toLowerCase();
@@ -401,10 +400,20 @@ function startSpeaking() {
         btn.classList.remove('recording');
         btn.textContent = '🎤 开始朗读';
         const res = document.getElementById('speechResult');
-        if (spoken.includes(expected) || levenshteinDistance(spoken, expected) <= 2) { res.className = 'speech-result success'; res.textContent = `✅ 正确！你说了: "${spoken}"`; gameData.coins += 8; saveGameData(); updateDisplay(); }
-        else { res.className = 'speech-result fail'; res.textContent = `❌ 你说了: "${spoken}"，应为: "${expected}"`; }
-        setTimeout(nextEnglishQuestion, 1500);
+        if (spoken.includes(expected) || levenshteinDistance(spoken, expected) <= 2) {
+            res.className = 'speech-result success';
+            res.textContent = `✅ 正确！你说了: "${spoken}"`;
+            gameData.coins += 8;
+            saveGameData();
+            updateDisplay();
+            setTimeout(nextEnglishQuestion, 1500);
+        } else {
+            res.className = 'speech-result fail';
+            res.textContent = `❌ 你说了: "${spoken}"，应为: "${expected}"`;
+            setTimeout(nextEnglishQuestion, 1500);
+        }
     };
+
     recognition.onerror = (e) => {
         clearTimeout(fallbackTimer);
         btn.classList.remove('recording');
@@ -412,6 +421,7 @@ function startSpeaking() {
         document.getElementById('speechResult').className = 'speech-result fail';
         document.getElementById('speechResult').textContent = '⚠️ 识别失败，请重试';
     };
+
     recognition.start();
 }
 function levenshteinDistance(a, b) {
