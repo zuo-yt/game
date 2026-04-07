@@ -666,10 +666,41 @@
             window.currentEnglishWord = data.word;
         }
         function playWordSound() {
-            const utterance = new SpeechSynthesisUtterance(window.currentEnglishWord);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.8;
-            speechSynthesis.speak(utterance);
+            const word = window.currentEnglishWord;
+
+            // 音频源列表（按优先级）
+            const audioSources = [
+                `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=1`,  // 有道词典（国内可用）
+                `https://tts.baidu.com/text2audio?tex=${encodeURIComponent(word)}&cuid=baike&lan=en&ctp=1&pdt=301&vol=9&rate=32&per=0`,  // 百度TTS
+                `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw&q=${encodeURIComponent(word)}`  // Google TTS
+            ];
+
+            // 尝试 SpeechSynthesis
+            if (typeof speechSynthesis !== 'undefined') {
+                try {
+                    const utterance = new SpeechSynthesisUtterance(word);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.8;
+                    utterance.onerror = () => tryAudioSources(audioSources, 0);
+                    speechSynthesis.speak(utterance);
+                    return;
+                } catch(e) {}
+            }
+            // 回退到 Audio 播放
+            tryAudioSources(audioSources, 0);
+        }
+
+        function tryAudioSources(sources, index) {
+            if (index >= sources.length) {
+                const res = document.getElementById('speechResult');
+                res.className = 'speech-result fail';
+                res.textContent = '⚠️ 语音播放失败，请检查网络';
+                return;
+            }
+            const audio = new Audio(sources[index]);
+            audio.onended = () => {}; // 播放成功
+            audio.onerror = () => tryAudioSources(sources, index + 1); // 尝试下一个源
+            audio.play().catch(() => tryAudioSources(sources, index + 1));
         }
         function startSpeaking() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
