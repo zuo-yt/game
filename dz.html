@@ -146,9 +146,12 @@
         .draw-overlay.active { display: flex; }
         .draw-card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; padding: 20px; }
         .draw-hint { position: fixed; bottom: 30px; color: rgba(255,255,255,0.6); font-size: 14px; cursor: pointer; }
-        .close-draw-btn { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); padding: 15px 50px; background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(255,107,107,0.4); transition: all 0.3s; opacity: 0; pointer-events: none; }
-        .close-draw-btn.show { opacity: 1; pointer-events: auto; }
-        .close-draw-btn:hover { transform: translateX(-50%) scale(1.05); box-shadow: 0 8px 30px rgba(255,107,107,0.6); }
+        .draw-btn-container { position: fixed; bottom: 40px; display: flex; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .draw-btn-container.show { opacity: 1; pointer-events: auto; }
+        .close-draw-btn { padding: 15px 40px; background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(255,107,107,0.4); transition: all 0.3s; }
+        .close-draw-btn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(255,107,107,0.6); }
+        .retry-draw-btn { padding: 15px 30px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(102,126,234,0.4); transition: all 0.3s; }
+        .retry-draw-btn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(102,126,234,0.6); }
 
         /* 抽卡卡牌样式 */
         .draw-card { width: 140px; height: 195px; perspective: 1000px; }
@@ -743,7 +746,7 @@
             gameData.totalDraws++;
             saveGameData();
             updateDisplay();
-            showDrawAnimation([skin]);
+            showDrawAnimation([skin], 'single');
         }
         function drawTen() {
             if (gameData.coins < 90) { showMessage('蛋币不足！需要90蛋币', 'error'); return; }
@@ -758,7 +761,7 @@
             }
             saveGameData();
             updateDisplay();
-            showDrawAnimation(results);
+            showDrawAnimation(results, 'ten');
         }
         function addSkinToCollection(skin) {
             const key = `${skin.rarity}_${skin.index}`;
@@ -771,7 +774,7 @@
         }
 
         // ===== 抽卡动画 =====
-        function showDrawAnimation(skinList) {
+        function showDrawAnimation(skinList, drawType) {
             const overlay = document.getElementById('drawOverlay');
             overlay.innerHTML = '';
             overlay.classList.add('active');
@@ -779,6 +782,31 @@
             const container = document.createElement('div');
             container.className = 'draw-card-container';
             overlay.appendChild(container);
+
+            // 按钮容器
+            const btnContainer = document.createElement('div');
+            btnContainer.className = 'draw-btn-container';
+            overlay.appendChild(btnContainer);
+
+            // 再抽按钮 - 根据抽卡类型显示不同按钮
+            const retryBtn = document.createElement('button');
+            retryBtn.className = 'retry-draw-btn';
+            if (drawType === 'single') {
+                retryBtn.textContent = '再抽1次 (10蛋币)';
+                retryBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    overlay.classList.remove('active');
+                    drawSingle();
+                };
+            } else {
+                retryBtn.textContent = '再抽10次 (90蛋币)';
+                retryBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    overlay.classList.remove('active');
+                    drawTen();
+                };
+            }
+            btnContainer.appendChild(retryBtn);
 
             // 关闭按钮
             const closeBtn = document.createElement('button');
@@ -790,7 +818,7 @@
                 updateCollection();
                 updateStats();
             };
-            overlay.appendChild(closeBtn);
+            btnContainer.appendChild(closeBtn);
 
             // 依次创建卡牌并翻转
             let lastIndex = skinList.length - 1;
@@ -823,9 +851,9 @@
                             createParticles(card, skin.rarity);
                             createSSLightBeams();
                         }
-                        // 最后一张卡翻转后显示关闭按钮
+                        // 最后一张卡翻转后显示按钮
                         if (i === lastIndex) {
-                            setTimeout(() => closeBtn.classList.add('show'), 500);
+                            setTimeout(() => btnContainer.classList.add('show'), 500);
                         }
                     }, 100);
 
