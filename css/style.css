@@ -1,0 +1,271 @@
+/* 基础样式 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* CSS 变量 - 统一管理颜色 */
+:root {
+    --rarity-c-start: #e0e0e0;
+    --rarity-c-end: #9e9e9e;
+    --rarity-b-start: #81c784;
+    --rarity-b-end: #43a047;
+    --rarity-a-start: #64b5f6;
+    --rarity-a-end: #1e88e5;
+    --rarity-s-start: #ba68c8;
+    --rarity-s-end: #8e24aa;
+    --rarity-ss-start: #ffd54f;
+    --rarity-ss-end: #ff8f00;
+    --rarity-sss-start: #ff5252;
+    --rarity-sss-mid: #d50000;
+    --rarity-sss-end: #ffd700;
+    --primary-purple: #667eea;
+    --primary-purple-dark: #764ba2;
+    --primary-pink: #f093fb;
+    --primary-pink-dark: #f5576c;
+    --primary-blue: #4facfe;
+    --primary-blue-dark: #00f2fe;
+    --text-dark: #333;
+    --text-gray: #666;
+    --bg-light: #f8f9fa;
+    --bg-gray: #e9ecef;
+    --danger: #ff6b6b;
+    --success: #56ab91;
+    --gold: #ffd700;
+}
+
+body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; padding: 20px; overflow-x: hidden; }
+.stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star { position: absolute; width: 3px; height: 3px; background: white; border-radius: 50%; animation: twinkle 2s infinite alternate; }
+@keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; } }
+.container { max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 30px; padding: 40px; position: relative; z-index: 1; }
+.game-title { text-align: center; margin-bottom: 30px; }
+.game-title h1 { font-size: 32px; color: var(--danger); }
+.game-title p { color: var(--text-gray); font-size: 14px; margin-top: 10px; }
+.coin-section { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); border-radius: 20px; margin-bottom: 25px; }
+.coin-display { display: flex; align-items: center; gap: 12px; }
+.coin-icon { width: 45px; height: 45px; background: linear-gradient(135deg, var(--gold), #ffb347); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; animation: bounce 1s infinite; }
+@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.coin-amount { font-size: 28px; font-weight: bold; color: var(--text-dark); }
+.coin-label { font-size: 13px; color: var(--text-gray); }
+.charm-section { display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border-radius: 15px; }
+.charm-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #e879f9, #c026d3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; animation: charmPulse 2s infinite; }
+@keyframes charmPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(192,38,211,0.3); } 50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(192,38,211,0.6); } }
+.charm-amount { font-size: 24px; font-weight: bold; color: #c026d3; }
+.charm-label { font-size: 12px; color: var(--text-gray); }
+.quiz-entry { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+.quiz-btn { padding: 20px; border: none; border-radius: 15px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.3s; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.quiz-btn:hover { transform: translateY(-3px); }
+.quiz-btn.math { background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; }
+.quiz-btn.chinese { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; }
+.quiz-btn.english { background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)); color: white; }
+.quiz-btn .icon { font-size: 30px; display: block; margin-bottom: 8px; }
+.quiz-btn .reward { font-size: 11px; opacity: 0.9; margin-top: 5px; }
+.draw-section { text-align: center; margin-bottom: 30px; }
+.draw-buttons { display: flex; gap: 20px; justify-content: center; }
+.draw-btn { padding: 20px 40px; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.3s; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+.draw-btn:hover:not(:disabled) { transform: translateY(-3px); }
+.draw-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.draw-btn.single { background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; }
+.draw-btn.ten { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; }
+.draw-btn .price { font-size: 12px; opacity: 0.9; display: block; margin-top: 5px; }
+.result-section { margin-bottom: 30px; padding: 25px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border-radius: 20px; min-height: 200px; }
+.result-title { font-size: 18px; color: var(--text-dark); margin-bottom: 15px; text-align: center; }
+.result-boxes { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+
+/* 卡牌样式 */
+.box-card { width: 130px; height: 180px; perspective: 1000px; }
+.box-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s ease-out; transform-style: preserve-3d; }
+.box-card.opened .box-inner { transform: rotateY(180deg); }
+.box-front, .box-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; overflow: hidden; }
+.box-front { background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); display: flex; align-items: center; justify-content: center; }
+.box-front::before { content: '?'; font-size: 80px; color: rgba(255,255,255,0.3); font-weight: bold; }
+.box-front::after { content: ''; position: absolute; inset: 8px; border: 2px solid rgba(255,255,255,0.3); border-radius: 8px; }
+.box-back { transform: rotateY(180deg); position: relative; }
+
+/* 稀有度样式 - 使用 CSS 变量 */
+.rarity-c { background: linear-gradient(180deg, var(--rarity-c-start), var(--rarity-c-end)); }
+.rarity-b { background: linear-gradient(180deg, var(--rarity-b-start), var(--rarity-b-end)); }
+.rarity-a { background: linear-gradient(180deg, var(--rarity-a-start), var(--rarity-a-end)); }
+.rarity-s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); }
+.rarity-ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); animation: goldGlow 1s infinite alternate; }
+.rarity-sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid) 50%, var(--rarity-sss-end)); animation: sssGlow 0.5s infinite alternate; }
+@keyframes goldGlow { from { box-shadow: 0 0 15px rgba(255,215,0,0.5); } to { box-shadow: 0 0 30px rgba(255,215,0,1); } }
+@keyframes sssGlow { from { box-shadow: 0 0 20px rgba(255,82,82,0.5); } to { box-shadow: 0 0 40px rgba(255,215,0,1); } }
+.skin-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+.rarity-badge { position: absolute; top: 8px; left: 8px; padding: 3px 10px; font-size: 11px; font-weight: bold; border-radius: 6px; z-index: 10; }
+.rarity-badge.c { background: rgba(255,255,255,0.9); color: #616161; }
+.rarity-badge.b { background: rgba(255,255,255,0.9); color: #2e7d32; }
+.rarity-badge.a { background: rgba(255,255,255,0.9); color: #1565c0; }
+.rarity-badge.s { background: rgba(255,255,255,0.9); color: #7b1fa2; }
+.rarity-badge.ss { background: #ff6f00; color: white; }
+.rarity-badge.sss { background: linear-gradient(90deg, var(--rarity-sss-start), var(--rarity-sss-end)); color: white; animation: badgeGlow 1s infinite alternate; }
+@keyframes badgeGlow { from { box-shadow: 0 0 5px var(--gold); } to { box-shadow: 0 0 15px var(--gold); } }
+.skin-name-bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 25px 8px 8px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; font-size: 11px; font-weight: bold; text-align: center; }
+
+/* 统计和收集 */
+.stats-section { margin-bottom: 25px; }
+.stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.stat-card { padding: 12px 5px; border-radius: 12px; text-align: center; }
+.stat-card.c { background: linear-gradient(180deg, var(--rarity-c-start), var(--rarity-c-end)); color: var(--text-dark); }
+.stat-card.b { background: linear-gradient(180deg, var(--rarity-b-start), var(--rarity-b-end)); color: white; }
+.stat-card.a { background: linear-gradient(180deg, var(--rarity-a-start), var(--rarity-a-end)); color: white; }
+.stat-card.s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); color: white; }
+.stat-card.ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); color: var(--text-dark); }
+.stat-card.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); color: white; }
+.stat-label { font-size: 8px; font-weight: bold; }
+.stat-count { font-size: 18px; font-weight: bold; margin-top: 3px; }
+.stat-percent { font-size: 9px; opacity: 0.7; }
+.section-header { display: flex; justify-content: space-between; cursor: pointer; padding: 15px 20px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); border-radius: 12px; color: white; margin-bottom: 15px; }
+.collection-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.collection-item { padding: 10px 5px; border-radius: 10px; text-align: center; font-size: 10px; background: var(--bg-light); color: #adb5bd; }
+.collection-item.collected { color: var(--text-dark); }
+.collection-item.collected.c { background: linear-gradient(180deg, var(--rarity-c-start), var(--rarity-c-end)); color: var(--text-dark); }
+.collection-item.collected.b { background: linear-gradient(180deg, var(--rarity-b-start), var(--rarity-b-end)); color: white; }
+.collection-item.collected.a { background: linear-gradient(180deg, var(--rarity-a-start), var(--rarity-a-end)); color: white; }
+.collection-item.collected.s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); color: white; }
+.collection-item.collected.ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); color: var(--text-dark); }
+.collection-item.collected.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); color: white; }
+.item-icon { font-size: 20px; margin-bottom: 3px; }
+.item-name { font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hidden { display: none !important; }
+.message { padding: 12px 20px; margin: 15px 0; border-radius: 12px; text-align: center; font-size: 14px; font-weight: bold; }
+.message.success { background: linear-gradient(135deg, #a8e6cf, var(--success)); color: white; }
+.message.error { background: linear-gradient(135deg, var(--danger), #ee5a5a); color: white; }
+
+/* 奖励按钮样式 */
+.bonus-section { margin-bottom: 25px; }
+.bonus-section-title { text-align: center; margin-bottom: 15px; font-size: 14px; color: var(--text-gray); }
+.bonus-buttons { display: flex; gap: 15px; justify-content: center; }
+.bonus-btn { padding: 15px 30px; color: white; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; transition: all 0.3s; background: linear-gradient(135deg, #74b9ff, #0984e3); }
+.bonus-btn:hover { transform: scale(1.05); }
+.bonus-btn .bonus-icon { font-size: 24px; display: block; }
+.bonus-btn .bonus-label { font-size: 14px; }
+.bonus-btn .bonus-reward { font-size: 12px; opacity: 0.9; }
+.bonus-btn.bath { background: linear-gradient(135deg, #81ecec, #00cec9); }
+
+/* 魅力值兑换区域 */
+.exchange-section { margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border-radius: 20px; }
+.exchange-section-title { text-align: center; margin-bottom: 15px; font-size: 16px; color: var(--text-dark); }
+.exchange-section-amount { font-size: 14px; color: #c026d3; margin-left: 10px; }
+.exchange-btn { padding: 12px 30px; background: linear-gradient(135deg, #e879f9, #c026d3); color: white; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; transition: all 0.3s; }
+.exchange-btn:hover { transform: scale(1.05); }
+
+/* 弹窗 */
+.quiz-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+.quiz-modal.active { display: flex; }
+.quiz-content { background: white; border-radius: 25px; padding: 30px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #999; }
+.close-btn:hover { color: var(--danger); }
+.quiz-header { text-align: center; margin-bottom: 25px; }
+.quiz-header h2 { font-size: 24px; color: var(--text-dark); margin-bottom: 10px; }
+.quiz-timer { font-size: 32px; font-weight: bold; color: var(--danger); }
+.quiz-progress { font-size: 14px; color: var(--text-gray); margin-top: 5px; }
+.math-question { font-size: 48px; font-weight: bold; color: var(--text-dark); margin: 30px 0; padding: 30px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border-radius: 20px; text-align: center; }
+.math-input { width: 150px; height: 60px; font-size: 32px; text-align: center; border: 3px solid var(--primary-purple); border-radius: 15px; outline: none; }
+.math-input:focus { border-color: var(--primary-purple-dark); box-shadow: 0 0 20px rgba(102,126,234,0.3); }
+.math-submit { margin-top: 20px; padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; border: none; border-radius: 12px; cursor: pointer; }
+.math-stats { display: flex; justify-content: center; gap: 40px; margin-top: 25px; }
+.chinese-character { font-size: 80px; color: var(--text-dark); margin: 20px 0; text-align: center; }
+.pinyin-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+.pinyin-option { padding: 20px; font-size: 24px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border: 2px solid #ddd; border-radius: 15px; cursor: pointer; transition: all 0.3s; }
+.pinyin-option:hover { border-color: var(--primary-pink-dark); background: linear-gradient(135deg, #fff5f5, #ffe0e0); }
+.pinyin-option.correct { background: linear-gradient(135deg, #d4edda, #c3e6cb); border-color: #28a745; }
+.pinyin-option.wrong { background: linear-gradient(135deg, #f8d7da, #f5c6cb); border-color: #dc3545; }
+.english-word { font-size: 48px; font-weight: bold; color: var(--text-dark); margin: 20px 0; text-align: center; }
+.english-meaning { font-size: 18px; color: var(--text-gray); margin-bottom: 20px; text-align: center; }
+.speak-btn { padding: 20px 40px; font-size: 20px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)); color: white; border: none; border-radius: 15px; cursor: pointer; margin: 10px; transition: all 0.3s; }
+.speak-btn:hover { transform: scale(1.05); }
+.speak-btn.listen-btn { background: linear-gradient(135deg, #a8e6cf, var(--success)); font-size: 18px; padding: 15px 30px; }
+.speech-result { margin-top: 20px; padding: 15px; font-size: 18px; border-radius: 10px; text-align: center; }
+.speech-result.success { background: #d4edda; color: #155724; }
+.speech-result.fail { background: #f8d7da; color: #721c24; }
+.result-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1100; justify-content: center; align-items: center; padding: 20px; }
+.result-modal.active { display: flex; }
+.result-content { background: white; border-radius: 25px; padding: 40px; text-align: center; max-width: 400px; }
+.result-icon { font-size: 60px; margin-bottom: 20px; }
+.result-title { font-size: 28px; font-weight: bold; color: var(--text-dark); margin-bottom: 15px; }
+.result-stats { font-size: 16px; color: var(--text-gray); margin-bottom: 20px; }
+.result-reward { font-size: 24px; font-weight: bold; color: var(--gold); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); margin-bottom: 25px; }
+.result-btn { padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, var(--danger), #ee5a5a); color: white; border: none; border-radius: 15px; cursor: pointer; }
+
+/* 抽卡动画遮罩 */
+.draw-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; }
+.draw-overlay.active { display: flex; }
+.draw-card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; padding: 20px; }
+.draw-hint { position: fixed; bottom: 30px; color: rgba(255,255,255,0.6); font-size: 14px; cursor: pointer; }
+.draw-btn-container { position: fixed; bottom: 40px; display: flex; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.draw-btn-container.show { opacity: 1; pointer-events: auto; }
+.close-draw-btn { padding: 15px 40px; background: linear-gradient(135deg, var(--danger), #ee5a5a); color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(255,107,107,0.4); transition: all 0.3s; }
+.close-draw-btn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(255,107,107,0.6); }
+.retry-draw-btn { padding: 15px 30px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(102,126,234,0.4); transition: all 0.3s; }
+.retry-draw-btn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(102,126,234,0.6); }
+
+/* 抽卡卡牌样式 */
+.draw-card { width: 140px; height: 195px; perspective: 1000px; }
+.draw-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+.draw-card.opened .draw-card-inner { transform: rotateY(180deg); }
+.draw-card-front, .draw-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; overflow: hidden; }
+.draw-card-front { background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); display: flex; align-items: center; justify-content: center; }
+.draw-card-front::before { content: '?'; font-size: 80px; color: rgba(255,255,255,0.3); font-weight: bold; }
+.draw-card-back { transform: rotateY(180deg); position: relative; }
+
+/* 粒子效果 */
+.particle { position: absolute; border-radius: 50%; pointer-events: none; animation: particleFly 1s ease-out forwards; }
+@keyframes particleFly { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
+
+/* SS级光束特效 */
+.ss-light-beam { position: fixed; width: 8px; height: 100vh; background: linear-gradient(to bottom, rgba(255,215,0,0.9), rgba(255,143,0,0.6), transparent); pointer-events: none; z-index: 10001; animation: beamFall 1.5s ease-out forwards; transform-origin: top; }
+@keyframes beamFall { 0% { opacity: 0; transform: scaleY(0); } 20% { opacity: 1; transform: scaleY(0.3); } 100% { opacity: 0; transform: scaleY(1); } }
+.ss-star { position: fixed; width: 20px; height: 20px; background: radial-gradient(circle, var(--gold) 0%, transparent 70%); border-radius: 50%; pointer-events: none; z-index: 10001; animation: starFlash 2s ease-out forwards; }
+@keyframes starFlash { 0% { transform: scale(0) rotate(0deg); opacity: 1; } 50% { transform: scale(1.5) rotate(180deg); opacity: 0.8; } 100% { transform: scale(0) rotate(360deg); opacity: 0; } }
+
+/* SSS级全屏闪光 */
+.sss-flash { position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(255,82,82,0.4) 0%, rgba(255,215,0,0.2) 30%, transparent 70%); pointer-events: none; z-index: 10001; animation: flashPulse 0.8s ease-out forwards; }
+@keyframes flashPulse { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; } 100% { opacity: 0; transform: scale(2); } }
+
+/* 响应式布局 - 手机适配 */
+@media (max-width: 600px) {
+    body { padding: 10px; }
+    .container { padding: 20px 15px; border-radius: 20px; }
+    .game-title h1 { font-size: 20px; }
+    .game-title p { font-size: 12px; }
+    .coin-section { flex-direction: column; gap: 15px; padding: 15px; }
+    .coin-display, .charm-section { width: 100%; justify-content: center; }
+    .coin-icon { width: 35px; height: 35px; font-size: 18px; }
+    .coin-amount { font-size: 20px; }
+    .charm-icon { width: 30px; height: 30px; font-size: 14px; }
+    .charm-amount { font-size: 18px; }
+    .quiz-entry { grid-template-columns: 1fr; gap: 10px; }
+    .quiz-btn { padding: 15px; font-size: 13px; }
+    .quiz-btn .icon { font-size: 24px; }
+    .quiz-btn .reward { font-size: 10px; }
+    .draw-buttons { flex-direction: column; gap: 10px; }
+    .draw-btn { width: 100%; padding: 15px; font-size: 16px; }
+    .result-section { padding: 15px; min-height: 120px; }
+    .result-title { font-size: 14px; }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .stat-card { padding: 8px 3px; }
+    .stat-count { font-size: 14px; }
+    .stat-percent { font-size: 8px; }
+    .section-header { padding: 12px 15px; font-size: 14px; }
+    .collection-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .collection-item { padding: 6px 3px; }
+    .item-icon { font-size: 16px; }
+    .item-name { font-size: 8px; }
+    .draw-card { width: 100px; height: 140px; }
+    .draw-card-front::before { font-size: 50px; }
+    .skin-fallback { font-size: 40px; }
+    .rarity-badge { font-size: 9px; padding: 2px 6px; }
+    .skin-name-bottom { font-size: 9px; padding: 15px 5px 5px; }
+    .draw-card-container { gap: 10px; }
+    .quiz-content { padding: 20px 15px; border-radius: 15px; }
+    .quiz-header h2 { font-size: 18px; }
+    .math-question { font-size: 32px; padding: 20px; }
+    .math-input { width: 100px; height: 45px; font-size: 24px; }
+    .chinese-character { font-size: 50px; }
+    .pinyin-option { padding: 12px; font-size: 18px; }
+    .english-word { font-size: 32px; }
+    .speak-btn { padding: 12px 20px; font-size: 14px; }
+    .result-content { padding: 20px; }
+    .result-icon { font-size: 40px; }
+    .result-title { font-size: 20px; }
+    .bonus-buttons { flex-direction: column; }
+}
