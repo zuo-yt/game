@@ -711,15 +711,17 @@ function exchangeGift(name, price) {
 }
 function confirmExchange() {
     if (!pendingGift) return;
-    gameData.charm -= pendingGift.charmCost;
+    // 先保存需要的信息，再调用关闭函数
+    const giftName = pendingGift.name;
+    const charmCost = pendingGift.charmCost;
+    gameData.charm -= charmCost;
     saveGameData();
     updateDisplay();
     updateExchangeDisplay();
     renderGiftList();
     closeConfirmExchange();
     // 不关闭礼品列表弹窗，用户关闭结果弹窗后返回礼品列表
-    showResult('🎁', '兑换成功！', `兑换: ${pendingGift.name}`, `消耗 ${pendingGift.charmCost} 魅力值`, '请在现实中领取礼品~');
-    pendingGift = null;
+    showResult('🎁', '兑换成功！', `兑换: ${giftName}`, `消耗 ${charmCost} 魅力值`, '请在现实中领取礼品~');
 }
 function closeConfirmExchange() {
     document.getElementById('confirmExchangeModal').classList.remove('active');
