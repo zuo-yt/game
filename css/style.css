@@ -140,6 +140,7 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .bonus-btn .bonus-label { font-size: 14px; }
 .bonus-btn .bonus-reward { font-size: 12px; opacity: 0.9; }
 .bonus-btn.bath { background: linear-gradient(135deg, #81ecec, #00cec9); }
+.bonus-btn.clean { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
 
 /* 魅力值兑换区域 - 喜庆吸引设计 */
 .exchange-section {

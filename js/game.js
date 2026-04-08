@@ -332,7 +332,8 @@ const giftList = [
 const BONUS_PASSWORD = '20190101';
 const BONUS_CONFIG = {
     hair: { coins: 500, name: '洗头', icon: '💇' },
-    bath: { coins: 1000, name: '洗澡', icon: '🛁' }
+    bath: { coins: 1000, name: '洗澡', icon: '🛁' },
+    clean: { coins: 100, name: '打扫', icon: '🧹' }
 };
 let pendingBonusType = null;
 
