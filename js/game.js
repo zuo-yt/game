@@ -363,66 +363,105 @@ function tryAudioSources(sources, index) {
 }
 function startSpeaking() {
     const btn = document.getElementById('speakBtn');
-    btn.classList.add('recording');
-    btn.textContent = '🔴 录音中...';
-    const hasSpeechAPI = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+    const res = document.getElementById('speechResult');
+    res.innerHTML = '';
 
-    // 不支持语音识别的环境
-    if (!hasSpeechAPI) {
-        setTimeout(() => {
-            btn.classList.remove('recording');
-            btn.textContent = '🎤 开始朗读';
-            const res = document.getElementById('speechResult');
-            res.className = 'speech-result fail';
-            res.textContent = '⚠️ 当前浏览器不支持语音识别，请使用其他浏览器';
-        }, 1000);
+    // 检测浏览器是否支持录音
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        res.className = 'speech-result fail';
+        res.textContent = '⚠️ 当前环境不支持录音，请使用现代浏览器';
         return;
     }
 
-    // 支持语音识别：进行真实校验
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
+    btn.classList.add('recording');
+    btn.textContent = '🔴 录音中...';
 
-    let fallbackTimer = setTimeout(() => {
-        recognition.stop();
-        btn.classList.remove('recording');
-        btn.textContent = '🎤 开始朗读';
-        document.getElementById('speechResult').className = 'speech-result fail';
-        document.getElementById('speechResult').textContent = '⚠️ 识别超时，请重试';
-    }, 8000);
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            const mediaRecorder = new MediaRecorder(stream);
+            const audioChunks = [];
 
-    recognition.onresult = (e) => {
-        clearTimeout(fallbackTimer);
-        const spoken = e.results[0][0].transcript.toLowerCase();
-        const expected = window.currentEnglishWord.toLowerCase();
-        btn.classList.remove('recording');
-        btn.textContent = '🎤 开始朗读';
-        const res = document.getElementById('speechResult');
-        if (spoken.includes(expected) || levenshteinDistance(spoken, expected) <= 2) {
-            res.className = 'speech-result success';
-            res.textContent = `✅ 正确！你说了: "${spoken}"`;
-            gameData.coins += 8;
-            saveGameData();
-            updateDisplay();
-            setTimeout(nextEnglishQuestion, 1500);
-        } else {
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+            mediaRecorder.onstop = () => {
+                stream.getTracks().forEach(track => track.stop());
+                btn.classList.remove('recording');
+                btn.textContent = '🎤 开始朗读';
+
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                res.className = 'speech-result';
+                res.style.background = '#fff3cd';
+                res.style.color = '#856404';
+                res.innerHTML = `
+                    <div style="font-size:16px;margin-bottom:10px;">🎧 请听录音，对比标准发音</div>
+                    <div style="display:flex;align-items:center;gap:15px;margin-bottom:15px;">
+                        <div style="text-align:center;">
+                            <div style="font-size:12px;color:#666;margin-bottom:5px;">标准发音</div>
+                            <button onclick="playWordSound()" style="padding:10px 20px;background:#28a745;color:white;border:none;border-radius:8px;cursor:pointer;">🔊 播放</button>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:12px;color:#666;margin-bottom:5px;">你的录音</div>
+                            <audio controls src="${audioUrl}" style="width:120px;height:36px;"></audio>
+                        </div>
+                    </div>
+                    <div style="font-size:14px;margin-bottom:10px;">单词: <strong style="color:#667eea;font-size:20px;">${window.currentEnglishWord}</strong></div>
+                    <div style="display:flex;gap:15px;justify-content:center;">
+                        <button onclick="confirmEnglishCorrect()" style="padding:12px 30px;background:#28a745;color:white;border:none;border-radius:10px;cursor:pointer;font-size:16px;">✅ 发音正确</button>
+                        <button onclick="confirmEnglishWrong()" style="padding:12px 30px;background:#dc3545;color:white;border:none;border-radius:10px;cursor:pointer;font-size:16px;">❌ 再试一次</button>
+                    </div>
+                `;
+            };
+
+            mediaRecorder.onerror = () => {
+                stream.getTracks().forEach(track => track.stop());
+                btn.classList.remove('recording');
+                btn.textContent = '🎤 开始朗读';
+                res.className = 'speech-result fail';
+                res.textContent = '⚠️ 录音失败，请重试';
+            };
+
+            mediaRecorder.start();
+            // 5秒后自动停止录音
+            setTimeout(() => {
+                if (mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+            }, 5000);
+        })
+        .catch(err => {
+            btn.classList.remove('recording');
+            btn.textContent = '🎤 开始朗读';
             res.className = 'speech-result fail';
-            res.textContent = `❌ 你说了: "${spoken}"，应为: "${expected}"`;
-            setTimeout(nextEnglishQuestion, 1500);
-        }
-    };
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                res.textContent = '⚠️ 麦克风权限被拒绝，请点击允许录音';
+            } else {
+                res.textContent = '⚠️ 无法访问麦克风: ' + err.message;
+            }
+        });
+}
 
-    recognition.onerror = (e) => {
-        clearTimeout(fallbackTimer);
-        btn.classList.remove('recording');
-        btn.textContent = '🎤 开始朗读';
-        document.getElementById('speechResult').className = 'speech-result fail';
-        document.getElementById('speechResult').textContent = '⚠️ 识别失败，请重试';
-    };
+// 确认发音正确
+function confirmEnglishCorrect() {
+    const res = document.getElementById('speechResult');
+    res.className = 'speech-result success';
+    res.style.background = '#d4edda';
+    res.style.color = '#155724';
+    res.textContent = '✅ 太棒了！发音正确！';
+    gameData.coins += 8;
+    saveGameData();
+    updateDisplay();
+    setTimeout(nextEnglishQuestion, 1500);
+}
 
-    recognition.start();
+// 确认发音错误
+function confirmEnglishWrong() {
+    const res = document.getElementById('speechResult');
+    res.className = 'speech-result';
+    res.style.background = '#f8d7da';
+    res.style.color = '#721c24';
+    res.innerHTML = '❌ 别灰心，再试一次！<br><button onclick="startSpeaking()" style="margin-top:10px;padding:10px 25px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer;">🎤 重新朗读</button>';
 }
 function levenshteinDistance(a, b) {
     // 初始化矩阵
