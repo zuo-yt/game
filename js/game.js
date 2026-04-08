@@ -433,7 +433,7 @@ const englishWordBank = [
 ];
 
 // 游戏数据
-let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0 };
+let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [] };
 let mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
 let chineseIndex = 0;
 let chineseCorrect = 0;
@@ -447,6 +447,7 @@ function init() {
     updateDisplay();
     updateCollection();
     updateStats();
+    updateLatestItems();
 }
 function createStars() {
     for (let i = 0; i < 30; i++) {
@@ -458,7 +459,13 @@ function createStars() {
         document.getElementById('stars').appendChild(star);
     }
 }
-function loadGameData() { const s = localStorage.getItem('eggPartyGame'); if (s) gameData = JSON.parse(s); }
+function loadGameData() {
+    const s = localStorage.getItem('eggPartyGame');
+    if (s) {
+        const saved = JSON.parse(s);
+        gameData = { ...gameData, ...saved };
+    }
+}
 function saveGameData() { localStorage.setItem('eggPartyGame', JSON.stringify(gameData)); }
 function updateDisplay() { document.getElementById('coinAmount').textContent = gameData.coins; document.getElementById('charmAmount').textContent = gameData.charm; }
 
@@ -843,6 +850,22 @@ function addSkinToCollection(skin) {
     }
     gameData.collected[key].count++;
     gameData.charm += charmValues[skin.rarity];
+    // 更新最新获得列表（保留最近10个）
+    gameData.latestSkins.unshift({ ...skin, time: Date.now() });
+    if (gameData.latestSkins.length > 10) gameData.latestSkins.pop();
+}
+
+// ===== 最新获得横条 =====
+function updateLatestItems() {
+    const container = document.getElementById('latestItems');
+    if (!container) return;
+    if (gameData.latestSkins.length === 0) {
+        container.innerHTML = '<span class="latest-hint">抽卡获得皮肤后在此展示</span>';
+        return;
+    }
+    container.innerHTML = gameData.latestSkins.slice(0, 10).map(skin =>
+        `<div class="latest-item ${skin.rarity}" title="${skin.name}">${skin.icon}</div>`
+    ).join('');
 }
 
 // ===== 抽卡动画 =====
@@ -869,7 +892,7 @@ function showDrawAnimation(skinList, drawType) {
     const closeBtn = document.createElement('button');
     closeBtn.className = 'close-draw-btn';
     closeBtn.textContent = '✕ 关闭';
-    closeBtn.onclick = (e) => { e.stopPropagation(); overlay.classList.remove('active'); updateCollection(); updateStats(); };
+    closeBtn.onclick = (e) => { e.stopPropagation(); overlay.classList.remove('active'); updateCollection(); updateStats(); updateLatestItems(); };
     btnContainer.appendChild(closeBtn);
     let lastIndex = skinList.length - 1;
     skinList.forEach((skin, i) => {
@@ -1548,11 +1571,21 @@ function confirmExchange() {
     // 先保存需要的信息，再调用关闭函数
     const giftName = pendingGift.name;
     const charmCost = pendingGift.charmCost;
+    // 保存兑换记录
+    gameData.exchangeHistory.unshift({
+        name: giftName,
+        price: pendingGift.price,
+        charmCost: charmCost,
+        time: Date.now()
+    });
+    // 最多保留50条记录
+    if (gameData.exchangeHistory.length > 50) gameData.exchangeHistory.pop();
     gameData.charm -= charmCost;
     saveGameData();
     updateDisplay();
     updateExchangeDisplay();
     renderGiftList();
+    renderExchangeHistory();
     closeConfirmExchange();
     // 不关闭礼品列表弹窗，用户关闭结果弹窗后返回礼品列表
     showResult('🎁', '兑换成功！', `兑换: ${giftName}`, `消耗 ${charmCost} 魅力值`, '请在现实中领取礼品~');
@@ -1560,6 +1593,39 @@ function confirmExchange() {
 function closeConfirmExchange() {
     document.getElementById('confirmExchangeModal').classList.remove('active');
     pendingGift = null;
+}
+
+// ===== 兑换记录 =====
+function showExchangeHistory() {
+    document.getElementById('exchangeHistoryModal').classList.add('active');
+    renderExchangeHistory();
+}
+function closeExchangeHistory() {
+    document.getElementById('exchangeHistoryModal').classList.remove('active');
+}
+function renderExchangeHistory() {
+    const container = document.getElementById('exchangeHistoryList');
+    if (!container) return;
+    if (gameData.exchangeHistory.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#999;padding:40px;">暂无兑换记录</div>';
+        return;
+    }
+    container.innerHTML = gameData.exchangeHistory.map(record => {
+        const date = new Date(record.time);
+        const dateStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
+        return `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:#f8f9fa;border-radius:10px;margin-bottom:8px;">
+                <div>
+                    <div style="font-weight:bold;color:#333;">${record.name}</div>
+                    <div style="font-size:12px;color:#999;">${dateStr}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:#c026d3;font-weight:bold;">-${record.charmCost}魅力</div>
+                    <div style="font-size:12px;color:#666;">¥${record.price}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 init();

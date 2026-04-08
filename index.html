@@ -24,20 +24,31 @@
                 <button class="bonus-btn bath" onclick="claimBonus('bath')"><span class="bonus-icon">🛁</span><span class="bonus-label">洗澡奖励</span><span class="bonus-reward">+1000蛋币</span></button>
             </div>
         </div>
-        <!-- 魅力值兑换 -->
+        <!-- 魅力值兑换 - 喜庆吸引设计 -->
         <div class="exchange-section">
-            <div class="exchange-section-title">🎁 魅力值兑换（100魅力值 = 1元）<span class="exchange-section-amount">可兑换: <span id="exchangeAmount">0</span>元</span></div>
-            <button class="exchange-btn" onclick="showExchangeModal()">查看礼品列表</button>
+            <div class="exchange-header">
+                <span class="exchange-emoji">🎁</span>
+                <span class="exchange-title">魅力值兑换商城</span>
+            </div>
+            <div class="exchange-info">
+                <div class="exchange-rate">💎 100魅力 = <strong>1元</strong></div>
+                <div class="exchange-balance">可兑换 <span id="exchangeAmount">0</span> 元</div>
+            </div>
+            <button class="exchange-btn" onclick="showExchangeModal()">🎁 查看礼品列表</button>
         </div>
         <div class="draw-section"><div class="draw-buttons"><button class="draw-btn single" onclick="drawSingle()">单抽 x1<span class="price">10 蛋币</span></button><button class="draw-btn ten" onclick="drawTen()">十连抽 x10<span class="price">90 蛋币</span></button></div></div>
-        <div class="result-section"><h3 class="result-title">✨ 抽奖结果</h3><div class="result-boxes" id="resultBoxes"><div style="color:#999;padding:40px;">答题获取蛋币后可抽取皮肤</div></div></div>
+        <!-- 最新获得横条 -->
+        <div class="latest-section" id="latestSection">
+            <div class="latest-title">🌟 最新获得</div>
+            <div class="latest-items" id="latestItems"><span class="latest-hint">抽卡获得皮肤后在此展示</span></div>
+        </div>
         <div class="stats-section"><div class="stats-grid">
             <div class="stat-card c"><div class="stat-label">C (1魅力)</div><div class="stat-count" id="cCount">0</div><div class="stat-percent" id="cPercent">0%</div></div>
             <div class="stat-card b"><div class="stat-label">B (5魅力)</div><div class="stat-count" id="bCount">0</div><div class="stat-percent" id="bPercent">0%</div></div>
             <div class="stat-card a"><div class="stat-label">A (20魅力)</div><div class="stat-count" id="aCount">0</div><div class="stat-percent" id="aPercent">0%</div></div>
             <div class="stat-card s"><div class="stat-label">S (100魅力)</div><div class="stat-count" id="sCount">0</div><div class="stat-percent" id="sPercent">0%</div></div>
-            <div class="stat-card ss"><div class="stat-label">SS (500魅力)</div><div class="stat-count" id="ssCount">0</div><div class="stat-percent" id="ssPercent">0%</div></div>
-            <div class="stat-card sss"><div class="stat-label">SSS (2000)</div><div class="stat-count" id="sssCount">0</div><div class="stat-percent" id="sssPercent">0%</div></div>
+            <div class="stat-card ss"><div class="stat-label">SS (250魅力)</div><div class="stat-count" id="ssCount">0</div><div class="stat-percent" id="ssPercent">0%</div></div>
+            <div class="stat-card sss"><div class="stat-label">SSS (1000魅力)</div><div class="stat-count" id="sssCount">0</div><div class="stat-percent" id="sssPercent">0%</div></div>
         </div></div>
         <div class="section-header" onclick="toggleSection('collectionContent')"><span>🎨 皮肤收集 (<span id="collectedCount">0</span>/30) | 魅力: <span id="charmDisplay">0</span></span><span>▼</span></div>
         <div class="collection-grid" id="collectionContent"></div>
@@ -83,7 +94,17 @@
                 <h2>🎁 魅力值兑换商城</h2>
                 <div style="font-size: 16px; color: #c026d3; margin-top: 10px;">当前魅力值: <span id="exchangeCharm">0</span> | 可兑换: <span id="exchangeYuan">0</span>元</div>
             </div>
-            <div id="giftList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;"></div>
+            <button onclick="showExchangeHistory()" style="width:100%;margin-bottom:15px;padding:10px;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">📋 查看兑换记录</button>
+            <div id="giftList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;"></div>
+        </div>
+    </div>
+
+    <!-- 兑换记录弹窗 -->
+    <div class="quiz-modal" id="exchangeHistoryModal">
+        <div class="quiz-content" style="max-width: 450px;">
+            <span class="close-btn" onclick="closeExchangeHistory()">&times;</span>
+            <div class="quiz-header"><h2>📋 兑换记录</h2></div>
+            <div id="exchangeHistoryList" style="max-height: 400px; overflow-y: auto;"></div>
         </div>
     </div>
 
