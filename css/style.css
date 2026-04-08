@@ -221,6 +221,35 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .sss-flash { position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(255,82,82,0.4) 0%, rgba(255,215,0,0.2) 30%, transparent 70%); pointer-events: none; z-index: 10001; animation: flashPulse 0.8s ease-out forwards; }
 @keyframes flashPulse { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; } 100% { opacity: 0; transform: scale(2); } }
 
+/* SSS级撒花特效 */
+.confetti { position: fixed; pointer-events: none; z-index: 10002; animation: confettiFall 3s ease-out forwards; }
+.confetti-heart { width: 15px; height: 15px; position: relative; transform: rotate(-45deg); }
+.confetti-heart::before { content: ''; position: absolute; width: 15px; height: 15px; background: inherit; border-radius: 50%; left: 0; top: 0; transform: translateX(7.5px); }
+.confetti-heart::after { content: ''; position: absolute; width: 15px; height: 15px; background: inherit; border-radius: 50%; left: 0; top: 0; transform: translateY(7.5px); }
+.confetti-star { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 16px solid #ffd700; transform: rotate(0deg); }
+.confetti-star::after { content: ''; position: absolute; left: -8px; top: 6px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 16px solid #ffd700; }
+.confetti-circle { width: 12px; height: 12px; border-radius: 50%; }
+.confetti-ribbon { width: 20px; height: 8px; border-radius: 2px; }
+.confetti-sparkle { width: 10px; height: 10px; background: radial-gradient(circle, #fff 30%, transparent 70%); border-radius: 50%; }
+@keyframes confettiFall {
+    0% { transform: translateY(-100vh) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(var(--rotate, 720deg)) scale(0.3); opacity: 0; }
+}
+@keyframes confettiBurst {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.2); }
+}
+.confetti-burst { animation: confettiBurst 1s ease-out forwards; }
+
+/* 烟花礼炮特效 */
+.firework-rocket { position: fixed; width: 6px; height: 20px; border-radius: 3px; pointer-events: none; z-index: 10003; }
+.firework-particle { position: fixed; border-radius: 50%; pointer-events: none; z-index: 10003; }
+.firework-ring { position: fixed; width: 10px; height: 10px; border: 3px solid; border-radius: 50%; pointer-events: none; z-index: 10003; animation: ringExpand 0.8s ease-out forwards; }
+@keyframes ringExpand { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(8); opacity: 0; } }
+.firework-flash { position: fixed; width: 20px; height: 20px; border-radius: 50%; pointer-events: none; z-index: 10003; animation: flashExpand 0.3s ease-out forwards; }
+@keyframes flashExpand { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
+.firework-trail { position: fixed; pointer-events: none; z-index: 10003; opacity: 0.8; }
+
 /* 响应式布局 - 手机适配 */
 @media (max-width: 600px) {
     body { padding: 10px; }

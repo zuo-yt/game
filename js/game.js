@@ -1,3 +1,264 @@
+// ===== 音效系统 =====
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playDrawSound() {
+    // 抽卡音效 - 短促的魔法音
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.15);
+}
+function playFlipSound() {
+    // 翻卡音效 - 真实翻书声
+    const now = audioCtx.currentTime;
+
+    // 1. 纸页拍打声 - 轻柔的"扑"（低频噪声脉冲）
+    const flapBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
+    const flapData = flapBuffer.getChannelData(0);
+    for (let i = 0; i < flapData.length; i++) {
+        // 低频噪声，模拟纸页拍打
+        const t = i / flapData.length;
+        flapData[i] = (Math.random() * 2 - 1) * Math.sin(t * Math.PI * 2) * Math.exp(-t * 15);
+    }
+    const flapSource = audioCtx.createBufferSource();
+    flapSource.buffer = flapBuffer;
+    const flapFilter = audioCtx.createBiquadFilter();
+    flapFilter.type = 'lowpass';
+    flapFilter.frequency.value = 800;
+    const flapGain = audioCtx.createGain();
+    flapGain.gain.setValueAtTime(0.25, now);
+    flapGain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+    flapSource.connect(flapFilter);
+    flapFilter.connect(flapGain);
+    flapGain.connect(audioCtx.destination);
+    flapSource.start(now);
+    flapSource.stop(now + 0.04);
+
+    // 2. 纸张摩擦声 - 翻页过程的质感（主要音色）
+    const rustleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.15, audioCtx.sampleRate);
+    const rustleData = rustleBuffer.getChannelData(0);
+    for (let i = 0; i < rustleData.length; i++) {
+        // 带调制的噪声，模拟纸张摩擦的不均匀质感
+        const t = i / rustleData.length;
+        const envelope = Math.sin(t * Math.PI) * Math.exp(-t * 3); // 中间强，两端弱
+        rustleData[i] = (Math.random() * 2 - 1) * envelope * 0.4;
+    }
+    const rustleSource = audioCtx.createBufferSource();
+    rustleSource.buffer = rustleBuffer;
+    const rustleFilter = audioCtx.createBiquadFilter();
+    rustleFilter.type = 'bandpass';
+    rustleFilter.frequency.setValueAtTime(1500, now);
+    rustleFilter.frequency.linearRampToValueAtTime(3000, now + 0.08);
+    rustleFilter.Q.value = 1.5;
+    const rustleGain = audioCtx.createGain();
+    rustleGain.gain.setValueAtTime(0, now);
+    rustleGain.gain.linearRampToValueAtTime(0.18, now + 0.02);
+    rustleGain.gain.setValueAtTime(0.18, now + 0.08);
+    rustleGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    rustleSource.connect(rustleFilter);
+    rustleFilter.connect(rustleGain);
+    rustleGain.connect(audioCtx.destination);
+    rustleSource.start(now);
+    rustleSource.stop(now + 0.15);
+
+    // 3. 书页落定声 - 翻页结束的轻微"啪"
+    const settleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.03, audioCtx.sampleRate);
+    const settleData = settleBuffer.getChannelData(0);
+    for (let i = 0; i < settleData.length; i++) {
+        const t = i / settleData.length;
+        settleData[i] = (Math.random() * 2 - 1) * Math.exp(-t * 20) * 0.3;
+    }
+    const settleSource = audioCtx.createBufferSource();
+    settleSource.buffer = settleBuffer;
+    const settleFilter = audioCtx.createBiquadFilter();
+    settleFilter.type = 'lowpass';
+    settleFilter.frequency.value = 600;
+    const settleGain = audioCtx.createGain();
+    settleGain.gain.setValueAtTime(0.15, now + 0.12);
+    settleGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    settleSource.connect(settleFilter);
+    settleFilter.connect(settleGain);
+    settleGain.connect(audioCtx.destination);
+    settleSource.start(now + 0.12);
+    settleSource.stop(now + 0.15);
+}
+function playRareSound(rarity) {
+    // 高稀有度音效 - 喜庆庆祝音效
+    const now = audioCtx.currentTime;
+
+    if (rarity === 'sss') {
+        // SSS级 - 盛大庆典音效（约2秒）
+        // 1. 开场号角 - 宏大开场
+        const fanfareOsc = audioCtx.createOscillator();
+        const fanfareGain = audioCtx.createGain();
+        fanfareOsc.type = 'triangle';
+        fanfareOsc.frequency.setValueAtTime(400, now);
+        fanfareOsc.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
+        fanfareGain.gain.setValueAtTime(0.3, now);
+        fanfareGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        fanfareOsc.connect(fanfareGain);
+        fanfareGain.connect(audioCtx.destination);
+        fanfareOsc.start(now);
+        fanfareOsc.stop(now + 0.2);
+
+        // 2. 主和弦序列 - 节日彩铃感（五音递进）
+        const melodyNotes = [523, 659, 784, 1047, 1319]; // C-E-G-C'-E' 大和弦
+        melodyNotes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            const startTime = now + 0.2 + i * 0.15;
+            osc.frequency.setValueAtTime(freq, startTime);
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
+            gain.gain.setValueAtTime(0.25, startTime + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.18);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + 0.18);
+        });
+
+        // 3. 高频闪烁层 - 魔法星光感
+        for (let i = 0; i < 8; i++) {
+            const sparkleOsc = audioCtx.createOscillator();
+            const sparkleGain = audioCtx.createGain();
+            sparkleOsc.type = 'sine';
+            const startTime = now + 0.3 + i * 0.12;
+            sparkleOsc.frequency.setValueAtTime(1500 + Math.random() * 500, startTime);
+            sparkleGain.gain.setValueAtTime(0, startTime);
+            sparkleGain.gain.linearRampToValueAtTime(0.08, startTime + 0.01);
+            sparkleGain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
+            sparkleOsc.connect(sparkleGain);
+            sparkleGain.connect(audioCtx.destination);
+            sparkleOsc.start(startTime);
+            sparkleOsc.stop(startTime + 0.1);
+        }
+
+        // 4. 收尾余音 - 华丽渐弱
+        const finalOsc = audioCtx.createOscillator();
+        const finalGain = audioCtx.createGain();
+        finalOsc.type = 'sine';
+        finalOsc.frequency.setValueAtTime(800, now + 1);
+        finalOsc.frequency.exponentialRampToValueAtTime(400, now + 1.8);
+        finalGain.gain.setValueAtTime(0.15, now + 1);
+        finalGain.gain.exponentialRampToValueAtTime(0.01, now + 1.8);
+        finalOsc.connect(finalGain);
+        finalGain.connect(audioCtx.destination);
+        finalOsc.start(now + 1);
+        finalOsc.stop(now + 1.8);
+
+    } else if (rarity === 'ss') {
+        // SS级 - 华丽庆祝音效（约1秒）
+        // 1. 开场短号角
+        const introOsc = audioCtx.createOscillator();
+        const introGain = audioCtx.createGain();
+        introOsc.type = 'triangle';
+        introOsc.frequency.setValueAtTime(500, now);
+        introOsc.frequency.exponentialRampToValueAtTime(900, now + 0.1);
+        introGain.gain.setValueAtTime(0.25, now);
+        introGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        introOsc.connect(introGain);
+        introGain.connect(audioCtx.destination);
+        introOsc.start(now);
+        introOsc.stop(now + 0.15);
+
+        // 2. 主和弦三连音（节日感）
+        const chordNotes = [523, 659, 784]; // C-E-G
+        chordNotes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            const startTime = now + 0.15 + i * 0.12;
+            osc.frequency.setValueAtTime(freq, startTime);
+            gain.gain.setValueAtTime(0.2, startTime);
+            gain.gain.setValueAtTime(0.2, startTime + 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + 0.15);
+        });
+
+        // 3. 高频闪烁点缀
+        for (let i = 0; i < 4; i++) {
+            const sparkleOsc = audioCtx.createOscillator();
+            const sparkleGain = audioCtx.createGain();
+            sparkleOsc.type = 'sine';
+            const startTime = now + 0.2 + i * 0.15;
+            sparkleOsc.frequency.setValueAtTime(1800 + i * 100, startTime);
+            sparkleGain.gain.setValueAtTime(0.06, startTime);
+            sparkleGain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
+            sparkleOsc.connect(sparkleGain);
+            sparkleGain.connect(audioCtx.destination);
+            sparkleOsc.start(startTime);
+            sparkleOsc.stop(startTime + 0.1);
+        }
+
+        // 4. 收尾余音
+        const endOsc = audioCtx.createOscillator();
+        const endGain = audioCtx.createGain();
+        endOsc.type = 'sine';
+        endOsc.frequency.setValueAtTime(600, now + 0.6);
+        endOsc.frequency.exponentialRampToValueAtTime(300, now + 0.95);
+        endGain.gain.setValueAtTime(0.12, now + 0.6);
+        endGain.gain.exponentialRampToValueAtTime(0.01, now + 0.95);
+        endOsc.connect(endGain);
+        endGain.connect(audioCtx.destination);
+        endOsc.start(now + 0.6);
+        endOsc.stop(now + 0.95);
+
+    } else if (rarity === 's') {
+        // S级 - 小庆祝音效（约0.6秒）
+        // 1. 开场短促上扬
+        const introOsc = audioCtx.createOscillator();
+        const introGain = audioCtx.createGain();
+        introOsc.type = 'triangle';
+        introOsc.frequency.setValueAtTime(400, now);
+        introOsc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+        introGain.gain.setValueAtTime(0.2, now);
+        introGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+        introOsc.connect(introGain);
+        introGain.connect(audioCtx.destination);
+        introOsc.start(now);
+        introOsc.stop(now + 0.12);
+
+        // 2. 双音和弦（简洁庆祝感）
+        [523, 659].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            const startTime = now + 0.12 + i * 0.08;
+            osc.frequency.setValueAtTime(freq, startTime);
+            gain.gain.setValueAtTime(0.18, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.12);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + 0.12);
+        });
+
+        // 3. 小尾音
+        const tailOsc = audioCtx.createOscillator();
+        const tailGain = audioCtx.createGain();
+        tailOsc.type = 'sine';
+        tailOsc.frequency.setValueAtTime(500, now + 0.35);
+        tailOsc.frequency.exponentialRampToValueAtTime(300, now + 0.58);
+        tailGain.gain.setValueAtTime(0.1, now + 0.35);
+        tailGain.gain.exponentialRampToValueAtTime(0.01, now + 0.58);
+        tailOsc.connect(tailGain);
+        tailGain.connect(audioCtx.destination);
+        tailOsc.start(now + 0.35);
+        tailOsc.stop(now + 0.58);
+    }
+}
+
 // ===== 皮肤数据 =====
 const skins = {
     c: [
@@ -46,19 +307,25 @@ const skins = {
 const rarityOrder = ['c', 'b', 'a', 's', 'ss', 'sss'];
 
 // ===== 魅力值定义 =====
-const charmValues = { c: 1, b: 5, a: 20, s: 100, ss: 500, sss: 2000 };
+const charmValues = { c: 1, b: 5, a: 20, s: 100, ss: 250, sss: 1000 };
 
 // ===== 礼品列表 =====
 const giftList = [
-    { name: '蛋仔盲盒', price: 69.8, icon: '🎁' },
-    { name: '尖叫饮料', price: 5, icon: '🥤' },
-    { name: '烤冷面', price: 6, icon: '🍜' },
-    { name: '西瓜', price: 20, icon: '🍉' },
-    { name: '头饰', price: 10, icon: '🎀' },
-    { name: '上衣', price: 100, icon: '👕' },
-    { name: '裤子', price: 100, icon: '👖' },
-    { name: '鞋子', price: 100, icon: '👟' },
-    { name: '糖果', price: 10, icon: '🍬' }
+    { name: '1元代金券', price: 1, image: 'images/voucher-1.png' },
+    { name: '5元代金券', price: 5, image: 'images/voucher-5.png' },
+    { name: '10元代金券', price: 10, image: 'images/voucher-10.png' },
+    { name: '20元代金券', price: 20, image: 'images/voucher-20.png' },
+    { name: '50元代金券', price: 50, image: 'images/voucher-50.png' },
+    { name: '100元代金券', price: 100, image: 'images/voucher-100.png' },
+    { name: '蛋仔盲盒', price: 69.8, image: 'images/blindbox.png' },
+    { name: '尖叫饮料', price: 5, image: 'images/drink.png' },
+    { name: '烤冷面', price: 6, image: 'images/noodles.png' },
+    { name: '西瓜', price: 20, image: 'images/watermelon.png' },
+    { name: '头饰', price: 10, image: 'images/hairpin.png' },
+    { name: '上衣', price: 100, image: 'images/shirt.png' },
+    { name: '裤子', price: 100, image: 'images/pants.png' },
+    { name: '鞋子', price: 100, image: 'images/shoes.png' },
+    { name: '糖果', price: 10, image: 'images/candy.png' }
 ];
 
 // ===== 密码和奖励配置 =====
@@ -498,11 +765,12 @@ function closeResultModal() { document.getElementById('resultModal').classList.r
 function getRandomSkin() {
     const rand = Math.random() * 100;
     let rarity;
-    if (rand < 0.5) rarity = 'sss';
-    else if (rand < 2.5) rarity = 'ss';
-    else if (rand < 10.5) rarity = 's';
-    else if (rand < 25.5) rarity = 'a';
-    else if (rand < 55.5) rarity = 'b';
+    // 概率：SSS 1%, SS 4%, S 8%, A 15%, B 30%, C 42%
+    if (rand < 1) rarity = 'sss';
+    else if (rand < 5) rarity = 'ss';
+    else if (rand < 13) rarity = 's';
+    else if (rand < 28) rarity = 'a';
+    else if (rand < 58) rarity = 'b';
     else rarity = 'c';
     const list = skins[rarity];
     const idx = Math.floor(Math.random() * list.length);
@@ -588,8 +856,10 @@ function showDrawAnimation(skinList, drawType) {
             container.appendChild(card);
             setTimeout(() => {
                 card.classList.add('opened');
-                if (skin.rarity === 'sss') { createParticles(card, skin.rarity); createSSSFlash(); }
-                else if (skin.rarity === 'ss') { createParticles(card, skin.rarity); createSSLightBeams(); }
+                playFlipSound();  // 播放翻卡音效
+                if (skin.rarity === 'sss') { createParticles(card, skin.rarity); createSSSFlash(); createConfetti(); createFireworks(); playRareSound('sss'); playCheerSound(); }
+                else if (skin.rarity === 'ss') { createParticles(card, skin.rarity); createSSLightBeams(); createConfettiSS(); playRareSound('ss'); }
+                else if (skin.rarity === 's') { playRareSound('s'); }
                 if (i === lastIndex) { setTimeout(() => btnContainer.classList.add('show'), 500); }
             }, 100);
         }, i * 300);
@@ -648,6 +918,487 @@ function createSSSFlash() {
         overlay.appendChild(flash2);
         setTimeout(() => flash2.remove(), 800);
     }, 300);
+}
+function createConfetti() {
+    // SSS级撒花特效 - 多种形状彩色纸屑
+    const overlay = document.getElementById('drawOverlay');
+    const shapes = ['heart', 'star', 'circle', 'ribbon', 'sparkle'];
+    const colors = ['#ff5252', '#ffd700', '#ff69b4', '#ff8f00', '#e91e63', '#00bcd4', '#9c27b0', '#4caf50', '#ffeb3b', '#ff6b6b'];
+
+    // 第一波撒花（50个）
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.className = `confetti confetti-${shape}`;
+            if (shape === 'circle' || shape === 'ribbon') {
+                confetti.style.background = color;
+            }
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-5%';
+            confetti.style.setProperty('--rotate', (Math.random() * 720 + 360) + 'deg');
+            confetti.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+            confetti.style.animationDelay = Math.random() * 0.3 + 's';
+            overlay.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3500);
+        }, i * 40);
+    }
+
+    // 第二波撒花（30个，延迟0.5秒）
+    for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.className = `confetti confetti-${shape}`;
+            if (shape === 'circle' || shape === 'ribbon') {
+                confetti.style.background = color;
+            }
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-5%';
+            confetti.style.setProperty('--rotate', (Math.random() * 720 - 360) + 'deg');
+            confetti.style.animationDuration = (2.5 + Math.random() * 1) + 's';
+            overlay.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 4000);
+        }, 500 + i * 50);
+    }
+
+    // 第三波中心爆发（20个，从中心向四周散开）
+    for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti confetti-sparkle';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = '12px';
+            confetti.style.height = '12px';
+            confetti.style.left = '50%';
+            confetti.style.top = '40%';
+            confetti.style.marginLeft = '-6px';
+            confetti.style.marginTop = '-6px';
+            confetti.style.transition = 'all 1s ease-out';
+            overlay.appendChild(confetti);
+
+            // 动画：从中心向四周扩散
+            const angle = (360 / 20) * i;
+            const distance = 150 + Math.random() * 100;
+            const tx = Math.cos(angle * Math.PI / 180) * distance;
+            const ty = Math.sin(angle * Math.PI / 180) * distance;
+
+            requestAnimationFrame(() => {
+                confetti.style.transform = `translate(${tx}px, ${ty}px) scale(0.2)`;
+                confetti.style.opacity = '0';
+            });
+
+            setTimeout(() => confetti.remove(), 1500);
+        }, 300 + i * 30);
+    }
+}
+function createConfettiSS() {
+    // SS级撒花特效 - 持续5秒的彩色纸屑
+    const overlay = document.getElementById('drawOverlay');
+    const shapes = ['heart', 'star', 'circle', 'ribbon'];
+    const colors = ['#ffd700', '#ff8f00', '#e91e63', '#9c27b0', '#ffeb3b', '#ff6b6b'];
+
+    // 持续5秒撒花（每0.1秒一个，共50个）
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.className = `confetti confetti-${shape}`;
+            if (shape === 'circle' || shape === 'ribbon') {
+                confetti.style.background = color;
+            } else {
+                confetti.style.background = color;
+            }
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-5%';
+            confetti.style.setProperty('--rotate', (Math.random() * 720) + 'deg');
+            confetti.style.animationDuration = '5s'; // 固定5秒
+            confetti.style.animationDelay = '0s';
+            overlay.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 5500);
+        }, i * 100); // 每0.1秒一个，总时长5秒
+    }
+}
+function createFireworks() {
+    // SSS级烟花礼炮特效 - 10个烟花，间隔1秒，总计10秒
+    const overlay = document.getElementById('drawOverlay');
+
+    // 鲜艳烟花颜色组（主色、亮色、深色）
+    const fireworkColors = [
+        ['#FF0000', '#FF4444', '#CC0000'],  // 鲜红
+        ['#FFD700', '#FFEC8B', '#FFA500'],  // 金黄
+        ['#FF1493', '#FF69B4', '#C71585'],  // 深粉红
+        ['#00FF00', '#7CFC00', '#32CD32'],  // 鲜绿
+        ['#00FFFF', '#40E0D0', '#00CED1'],  // 青色
+        ['#FF4500', '#FF6347', '#DC143C'],  // 橙红
+        ['#FFFF00', '#FFD700', '#FFA500'],  // 明黄
+        ['#FF00FF', '#EE82EE', '#DA70D6'],  // 品红紫
+        ['#00BFFF', '#87CEEB', '#1E90FF'],  // 天蓝
+        ['#FFFFFF', '#F0F8FF', '#E6E6FA'],  // 纯白闪光
+        ['#ADFF2F', '#9ACD32', '#6B8E23'],  // 黄绿
+        ['#FF6B6B', '#FF8E8E', '#FF5252'],  // 珊瑚红
+        ['#FFB6C1', '#FFC0CB', '#FF69B4'],  // 浅粉
+        ['#7B68EE', '#6A5ACD', '#483D8B'],  // 蓝紫
+        ['#40E0D0', '#48D1CC', '#20B2AA'],  // 青绿
+    ];
+
+    // 10个烟花，间隔1秒
+    for (let idx = 0; idx < 10; idx++) {
+        setTimeout(() => {
+            // 随机位置
+            const pos = {
+                x: (15 + Math.random() * 70) + '%',
+                y: (20 + Math.random() * 35) + '%'
+            };
+            const colorIdx = Math.floor(Math.random() * fireworkColors.length);
+            const colors = fireworkColors[colorIdx];
+
+            // 烟花升空轨迹
+            const rocket = document.createElement('div');
+            rocket.className = 'firework-rocket';
+            const startX = (Math.random() * 100) + '%';
+            rocket.style.left = pos.x;
+            rocket.style.top = '100%';
+            rocket.style.background = colors[0];
+            rocket.style.width = '8px';
+            rocket.style.height = '25px';
+            rocket.style.borderRadius = '4px';
+            overlay.appendChild(rocket);
+
+            // 升空动画
+            requestAnimationFrame(() => {
+                rocket.style.transition = 'top 0.8s ease-out, opacity 0.8s ease-out';
+                rocket.style.top = pos.y;
+            });
+
+            // 升空音效
+            playRocketSound();
+
+            // 烟花爆炸（升空后爆炸）
+            setTimeout(() => {
+                rocket.style.opacity = '0';
+                setTimeout(() => rocket.remove(), 100);
+
+                // 爆炸音效
+                playFireworkExplosionSound();
+
+                // 爆炸粒子（80-120个密集粒子）
+                const particleCount = 80 + Math.floor(Math.random() * 40);
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'firework-particle';
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.left = pos.x;
+                    particle.style.top = pos.y;
+                    const size = 4 + Math.random() * 6;
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    particle.style.borderRadius = '50%';
+
+                    // 添加拖尾效果
+                    particle.style.boxShadow = `0 0 ${size}px ${colors[0]}`;
+
+                    const angle = (360 / particleCount) * i + (Math.random() - 0.5) * 30;
+                    const distance = 60 + Math.random() * 100;
+                    const tx = Math.cos(angle * Math.PI / 180) * distance;
+                    const ty = Math.sin(angle * Math.PI / 180) * distance - 20; // 稍微向上偏移
+
+                    overlay.appendChild(particle);
+                    requestAnimationFrame(() => {
+                        particle.style.transition = 'all 1.2s ease-out';
+                        particle.style.transform = `translate(${tx}px, ${ty}px)`;
+                        particle.style.opacity = '0';
+                    });
+                    setTimeout(() => particle.remove(), 1300);
+                }
+
+                // 大型爆炸光环
+                const ring = document.createElement('div');
+                ring.className = 'firework-ring';
+                ring.style.left = pos.x;
+                ring.style.top = pos.y;
+                ring.style.borderColor = colors[0];
+                ring.style.width = '15px';
+                ring.style.height = '15px';
+                overlay.appendChild(ring);
+                setTimeout(() => ring.remove(), 1000);
+
+                // 爆炸闪光中心
+                const flash = document.createElement('div');
+                flash.className = 'firework-flash';
+                flash.style.left = pos.x;
+                flash.style.top = pos.y;
+                flash.style.background = `radial-gradient(circle, ${colors[1]} 0%, transparent 70%)`;
+                flash.style.width = '30px';
+                flash.style.height = '30px';
+                overlay.appendChild(flash);
+                setTimeout(() => flash.remove(), 400);
+
+                // 垂落粒子（模拟烟花落下的尾焰）
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const trail = document.createElement('div');
+                        trail.className = 'firework-trail';
+                        trail.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        trail.style.left = pos.x;
+                        trail.style.top = pos.y;
+                        trail.style.width = '3px';
+                        trail.style.height = '15px';
+                        trail.style.borderRadius = '2px';
+
+                        const tx = (Math.random() - 0.5) * 60;
+                        const ty = 50 + Math.random() * 100;
+
+                        overlay.appendChild(trail);
+                        requestAnimationFrame(() => {
+                            trail.style.transition = 'all 1.5s ease-in';
+                            trail.style.transform = `translate(${tx}px, ${ty}px)`;
+                            trail.style.opacity = '0';
+                        });
+                        setTimeout(() => trail.remove(), 1600);
+                    }, i * 50);
+                }
+            }, 800);
+        }, idx * 1000); // 间隔1秒
+    }
+}
+function playRocketSound() {
+    // 烟花升空音效 - 嘶嘶的升空声
+    const now = audioCtx.currentTime;
+
+    // 升空嘶嘶声（高频噪声渐变）
+    const hissBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.8, audioCtx.sampleRate);
+    const hissData = hissBuffer.getChannelData(0);
+    for (let i = 0; i < hissData.length; i++) {
+        const t = i / hissData.length;
+        hissData[i] = (Math.random() * 2 - 1) * 0.3 * (1 - t * 0.5) * Math.sin(t * Math.PI * 10);
+    }
+    const hissSource = audioCtx.createBufferSource();
+    hissSource.buffer = hissBuffer;
+    const hissFilter = audioCtx.createBiquadFilter();
+    hissFilter.type = 'highpass';
+    hissFilter.frequency.setValueAtTime(2000, now);
+    hissFilter.frequency.linearRampToValueAtTime(4000, now + 0.8);
+    const hissGain = audioCtx.createGain();
+    hissGain.gain.setValueAtTime(0.15, now);
+    hissGain.gain.linearRampToValueAtTime(0.08, now + 0.4);
+    hissGain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+    hissSource.connect(hissFilter);
+    hissFilter.connect(hissGain);
+    hissGain.connect(audioCtx.destination);
+    hissSource.start(now);
+    hissSource.stop(now + 0.8);
+
+    // 升空嗡嗡声（低频）
+    const buzzOsc = audioCtx.createOscillator();
+    const buzzGain = audioCtx.createGain();
+    buzzOsc.type = 'sine';
+    buzzOsc.frequency.setValueAtTime(150, now);
+    buzzOsc.frequency.linearRampToValueAtTime(300, now + 0.8);
+    buzzGain.gain.setValueAtTime(0.05, now);
+    buzzGain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+    buzzOsc.connect(buzzGain);
+    buzzGain.connect(audioCtx.destination);
+    buzzOsc.start(now);
+    buzzOsc.stop(now + 0.8);
+}
+function playFireworkExplosionSound() {
+    // 烟花爆炸音效 - 逼真的砰声+噼啪声
+    const now = audioCtx.currentTime;
+
+    // 1. 爆炸"砰"声（低频冲击波）
+    const burstBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
+    const burstData = burstBuffer.getChannelData(0);
+    for (let i = 0; i < burstData.length; i++) {
+        const t = i / burstData.length;
+        burstData[i] = (Math.random() * 2 - 1) * Math.exp(-t * 25) * 0.6;
+    }
+    const burstSource = audioCtx.createBufferSource();
+    burstSource.buffer = burstBuffer;
+    const burstFilter = audioCtx.createBiquadFilter();
+    burstFilter.type = 'lowpass';
+    burstFilter.frequency.setValueAtTime(1000, now);
+    burstFilter.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+    const burstGain = audioCtx.createGain();
+    burstGain.gain.setValueAtTime(0.5, now);
+    burstGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+    burstSource.connect(burstFilter);
+    burstFilter.connect(burstGain);
+    burstGain.connect(audioCtx.destination);
+    burstSource.start(now);
+    burstSource.stop(now + 0.12);
+
+    // 2. 高频爆裂声（"啪"的尖锐音）
+    const crackOsc = audioCtx.createOscillator();
+    const crackGain = audioCtx.createGain();
+    crackOsc.type = 'square';
+    crackOsc.frequency.setValueAtTime(800, now + 0.02);
+    crackOsc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+    crackGain.gain.setValueAtTime(0, now);
+    crackGain.gain.setValueAtTime(0.25, now + 0.02);
+    crackGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+    crackOsc.connect(crackGain);
+    crackGain.connect(audioCtx.destination);
+    crackOsc.start(now);
+    crackOsc.stop(now + 0.08);
+
+    // 3. 噼啪声序列（火花散落的声音）
+    for (let i = 0; i < 15; i++) {
+        const sparkleOsc = audioCtx.createOscillator();
+        const sparkleGain = audioCtx.createGain();
+        sparkleOsc.type = 'sine';
+        const startTime = now + 0.05 + i * 0.04 + Math.random() * 0.02;
+        sparkleOsc.frequency.setValueAtTime(1500 + Math.random() * 1000, startTime);
+        sparkleOsc.frequency.exponentialRampToValueAtTime(500 + Math.random() * 300, startTime + 0.03);
+        sparkleGain.gain.setValueAtTime(0, startTime - 0.01);
+        sparkleGain.gain.setValueAtTime(0.08 + Math.random() * 0.05, startTime);
+        sparkleGain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04);
+        sparkleOsc.connect(sparkleGain);
+        sparkleGain.connect(audioCtx.destination);
+        sparkleOsc.start(startTime);
+        sparkleOsc.stop(startTime + 0.05);
+    }
+
+    // 4. 回响余音（环境共鸣）
+    const echoBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.4, audioCtx.sampleRate);
+    const echoData = echoBuffer.getChannelData(0);
+    for (let i = 0; i < echoData.length; i++) {
+        const t = i / echoData.length;
+        echoData[i] = (Math.random() * 2 - 1) * 0.1 * Math.exp(-t * 5) * Math.sin(t * Math.PI * 2);
+    }
+    const echoSource = audioCtx.createBufferSource();
+    echoSource.buffer = echoBuffer;
+    const echoFilter = audioCtx.createBiquadFilter();
+    echoFilter.type = 'lowpass';
+    echoFilter.frequency.value = 300;
+    const echoGain = audioCtx.createGain();
+    echoGain.gain.setValueAtTime(0.08, now + 0.1);
+    echoGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+    echoSource.connect(echoFilter);
+    echoFilter.connect(echoGain);
+    echoGain.connect(audioCtx.destination);
+    echoSource.start(now + 0.1);
+    echoSource.stop(now + 0.5);
+}
+function playCheerSound() {
+    // 掌声和欢呼声 - SSS级庆祝音效（持续5秒）
+    const now = audioCtx.currentTime;
+    const duration = 5;
+
+    // 1. 掌声 - 密集的噪声脉冲模拟拍手声（5秒）
+    const clapBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
+    const clapData = clapBuffer.getChannelData(0);
+    for (let i = 0; i < clapData.length; i++) {
+        const t = i / clapData.length;
+        // 模拟不规则拍手节奏
+        const clapPattern = Math.sin(t * 80) * 0.5 + Math.sin(t * 120) * 0.3 + Math.random() * 0.4;
+        // 掌声包络：渐强 -> 持续 -> 渐弱
+        const envelope = Math.pow(Math.sin(t * Math.PI), 0.5) * (1 + Math.sin(t * 20) * 0.2);
+        clapData[i] = clapPattern * envelope * 0.25;
+    }
+    const clapSource = audioCtx.createBufferSource();
+    clapSource.buffer = clapBuffer;
+    const clapFilter = audioCtx.createBiquadFilter();
+    clapFilter.type = 'bandpass';
+    clapFilter.frequency.setValueAtTime(2000, now);
+    clapFilter.Q.value = 1;
+    const clapGain = audioCtx.createGain();
+    clapGain.gain.setValueAtTime(0.3, now);
+    clapGain.gain.setValueAtTime(0.35, now + 2);
+    clapGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    clapSource.connect(clapFilter);
+    clapFilter.connect(clapGain);
+    clapGain.connect(audioCtx.destination);
+    clapSource.start(now);
+    clapSource.stop(now + duration);
+
+    // 2. 欢呼声 - 人声模拟（5秒）
+    const cheerBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
+    const cheerData = cheerBuffer.getChannelData(0);
+    for (let i = 0; i < cheerData.length; i++) {
+        const t = i / cheerData.length;
+        // 模拟人群欢呼的嘈杂声
+        const voiceNoise = (Math.random() * 2 - 1);
+        // 添加一些"哇"的声音感（中频共振）
+        const vowel1 = Math.sin(t * Math.PI * 800) * 0.3;
+        const vowel2 = Math.sin(t * Math.PI * 1200) * 0.2;
+        const vowel3 = Math.sin(t * Math.PI * 2500) * 0.1;
+        // 包络：渐强 -> 持续高潮 -> 渐弱
+        const envelope = Math.pow(Math.min(1, t * 3), 0.5) * Math.exp(-t * 0.5);
+        cheerData[i] = (voiceNoise * 0.4 + vowel1 + vowel2 + vowel3) * envelope * 0.3;
+    }
+    const cheerSource = audioCtx.createBufferSource();
+    cheerSource.buffer = cheerBuffer;
+    const cheerFilter = audioCtx.createBiquadFilter();
+    cheerFilter.type = 'bandpass';
+    cheerFilter.frequency.setValueAtTime(800, now);
+    cheerFilter.frequency.linearRampToValueAtTime(1500, now + 1);
+    cheerFilter.Q.value = 2;
+    const cheerGain = audioCtx.createGain();
+    cheerGain.gain.setValueAtTime(0, now);
+    cheerGain.gain.linearRampToValueAtTime(0.25, now + 0.2);
+    cheerGain.gain.setValueAtTime(0.25, now + 3);
+    cheerGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    cheerSource.connect(cheerFilter);
+    cheerFilter.connect(cheerGain);
+    cheerGain.connect(audioCtx.destination);
+    cheerSource.start(now);
+    cheerSource.stop(now + duration);
+
+    // 3. 口哨声 - 高频尖啸（5秒内8次）
+    for (let i = 0; i < 8; i++) {
+        const whistleOsc = audioCtx.createOscillator();
+        const whistleGain = audioCtx.createGain();
+        const whistleFilter = audioCtx.createBiquadFilter();
+        whistleOsc.type = 'sine';
+        const startTime = now + 0.3 + i * 0.55 + Math.random() * 0.15;
+        // 口哨的颤音效果
+        whistleOsc.frequency.setValueAtTime(1200 + Math.random() * 300, startTime);
+        whistleOsc.frequency.linearRampToValueAtTime(1800 + Math.random() * 400, startTime + 0.1);
+        whistleOsc.frequency.setValueAtTime(1600 + Math.random() * 200, startTime + 0.2);
+        whistleOsc.frequency.linearRampToValueAtTime(1000 + Math.random() * 200, startTime + 0.4);
+        whistleFilter.type = 'highpass';
+        whistleFilter.frequency.value = 800;
+        whistleGain.gain.setValueAtTime(0, startTime - 0.01);
+        whistleGain.gain.linearRampToValueAtTime(0.08, startTime);
+        whistleGain.gain.setValueAtTime(0.08, startTime + 0.15);
+        whistleGain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.5);
+        whistleOsc.connect(whistleFilter);
+        whistleFilter.connect(whistleGain);
+        whistleGain.connect(audioCtx.destination);
+        whistleOsc.start(startTime);
+        whistleOsc.stop(startTime + 0.5);
+    }
+
+    // 4. "哇哦"声效 - 群体惊呼（5秒内4次）
+    for (let j = 0; j < 4; j++) {
+        const wowBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.8, audioCtx.sampleRate);
+        const wowData = wowBuffer.getChannelData(0);
+        for (let i = 0; i < wowData.length; i++) {
+            const t = i / wowData.length;
+            const wow = Math.sin(t * Math.PI * 600) * 0.4 + Math.sin(t * Math.PI * 900) * 0.25;
+            const envelope = Math.sin(t * Math.PI) * Math.exp(-t * 2);
+            wowData[i] = (wow + (Math.random() * 2 - 1) * 0.2) * envelope * 0.3;
+        }
+        const wowSource = audioCtx.createBufferSource();
+        wowSource.buffer = wowBuffer;
+        const wowFilter = audioCtx.createBiquadFilter();
+        wowFilter.type = 'bandpass';
+        wowFilter.frequency.value = 700;
+        wowFilter.Q.value = 2;
+        const wowGain = audioCtx.createGain();
+        const wowStartTime = now + 0.1 + j * 1.2;
+        wowGain.gain.setValueAtTime(0.18, wowStartTime);
+        wowGain.gain.exponentialRampToValueAtTime(0.01, wowStartTime + 0.8);
+        wowSource.connect(wowFilter);
+        wowFilter.connect(wowGain);
+        wowGain.connect(audioCtx.destination);
+        wowSource.start(wowStartTime);
+        wowSource.stop(wowStartTime + 0.8);
+    }
 }
 function updateCollection() {
     const container = document.getElementById('collectionContent');
@@ -740,7 +1491,7 @@ function renderGiftList() {
         const item = document.createElement('div');
         item.style.cssText = `padding: 20px; background: ${canExchange ? 'linear-gradient(135deg, #f8f9fa, #e9ecef)' : '#f0f0f0'}; border-radius: 15px; text-align: center; transition: all 0.3s;`;
         item.innerHTML = `
-            <div style="font-size: 40px;">${gift.icon}</div>
+            <div style="width: 60px; height: 60px; margin: 0 auto; display: flex; align-items: center; justify-content: center;"><img src="${gift.image}" alt="${gift.name}" style="width: 100%; height: 100%; object-fit: contain;"></div>
             <div style="font-size: 16px; font-weight: bold; margin-top: 10px; color: #333;">${gift.name}</div>
             <div style="font-size: 14px; color: #666; margin-top: 5px;">¥${gift.price}</div>
             <button onclick="exchangeGift('${gift.name}', ${gift.price})" style="margin-top: 15px; padding: 10px 25px; background: ${canExchange ? 'linear-gradient(135deg, #e879f9, #c026d3)' : '#ccc'}; color: white; border: none; border-radius: 8px; cursor: ${canExchange ? 'pointer' : 'not-allowed'}; font-size: 13px;" ${canExchange ? '' : 'disabled'}>${canExchange ? '兑换' : '魅力不足'}</button>
@@ -753,7 +1504,7 @@ function exchangeGift(name, price) {
     if (yuan < price) { showMessage('魅力值不足，无法兑换', 'error'); return; }
     pendingGift = { name, price, charmCost: price * 100 };
     const gift = giftList.find(g => g.name === name);
-    document.getElementById('confirmGiftIcon').textContent = gift ? gift.icon : '🎁';
+    document.getElementById('confirmGiftIcon').innerHTML = gift ? `<img src="${gift.image}" alt="${gift.name}" style="width: 50px; height: 50px; object-fit: contain;">` : '🎁';
     document.getElementById('confirmGiftName').textContent = name;
     document.getElementById('confirmCharmCost').textContent = pendingGift.charmCost;
     document.getElementById('confirmExchangeModal').classList.add('active');
