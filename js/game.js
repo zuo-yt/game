@@ -588,6 +588,12 @@ function closeChineseQuiz() { document.getElementById('chineseModal').classList.
 // ===== 英语题 =====
 function startEnglishQuiz() { englishIndex = 0; document.getElementById('englishModal').classList.add('active'); showEnglishQuestion(); }
 function showEnglishQuestion() {
+    // 停止正在进行的录音
+    if (currentMediaRecorder && currentMediaRecorder.state === 'recording') {
+        clearTimeout(recordingTimer);
+        currentMediaRecorder.stop();
+    }
+
     const data = englishWordBank[Math.floor(Math.random() * englishWordBank.length)];
     document.getElementById('englishWord').textContent = data.word;
     document.getElementById('englishMeaning').textContent = data.meaning;
@@ -628,9 +634,22 @@ function tryAudioSources(sources, index) {
     audio.onerror = () => tryAudioSources(sources, index + 1);
     audio.play().catch(() => tryAudioSources(sources, index + 1));
 }
+// 录音状态管理
+let currentMediaRecorder = null;
+let currentStream = null;
+let recordingTimer = null;
+
 function startSpeaking() {
     const btn = document.getElementById('speakBtn');
     const res = document.getElementById('speechResult');
+
+    // 如果正在录音，点击则停止录音
+    if (currentMediaRecorder && currentMediaRecorder.state === 'recording') {
+        clearTimeout(recordingTimer);
+        currentMediaRecorder.stop();
+        return;
+    }
+
     res.innerHTML = '';
 
     // 检测浏览器是否支持录音
@@ -641,11 +660,13 @@ function startSpeaking() {
     }
 
     btn.classList.add('recording');
-    btn.textContent = '🔴 录音中...';
+    btn.textContent = '⏹️ 结束录音';
 
     navigator.mediaDevices.getUserMedia({ audio: true })
         .then(stream => {
+            currentStream = stream;
             const mediaRecorder = new MediaRecorder(stream);
+            currentMediaRecorder = mediaRecorder;
             const audioChunks = [];
 
             mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
@@ -654,6 +675,8 @@ function startSpeaking() {
                 stream.getTracks().forEach(track => track.stop());
                 btn.classList.remove('recording');
                 btn.textContent = '🎤 开始朗读';
+                currentMediaRecorder = null;
+                currentStream = null;
 
                 const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                 const audioUrl = URL.createObjectURL(audioBlob);
@@ -685,21 +708,25 @@ function startSpeaking() {
                 stream.getTracks().forEach(track => track.stop());
                 btn.classList.remove('recording');
                 btn.textContent = '🎤 开始朗读';
+                currentMediaRecorder = null;
+                currentStream = null;
                 res.className = 'speech-result fail';
                 res.textContent = '⚠️ 录音失败，请重试';
             };
 
             mediaRecorder.start();
-            // 5秒后自动停止录音
-            setTimeout(() => {
-                if (mediaRecorder.state === 'recording') {
-                    mediaRecorder.stop();
+            // 最多10秒自动停止录音（保底）
+            recordingTimer = setTimeout(() => {
+                if (currentMediaRecorder && currentMediaRecorder.state === 'recording') {
+                    currentMediaRecorder.stop();
                 }
-            }, 5000);
+            }, 10000);
         })
         .catch(err => {
             btn.classList.remove('recording');
             btn.textContent = '🎤 开始朗读';
+            currentMediaRecorder = null;
+            currentStream = null;
             res.className = 'speech-result fail';
             if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
                 res.textContent = '⚠️ 麦克风权限被拒绝，请点击允许录音';
@@ -747,7 +774,14 @@ function levenshteinDistance(a, b) {
     return m[b.length][a.length];
 }
 function nextEnglishQuestion() { englishIndex++; if (englishIndex < 10) showEnglishQuestion(); else { closeEnglishQuiz(); showResult('🔤', '英语挑战完成！', '完成10道题目', '+50 蛋币', ''); gameData.coins += 50; saveGameData(); updateDisplay(); } }
-function closeEnglishQuiz() { document.getElementById('englishModal').classList.remove('active'); }
+function closeEnglishQuiz() {
+    // 停止正在进行的录音
+    if (currentMediaRecorder && currentMediaRecorder.state === 'recording') {
+        clearTimeout(recordingTimer);
+        currentMediaRecorder.stop();
+    }
+    document.getElementById('englishModal').classList.remove('active');
+}
 
 // ===== 结果弹窗 =====
 function showResult(icon, title, stats, reward, bonus) {
