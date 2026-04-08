@@ -449,6 +449,7 @@ function init() {
     updateCollection();
     updateStats();
     updateLatestItems();
+    updateExchangeDisplay();
 }
 function createStars() {
     for (let i = 0; i < 30; i++) {
@@ -468,7 +469,11 @@ function loadGameData() {
     }
 }
 function saveGameData() { localStorage.setItem('eggPartyGame', JSON.stringify(gameData)); }
-function updateDisplay() { document.getElementById('coinAmount').textContent = gameData.coins; document.getElementById('charmAmount').textContent = gameData.charm; }
+function updateDisplay() {
+    document.getElementById('coinAmount').textContent = gameData.coins;
+    document.getElementById('charmAmount').textContent = gameData.charm;
+    updateExchangeDisplay();
+}
 
 // ===== 数学题 =====
 function startMathQuiz() {
