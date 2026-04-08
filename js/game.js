@@ -1509,12 +1509,18 @@ function claimBonus(type) {
     pendingBonusType = type;
     document.getElementById('passwordModal').classList.add('active');
     document.getElementById('passwordInput').value = '';
+    document.getElementById('passwordError').textContent = '密码错误，请重新输入';
     document.getElementById('passwordError').style.display = 'none';
     document.getElementById('passwordInput').focus();
 }
 function verifyPassword() {
     const input = document.getElementById('passwordInput').value;
     if (input === BONUS_PASSWORD) {
+        if (!pendingBonusType || !BONUS_CONFIG[pendingBonusType]) {
+            document.getElementById('passwordError').textContent = '请先选择奖励类型';
+            document.getElementById('passwordError').style.display = 'block';
+            return;
+        }
         const bonus = BONUS_CONFIG[pendingBonusType];
         gameData.coins += bonus.coins;
         saveGameData();
@@ -1522,6 +1528,7 @@ function verifyPassword() {
         closePasswordModal();
         showResult(bonus.icon, `${bonus.name}完成！`, `获得奖励`, `+${bonus.coins} 蛋币`, '密码验证成功！');
     } else {
+        document.getElementById('passwordError').textContent = '密码错误，请重新输入';
         document.getElementById('passwordError').style.display = 'block';
         document.getElementById('passwordInput').value = '';
     }
