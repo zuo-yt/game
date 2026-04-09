@@ -881,7 +881,8 @@ function renderAchievementList() {
 
     if (currentAchievementTab === 'achievement') {
         container.innerHTML = ACHIEVEMENTS.map(ach => {
-            const unlocked = ach.condition(gameData);
+            // 使用 gameData.achievements 作为唯一真相来源
+            const unlocked = gameData.achievements[ach.id];
             return `<div class="achievement-item ${unlocked ? 'unlocked' : 'locked'}">
                 <div class="achievement-item-icon">${unlocked ? ach.icon : '🔒'}</div>
                 <div class="achievement-item-info">
@@ -894,7 +895,7 @@ function renderAchievementList() {
     } else {
         // 称号列表
         container.innerHTML = TITLES.map(title => {
-            const unlocked = ACHIEVEMENTS.find(a => a.id === title.id)?.condition(gameData);
+            const unlocked = gameData.achievements[title.id];
             const equipped = gameData.currentTitle === title.id;
             return `<div class="achievement-item title-item ${unlocked ? 'unlocked' : 'locked'} ${equipped ? 'equipped' : ''}" onclick="equipTitle('${title.id}')">
                 <div class="achievement-item-icon">${unlocked ? title.icon : '🔒'}</div>
@@ -940,11 +941,23 @@ function checkAchievements() {
     });
     if (newAchievement) {
         saveGameData();
-        updateAchievementCount();
     }
+    updateAchievementCount();
 }
 function updateAchievementCount() {
-    const unlocked = ACHIEVEMENTS.filter(a => a.condition(gameData)).length;
+    // 先同步检测所有成就，确保 gameData.achievements 与 condition 一致
+    let needSave = false;
+    ACHIEVEMENTS.forEach(ach => {
+        if (!gameData.achievements[ach.id] && ach.condition(gameData)) {
+            gameData.achievements[ach.id] = true;
+            needSave = true;
+        }
+    });
+    if (needSave) {
+        saveGameData();
+    }
+    // 使用 gameData.achievements 计算数量
+    const unlocked = ACHIEVEMENTS.filter(a => gameData.achievements[a.id]).length;
     document.getElementById('achievementCount').textContent = `${unlocked}/${ACHIEVEMENTS.length}`;
 }
 function loadGameData() {
