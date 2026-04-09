@@ -862,8 +862,8 @@ function closeResultModal() { document.getElementById('resultModal').classList.r
 function getRandomSkin() {
     const rand = Math.random() * 100;
     let rarity;
-    // 概率：SSS 1%, SS 4%, S 8%, A 15%, B 30%, C 42%
-    if (rand < 1) rarity = 'sss';
+    // 概率：SSS 0.5%, SS 4.5%, S 8%, A 15%, B 30%, C 42%
+    if (rand < 0.5) rarity = 'sss';
     else if (rand < 5) rarity = 'ss';
     else if (rand < 13) rarity = 's';
     else if (rand < 28) rarity = 'a';
