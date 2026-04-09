@@ -1636,84 +1636,108 @@ async function shareEggDisplay() {
 }
 
 function showShareGuide(dataUrl) {
-    // 创建分享引导遮罩
+    // 创建图片分享遮罩 - 用户可长按图片保存或分享
     let overlay = document.getElementById('shareGuideOverlay');
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'shareGuideOverlay';
         overlay.innerHTML = `
             <div class="share-guide-content">
-                <div class="share-guide-arrow">👆</div>
-                <div class="share-guide-text">点击右上角「...」分享给好友</div>
-                <div class="share-preview"><img id="sharePreviewImg" style="max-width: 100%; border-radius: 15px;"></div>
-                <button class="share-guide-btn" onclick="closeShareGuide()">我知道了</button>
+                <div class="share-guide-title">🎁 分享蛋仔形象</div>
+                <div class="share-guide-tip">长按图片保存或分享给好友</div>
+                <div class="share-preview-large"><img id="sharePreviewImg"></div>
+                <div class="share-guide-actions">
+                    <button class="share-save-btn" onclick="saveShareImage()">💾 保存图片</button>
+                    <button class="share-guide-btn" onclick="closeShareGuide()">✕ 关闭</button>
+                </div>
             </div>
         `;
         overlay.style.cssText = `
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.85);
             z-index: 10000;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
         `;
         const content = overlay.querySelector('.share-guide-content');
         content.style.cssText = `
             text-align: center;
             color: white;
+            max-width: 90vw;
         `;
-        const arrow = overlay.querySelector('.share-guide-arrow');
-        arrow.style.cssText = `
-            font-size: 50px;
-            position: absolute;
-            top: 50px;
-            right: 30px;
-            animation: bounce 1s infinite;
-        `;
-        const text = overlay.querySelector('.share-guide-text');
-        text.style.cssText = `
-            font-size: 20px;
-            margin-top: 60px;
-            margin-bottom: 20px;
+        const title = overlay.querySelector('.share-guide-title');
+        title.style.cssText = `
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
             color: #ffd700;
         `;
-        const preview = overlay.querySelector('.share-preview');
-        preview.style.cssText = `
-            margin: 20px 0;
-            max-height: 50vh;
-            overflow: hidden;
+        const tip = overlay.querySelector('.share-guide-tip');
+        tip.style.cssText = `
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #aaa;
         `;
-        const btn = overlay.querySelector('.share-guide-btn');
-        btn.style.cssText = `
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        const preview = overlay.querySelector('.share-preview-large');
+        preview.style.cssText = `
+            margin: 15px auto;
+            max-width: 320px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        `;
+        const img = overlay.querySelector('#sharePreviewImg');
+        img.style.cssText = `
+            width: 100%;
+            display: block;
+            border-radius: 20px;
+        `;
+        const actions = overlay.querySelector('.share-guide-actions');
+        actions.style.cssText = `
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        `;
+        const saveBtn = overlay.querySelector('.share-save-btn');
+        saveBtn.style.cssText = `
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
             border: none;
             border-radius: 25px;
-            font-size: 16px;
+            font-size: 14px;
+            cursor: pointer;
+        `;
+        const closeBtn = overlay.querySelector('.share-guide-btn');
+        closeBtn.style.cssText = `
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
             cursor: pointer;
         `;
         document.body.appendChild(overlay);
-
-        // 添加弹跳动画样式
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes bounce {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-15px); }
-            }
-        `;
-        document.head.appendChild(style);
     }
 
     // 设置预览图片
     document.getElementById('sharePreviewImg').src = dataUrl;
     overlay.style.display = 'flex';
 
-    // 保存图片到本地供分享
-    saveImageForShare(dataUrl);
+    // 保存当前图片URL供下载使用
+    window.currentShareDataUrl = dataUrl;
+}
+
+function saveShareImage() {
+    if (window.currentShareDataUrl) {
+        downloadImage(window.currentShareDataUrl);
+        closeShareGuide();
+    }
 }
 
 function closeShareGuide() {
@@ -1779,8 +1803,7 @@ function drawSingle() {
     updateDisplay();
     updateCollection();
     updateLatestItems();
-    checkAchievements(); // 检查抽卡相关成就
-    showDrawAnimation([skin], 'single');
+    showDrawAnimation([skin], 'single', true); // 动画结束后检查成就
 }
 function drawTen() {
     if (gameData.coins < 90) { showResult('💸', '蛋币不足', `当前蛋币: ${gameData.coins}`, '需要 90 蛋币', '请先答题获取蛋币'); return; }
@@ -1797,8 +1820,7 @@ function drawTen() {
     updateDisplay();
     updateCollection();
     updateLatestItems();
-    checkAchievements(); // 检查抽卡相关成就
-    showDrawAnimation(results, 'ten');
+    showDrawAnimation(results, 'ten', true); // 动画结束后检查成就
 }
 function addSkinToCollection(skin) {
     const key = `${skin.rarity}_${skin.index}`;
@@ -1826,7 +1848,7 @@ function updateLatestItems() {
 }
 
 // ===== 抽卡动画 =====
-function showDrawAnimation(skinList, drawType) {
+function showDrawAnimation(skinList, drawType, checkAchievementOnClose = false) {
     const overlay = document.getElementById('drawOverlay');
     overlay.innerHTML = '';
     overlay.classList.add('active');
@@ -1849,7 +1871,14 @@ function showDrawAnimation(skinList, drawType) {
     const closeBtn = document.createElement('button');
     closeBtn.className = 'close-draw-btn';
     closeBtn.textContent = '✕ 关闭';
-    closeBtn.onclick = (e) => { e.stopPropagation(); overlay.classList.remove('active'); updateCollection(); updateStats(); updateLatestItems(); };
+    closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        overlay.classList.remove('active');
+        updateCollection();
+        updateStats();
+        updateLatestItems();
+        if (checkAchievementOnClose) checkAchievements(); // 关闭动画后检查成就
+    };
     btnContainer.appendChild(closeBtn);
     let lastIndex = skinList.length - 1;
     skinList.forEach((skin, i) => {
