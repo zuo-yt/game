@@ -481,9 +481,9 @@ const DIFFICULTY_CONFIG = {
 // 不同挑战类型的难度描述
 const CHALLENGE_DESC = {
     math: {
-        easy: '20以内两数加减',
-        normal: '20以内三数运算',
-        hard: '50以内两数加减'
+        easy: '20以内两数加减 · 2分钟',
+        normal: '20以内三数运算 · 3分钟',
+        hard: '50以内两数加减 · 2分钟'
     },
     chinese: {
         easy: '常用100字拼音',
@@ -1050,7 +1050,9 @@ function startMathQuiz() {
     const range = config.mathRange;
     const operands = config.operands;
 
-    mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
+    // 三数运算限时3分钟，两数运算限时2分钟
+    const timeLimit = operands === 3 ? 180 : 120;
+    mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: timeLimit };
     for (let i = 0; i < 20; i++) {
         let question;
         if (operands === 2) {
