@@ -1123,6 +1123,7 @@ function updateDisplay() {
     document.getElementById('coinAmount').textContent = Math.floor(gameData.coins);
     document.getElementById('charmAmount').textContent = Math.floor(gameData.charm);
     updateExchangeDisplay();
+    updateStats();
 }
 
 // ===== 蛋仔展示 =====
@@ -1776,6 +1777,8 @@ function drawSingle() {
     gameData.totalDraws++;
     saveGameData();
     updateDisplay();
+    updateCollection();
+    updateLatestItems();
     checkAchievements(); // 检查抽卡相关成就
     showDrawAnimation([skin], 'single');
 }
@@ -1792,6 +1795,8 @@ function drawTen() {
     }
     saveGameData();
     updateDisplay();
+    updateCollection();
+    updateLatestItems();
     checkAchievements(); // 检查抽卡相关成就
     showDrawAnimation(results, 'ten');
 }
