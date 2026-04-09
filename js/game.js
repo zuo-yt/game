@@ -1066,13 +1066,13 @@ function startMathQuiz() {
             question = { display: `${a} ${op} ${b} = ?`, ans };
         } else {
             // 三数运算：a + b ± c 或 a - b + c 等
-            let a, b, c, ops, ans;
+            let a, b, c, op1, op2, ans;
             do {
                 a = Math.floor(Math.random() * (range + 1));
                 b = Math.floor(Math.random() * (range + 1));
                 c = Math.floor(Math.random() * (range + 1));
-                const op1 = Math.random() > 0.5 ? '+' : '-';
-                const op2 = Math.random() > 0.5 ? '+' : '-';
+                op1 = Math.random() > 0.5 ? '+' : '-';
+                op2 = Math.random() > 0.5 ? '+' : '-';
                 // 先计算第一步，确保中间结果不为负
                 let mid;
                 if (op1 === '+') mid = a + b;
@@ -1080,9 +1080,8 @@ function startMathQuiz() {
                 // 再计算第二步
                 if (op2 === '+') ans = mid + c;
                 else { if (mid < c) { c = Math.floor(Math.random() * (mid + 1)); } ans = mid - c; }
-                ops = `${op1} ${op2}`;
             } while (ans > range || ans < 0);
-            question = { display: `${a} ${ops.charAt(0)} ${b} ${ops.charAt(1)} ${c} = ?`, ans };
+            question = { display: `${a} ${op1} ${b} ${op2} ${c} = ?`, ans };
         }
         mathData.questions.push(question);
     }
