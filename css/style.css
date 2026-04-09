@@ -36,14 +36,21 @@
     min-height: 240px;
     position: relative;
 }
-/* 顶部行：左角等级 + 右角名称 */
+/* 顶部行：等级(左) + 称号(居中) + 名称(右) */
 .egg-top-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     padding: 0 10px;
+}
+.egg-display-title {
+    font-size: 15px;
+    color: #c026d3;
+    font-weight: bold;
+    flex: 1;
+    text-align: center;
 }
 .egg-display-rarity {
     font-size: 14px;
@@ -55,14 +62,6 @@
     font-size: 18px;
     font-weight: bold;
     color: var(--text-dark);
-}
-/* 称号：蛋仔正上方居中 */
-.egg-display-title {
-    font-size: 16px;
-    color: #c026d3;
-    font-weight: bold;
-    margin-bottom: 10px;
-    min-height: 20px;
 }
 .egg-visual {
     position: relative;
@@ -528,8 +527,8 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
     /* 蛋仔展示区域 */
     .egg-display-section { padding: 20px 12px; margin-bottom: 20px; }
     .egg-display-card { padding: 15px 10px; min-height: 180px; }
-    .egg-top-row { margin-bottom: 6px; padding: 0 5px; }
-    .egg-display-title { font-size: 14px; margin-bottom: 8px; }
+    .egg-top-row { margin-bottom: 10px; padding: 0 5px; gap: 8px; }
+    .egg-display-title { font-size: 13px; }
     .egg-display-name { font-size: 15px; }
     .egg-display-rarity { font-size: 12px; padding: 3px 8px; }
     .egg-visual { width: 100px; height: 100px; }
