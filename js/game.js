@@ -473,9 +473,9 @@ let pendingGift = null;
 
 // ===== 难度配置 =====
 const DIFFICULTY_CONFIG = {
-    easy: { name: '简单', multiplier: 1, mathRange: 10, reward: '×1' },
-    normal: { name: '普通', multiplier: 1.5, mathRange: 20, reward: '×1.5' },
-    hard: { name: '困难', multiplier: 2, mathRange: 100, reward: '×2' }
+    easy: { name: '简单', multiplier: 1, mathRange: 20, operands: 2, reward: '×1' },
+    normal: { name: '普通', multiplier: 1.5, mathRange: 20, operands: 3, reward: '×1.5' },
+    hard: { name: '困难', multiplier: 2, mathRange: 50, operands: 2, reward: '×2' }
 };
 
 // 不同挑战类型的难度描述
@@ -1048,18 +1048,43 @@ function changeSkin(rarity, index) {
 function startMathQuiz() {
     const config = DIFFICULTY_CONFIG[currentDifficulty];
     const range = config.mathRange;
+    const operands = config.operands;
 
     mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
     for (let i = 0; i < 20; i++) {
-        let a, b, op, ans;
-        do {
-            a = Math.floor(Math.random() * range);
-            b = Math.floor(Math.random() * range);
-            op = Math.random() > 0.5 ? '+' : '-';
-            if (op === '+') ans = a + b;
-            else { if (a < b) [a, b] = [b, a]; ans = a - b; }
-        } while (ans > range || ans < 0);
-        mathData.questions.push({ a, b, op, ans });
+        let question;
+        if (operands === 2) {
+            // 两数运算：加减法
+            let a, b, op, ans;
+            do {
+                a = Math.floor(Math.random() * (range + 1));
+                b = Math.floor(Math.random() * (range + 1));
+                op = Math.random() > 0.5 ? '+' : '-';
+                if (op === '+') ans = a + b;
+                else { if (a < b) [a, b] = [b, a]; ans = a - b; }
+            } while (ans > range || ans < 0);
+            question = { display: `${a} ${op} ${b} = ?`, ans };
+        } else {
+            // 三数运算：a + b ± c 或 a - b + c 等
+            let a, b, c, ops, ans;
+            do {
+                a = Math.floor(Math.random() * (range + 1));
+                b = Math.floor(Math.random() * (range + 1));
+                c = Math.floor(Math.random() * (range + 1));
+                const op1 = Math.random() > 0.5 ? '+' : '-';
+                const op2 = Math.random() > 0.5 ? '+' : '-';
+                // 先计算第一步，确保中间结果不为负
+                let mid;
+                if (op1 === '+') mid = a + b;
+                else { if (a < b) [a, b] = [b, a]; mid = a - b; }
+                // 再计算第二步
+                if (op2 === '+') ans = mid + c;
+                else { if (mid < c) { c = Math.floor(Math.random() * (mid + 1)); } ans = mid - c; }
+                ops = `${op1} ${op2}`;
+            } while (ans > range || ans < 0);
+            question = { display: `${a} ${ops.charAt(0)} ${b} ${ops.charAt(1)} ${c} = ?`, ans };
+        }
+        mathData.questions.push(question);
     }
     document.getElementById('mathModal').classList.add('active');
     document.getElementById('mathCorrect').textContent = '0';
@@ -1070,7 +1095,7 @@ function startMathQuiz() {
 }
 function showMathQuestion() {
     const q = mathData.questions[mathData.currentIndex];
-    document.getElementById('mathQuestion').textContent = `${q.a} ${q.op} ${q.b} = ?`;
+    document.getElementById('mathQuestion').textContent = q.display;
     document.getElementById('mathCurrent').textContent = mathData.currentIndex + 1;
     document.getElementById('mathInput').value = '';
     document.getElementById('mathInput').focus();
