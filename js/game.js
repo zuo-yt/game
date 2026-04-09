@@ -473,9 +473,28 @@ let pendingGift = null;
 
 // ===== 难度配置 =====
 const DIFFICULTY_CONFIG = {
-    easy: { name: '简单', multiplier: 1, mathRange: 10, desc: '10以内加减法', reward: '×1' },
-    normal: { name: '普通', multiplier: 1.5, mathRange: 20, desc: '20以内加减法', reward: '×1.5' },
-    hard: { name: '困难', multiplier: 2, mathRange: 100, desc: '100以内四则运算', reward: '×2' }
+    easy: { name: '简单', multiplier: 1, mathRange: 10, reward: '×1' },
+    normal: { name: '普通', multiplier: 1.5, mathRange: 20, reward: '×1.5' },
+    hard: { name: '困难', multiplier: 2, mathRange: 100, reward: '×2' }
+};
+
+// 不同挑战类型的难度描述
+const CHALLENGE_DESC = {
+    math: {
+        easy: '10以内加减法',
+        normal: '20以内加减法',
+        hard: '100以内四则运算'
+    },
+    chinese: {
+        easy: '常用100字拼音',
+        normal: '常用200字拼音',
+        hard: '常用300字拼音'
+    },
+    english: {
+        easy: '一年级词汇',
+        normal: '二三年级词汇',
+        hard: '四六年级词汇'
+    }
 };
 
 // ===== 成就配置 =====
@@ -566,9 +585,10 @@ function showChallengeMode(type) {
 
     let html = '';
     for (const [key, config] of Object.entries(DIFFICULTY_CONFIG)) {
+        const desc = CHALLENGE_DESC[type]?.[key] || config.name;
         html += `<button class="difficulty-btn ${key}" onclick="startChallengeWithDifficulty('${key}')">
             <div class="difficulty-name">${config.name}</div>
-            <div class="difficulty-desc">${config.desc}</div>
+            <div class="difficulty-desc">${desc}</div>
             <div class="difficulty-reward">奖励 ${config.reward}</div>
         </button>`;
     }
