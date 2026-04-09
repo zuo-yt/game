@@ -932,17 +932,73 @@ function checkStudyStar() {
 }
 
 function checkAchievements() {
-    let newAchievement = false;
+    let newAchievements = [];
     ACHIEVEMENTS.forEach(ach => {
         if (!gameData.achievements[ach.id] && ach.condition(gameData)) {
             gameData.achievements[ach.id] = true;
-            newAchievement = true;
+            newAchievements.push(ach);
         }
     });
-    if (newAchievement) {
+    if (newAchievements.length > 0) {
         saveGameData();
+        // 显示庆贺弹窗
+        showAchievementUnlock(newAchievements[0]);
     }
     updateAchievementCount();
+}
+
+// 显示成就解锁庆贺弹窗
+let pendingAchievements = [];
+function showAchievementUnlock(achievement) {
+    if (!achievement) return;
+
+    // 如果已有弹窗显示，加入队列
+    if (document.getElementById('achievementUnlockModal').classList.contains('active')) {
+        pendingAchievements.push(achievement);
+        return;
+    }
+
+    document.getElementById('unlockIcon').textContent = achievement.icon;
+    document.getElementById('unlockName').textContent = achievement.name;
+    document.getElementById('unlockDesc').textContent = achievement.desc;
+    document.getElementById('achievementUnlockModal').classList.add('active');
+
+    // 播放庆贺音效（如果有）
+    playUnlockSound();
+}
+
+function closeAchievementUnlock() {
+    document.getElementById('achievementUnlockModal').classList.remove('active');
+
+    // 检查是否有待显示的成就
+    if (pendingAchievements.length > 0) {
+        const next = pendingAchievements.shift();
+        setTimeout(() => showAchievementUnlock(next), 300);
+    }
+}
+
+function playUnlockSound() {
+    // 使用 AudioContext 播放简单的解锁音效
+    if (!audioCtx) initAudioContext();
+    if (!audioCtx) return;
+
+    try {
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+        oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialDecayTo && gainNode.gain.exponentialDecayTo(0.01, audioCtx.currentTime + 0.5);
+
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.5);
+    } catch(e) {}
 }
 function updateAchievementCount() {
     // 先同步检测所有成就，确保 gameData.achievements 与 condition 一致

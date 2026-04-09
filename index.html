@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>蛋仔派对皮肤盲盒</title>
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20260410e">
+    <link rel="stylesheet" href="css/style.css?v=20260410f">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
 </head>
 <body>
@@ -225,9 +225,22 @@
         </div>
     </div>
 
+    <!-- 成就解锁庆贺弹窗 -->
+    <div class="achievement-unlock-modal" id="achievementUnlockModal">
+        <div class="achievement-unlock-content">
+            <div class="achievement-unlock-glow"></div>
+            <div class="achievement-unlock-icon" id="unlockIcon">🏆</div>
+            <div class="achievement-unlock-badge">✨ 成就解锁 ✨</div>
+            <div class="achievement-unlock-name" id="unlockName">成就名称</div>
+            <div class="achievement-unlock-desc" id="unlockDesc">成就描述</div>
+            <div class="achievement-unlock-celebrate">🎉 恭喜你达成了新成就！继续加油！💪</div>
+            <button class="achievement-unlock-btn" onclick="closeAchievementUnlock()">太棒了！</button>
+        </div>
+    </div>
+
     <!-- 抽卡动画遮罩 -->
     <div class="draw-overlay" id="drawOverlay"></div>
 
-    <script src="js/game.js?v=20260410k"></script>
+    <script src="js/game.js?v=20260410l"></script>
 </body>
 </html>

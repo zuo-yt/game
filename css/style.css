@@ -445,6 +445,108 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .result-reward { font-size: 24px; font-weight: bold; color: var(--gold); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); margin-bottom: 25px; }
 .result-btn { padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, var(--danger), #ee5a5a); color: white; border: none; border-radius: 15px; cursor: pointer; }
 
+/* 成就解锁庆贺弹窗 */
+.achievement-unlock-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+.achievement-unlock-modal.active { display: flex; }
+.achievement-unlock-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 30px;
+    padding: 50px 40px;
+    text-align: center;
+    max-width: 380px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.4), 0 0 100px rgba(255, 215, 0, 0.2);
+    animation: unlockPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+@keyframes unlockPop {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.achievement-unlock-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    animation: glowPulse 2s infinite;
+}
+@keyframes glowPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+.achievement-unlock-icon {
+    font-size: 80px;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+    animation: iconFloat 2s infinite;
+}
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.achievement-unlock-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #1a1a2e;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+    animation: badgeShine 2s infinite;
+}
+@keyframes badgeShine {
+    0%, 100% { box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+    50% { box-shadow: 0 0 25px rgba(255,215,0,0.8); }
+}
+.achievement-unlock-name {
+    font-size: 26px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 20px rgba(255,215,0,0.5);
+}
+.achievement-unlock-desc {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+.achievement-unlock-celebrate {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 1;
+}
+.achievement-unlock-btn {
+    padding: 15px 45px;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #1a1a2e;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+    transition: all 0.3s;
+}
+.achievement-unlock-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 30px rgba(255,215,0,0.6);
+}
+
 /* 抽卡动画遮罩 */
 .draw-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; }
 .draw-overlay.active { display: flex; }
@@ -610,6 +712,12 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
     .result-content { padding: 20px; }
     .result-icon { font-size: 40px; }
     .result-title { font-size: 20px; }
+
+    /* 成就解锁弹窗 */
+    .achievement-unlock-content { padding: 35px 25px; }
+    .achievement-unlock-icon { font-size: 60px; }
+    .achievement-unlock-name { font-size: 22px; }
+    .achievement-unlock-btn { padding: 12px 35px; font-size: 16px; }
 
     /* 点击反馈增强 */
     .quiz-btn:active, .bonus-btn:active, .draw-btn:active, .exchange-btn:active {
