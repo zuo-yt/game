@@ -2,30 +2,38 @@
 
 ## 成就系统
 
+### 成就奖励等级
+
+| 难度 | 奖励 | 说明 |
+|------|------|------|
+| 简单 | +50 蛋币 | 基础成就 |
+| 中等 | +100 蛋币 | 进阶成就 |
+| 困难 | +200 蛋币 | 高难度成就 |
+
 ### 成就列表（共20个）
 
-| ID | 名称 | 描述 | 图标 | 解锁条件 |
-|------|------|------|------|---------|
-| first_sss | 欧皇降临 | 首次获得SSS皮肤 | 🌟 | stats.sss > 0 |
-| collect_10 | 收藏家 | 收集10种皮肤 | 📦 | 收集数 ≥ 10 |
-| collect_all | 大满贯 | 收集全部30种皮肤 | 🏆 | 收集数 ≥ 30 |
-| math_master | 数学小天才 | 数学挑战满分 | 🔢 | mathPerfect = true |
-| chinese_master | 语文小博士 | 语文挑战连续10题全对 | 📖 | chinesePerfect = true |
-| english_master | 英语达人 | 英语挑战满分 | 🔤 | englishPerfect = true |
-| survival_20 | 生存专家 | 生存模式答对20题 | ⏱️ | survivalBest ≥ 20 |
-| survival_50 | 生存大师 | 生存模式答对50题 | 🔥 | survivalBest ≥ 50 |
-| adventure_5 | 闯关新手 | 闯关模式通过5关 | 🎯 | adventureLevel ≥ 5 |
-| adventure_10 | 闯关王者 | 闯关模式通关 | 👑 | adventureLevel ≥ 10 |
-| draw_100 | 抽卡狂魔 | 累计抽卡100次 | 🎰 | totalDraws ≥ 100 |
-| draw_500 | 赌神 | 累计抽卡500次 | 💎 | totalDraws ≥ 500 |
-| charm_1000 | 魅力四射 | 魅力值达到1000 | ✨ | charm ≥ 1000 |
-| charm_10000 | 魅力之王 | 魅力值达到10000 | 💫 | charm ≥ 10000 |
-| combo_10 | 连击新手 | 达成10连击 | ⚡ | maxCombo ≥ 10 |
-| combo_30 | 连击大师 | 达成30连击 | 💥 | maxCombo ≥ 30 |
-| rich | 富翁 | 蛋币达到10000 | 💰 | coins ≥ 10000 |
-| study_star | 学习之星 | 三种挑战各满分1次 | ⭐ | math+chinese+english全满分 |
-| ss_collector | SS收藏家 | 收集5种SS皮肤 | 🟡 | SS级收集 ≥ 5 |
-| s_collector | S收藏家 | 收集5种S皮肤 | 🟣 | S级收集 ≥ 5 |
+| ID | 名称 | 描述 | 图标 | 奖励 | 解锁条件 |
+|------|------|------|------|------|---------|
+| first_sss | 欧皇降临 | 首次获得SSS皮肤 | 🌟 | +200 | stats.sss > 0 |
+| collect_10 | 收藏家 | 收集10种皮肤 | 📦 | +50 | 收集数 ≥ 10 |
+| collect_all | 大满贯 | 收集全部30种皮肤 | 🏆 | +200 | 收集数 ≥ 30 |
+| math_master | 数学小天才 | 数学挑战满分 | 🔢 | +100 | mathPerfect = true |
+| chinese_master | 语文小博士 | 语文挑战连续10题全对 | 📖 | +100 | chinesePerfect = true |
+| english_master | 英语达人 | 英语挑战满分 | 🔤 | +100 | englishPerfect = true |
+| survival_20 | 生存专家 | 生存模式答对20题 | ⏱️ | +50 | survivalBest ≥ 20 |
+| survival_50 | 生存大师 | 生存模式答对50题 | 🔥 | +200 | survivalBest ≥ 50 |
+| adventure_5 | 闯关新手 | 闯关模式通过5关 | 🎯 | +50 | adventureLevel ≥ 5 |
+| adventure_10 | 闯关王者 | 闯关模式通关 | 👑 | +200 | adventureLevel ≥ 10 |
+| draw_100 | 抽卡狂魔 | 累计抽卡100次 | 🎰 | +50 | totalDraws ≥ 100 |
+| draw_500 | 赌神 | 累计抽卡500次 | 💎 | +200 | totalDraws ≥ 500 |
+| charm_1000 | 魅力四射 | 魅力值达到1000 | ✨ | +100 | charm ≥ 1000 |
+| charm_10000 | 魅力之王 | 魅力值达到10000 | 💫 | +200 | charm ≥ 10000 |
+| combo_10 | 连击新手 | 达成10连击 | ⚡ | +50 | maxCombo ≥ 10 |
+| combo_30 | 连击大师 | 达成30连击 | 💥 | +200 | maxCombo ≥ 30 |
+| rich | 富翁 | 蛋币达到10000 | 💰 | +100 | coins ≥ 10000 |
+| study_star | 学习之星 | 三种挑战各满分1次 | ⭐ | +200 | math+chinese+english全满分 |
+| ss_collector | SS收藏家 | 收集5种SS皮肤 | 🟡 | +200 | SS级收集 ≥ 5 |
+| s_collector | S收藏家 | 收集5种S皮肤 | 🟣 | +100 | S级收集 ≥ 5 |
 
 ### 成就触发时机
 
@@ -49,18 +57,18 @@
 
 称号与特定成就绑定，解锁对应成就后自动获得称号：
 
-| ID | 名称 | 图标 | 关联成就 |
-|------|------|------|---------|
-| first_sss | 欧皇 | 🌟 | 欧皇降临 |
-| collect_all | 大满贯 | 🏆 | 大满贯 |
-| math_master | 数学天才 | 🔢 | 数学小天才 |
-| chinese_master | 语文博士 | 📖 | 语文小博士 |
-| english_master | 英语达人 | 🔤 | 英语达人 |
-| survival_50 | 生存大师 | 🔥 | 生存大师 |
-| adventure_10 | 闯关王者 | 👑 | 闯关王者 |
-| draw_500 | 赖神 | 💎 | 赖神 |
-| charm_10000 | 魅力之王 | 💫 | 魅力之王 |
-| combo_30 | 连击大师 | 💥 | 连击大师 |
+| ID | 名称 | 图标 | 关联成就 | 奖励 |
+|------|------|------|---------|------|
+| first_sss | 欧皇 | 🌟 | 欧皇降临 | +200 |
+| collect_all | 大满贯 | 🏆 | 大满贯 | +200 |
+| math_master | 数学天才 | 🔢 | 数学小天才 | +100 |
+| chinese_master | 语文博士 | 📖 | 语文小博士 | +100 |
+| english_master | 英语达人 | 🔤 | 英语达人 | +100 |
+| survival_50 | 生存大师 | 🔥 | 生存大师 | +200 |
+| adventure_10 | 闯关王者 | 👑 | 闯关王者 | +200 |
+| draw_500 | 赌神 | 💎 | 赌神 | +200 |
+| charm_10000 | 魅力之王 | 💫 | 魅力之王 | +200 |
+| combo_30 | 连击大师 | 💥 | 连击大师 | +200 |
 
 ### 称号功能
 
@@ -78,6 +86,7 @@
 
 - **动画效果**：金色光晕脉冲、图标浮动、徽章闪光
 - **音效**：解锁音效（音阶上升）
+- **奖励显示**：显示获得的蛋币数量
 - **按钮**：点击"太棒了！"关闭弹窗
 
 ### 称号解锁弹窗
