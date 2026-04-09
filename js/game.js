@@ -972,6 +972,9 @@ function loadGameData() {
     }
 }
 function saveGameData() {
+    // 确保数值为整数，防止浮点数精度问题
+    gameData.coins = Math.floor(gameData.coins);
+    gameData.charm = Math.floor(gameData.charm);
     try {
         localStorage.setItem('eggPartyGame', JSON.stringify(gameData));
     } catch(e) {
@@ -979,8 +982,8 @@ function saveGameData() {
     }
 }
 function updateDisplay() {
-    document.getElementById('coinAmount').textContent = gameData.coins;
-    document.getElementById('charmAmount').textContent = gameData.charm;
+    document.getElementById('coinAmount').textContent = Math.floor(gameData.coins);
+    document.getElementById('charmAmount').textContent = Math.floor(gameData.charm);
     updateExchangeDisplay();
 }
 
