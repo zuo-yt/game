@@ -439,6 +439,7 @@ let mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0
 let chineseIndex = 0;
 let chineseCorrect = 0;
 let englishIndex = 0;
+let englishCorrect = 0;
 let pendingGift = null;
 
 // ===== 难度配置 =====
@@ -865,6 +866,13 @@ function equipTitle(titleId) {
     updateEggDisplay();
     renderAchievementList();
 }
+function checkStudyStar() {
+    // 检查三种挑战是否都满分过
+    if (gameData.achievements.math_master && gameData.achievements.chinese_master && gameData.achievements.english_master) {
+        gameData.achievements.study_star = true;
+    }
+}
+
 function checkAchievements() {
     let newAchievement = false;
     ACHIEVEMENTS.forEach(ach => {
@@ -958,16 +966,19 @@ function changeSkin(rarity, index) {
 
 // ===== 数学题 =====
 function startMathQuiz() {
+    const config = DIFFICULTY_CONFIG[currentDifficulty];
+    const range = config.mathRange;
+
     mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
     for (let i = 0; i < 20; i++) {
         let a, b, op, ans;
         do {
-            a = Math.floor(Math.random() * 20);
-            b = Math.floor(Math.random() * 20);
+            a = Math.floor(Math.random() * range);
+            b = Math.floor(Math.random() * range);
             op = Math.random() > 0.5 ? '+' : '-';
             if (op === '+') ans = a + b;
             else { if (a < b) [a, b] = [b, a]; ans = a - b; }
-        } while (ans > 20 || ans < 0);
+        } while (ans > range || ans < 0);
         mathData.questions.push({ a, b, op, ans });
     }
     document.getElementById('mathModal').classList.add('active');
@@ -987,13 +998,15 @@ function showMathQuestion() {
 function submitMathAnswer() {
     const ans = parseInt(document.getElementById('mathInput').value);
     if (isNaN(ans)) return;
+    const config = DIFFICULTY_CONFIG[currentDifficulty];
     const q = mathData.questions[mathData.currentIndex];
+    const reward = Math.floor(5 * config.multiplier);
     if (ans === q.ans) {
         mathData.correct++;
-        mathData.earned += 5;
+        mathData.earned += reward;
         document.getElementById('mathCorrect').textContent = mathData.correct;
         document.getElementById('mathEarned').textContent = mathData.earned;
-        gameData.coins += 5;
+        gameData.coins += reward;
         saveGameData();
         updateDisplay();
     } else {
@@ -1018,7 +1031,13 @@ function finishMathQuiz() {
     else if (timeUsed <= 90) { mult = 1.5; bonus = '🚀 快速完成！×1.5倍奖励'; }
     else { bonus = `⏱️ 用时: ${Math.floor(timeUsed/60)}分${timeUsed%60}秒`; }
     let extraBonus = 0;
-    if (mathData.correct === 20) { extraBonus = 100; bonus += '<br>🏆 全部答对！额外+100蛋币'; }
+    if (mathData.correct === 20) {
+        extraBonus = 100;
+        bonus += '<br>🏆 全部答对！额外+100蛋币';
+        // 触发数学满分成就
+        gameData.achievements.math_master = true;
+        checkStudyStar();
+    }
     const efficiencyReward = Math.floor(mathData.earned * mult);
     const totalReward = efficiencyReward + extraBonus;
     let title = '', icon = '';
@@ -1030,6 +1049,7 @@ function finishMathQuiz() {
     gameData.coins += (efficiencyReward - mathData.earned) + extraBonus;
     saveGameData();
     updateDisplay();
+    checkAchievements();
     showResult(icon, title, `正确 ${mathData.correct}/20 题`, `共获得 ${totalReward} 蛋币`, bonus);
 }
 function closeMathQuiz() { clearInterval(mathData.timer); document.getElementById('mathModal').classList.remove('active'); }
@@ -1060,27 +1080,46 @@ function showChineseQuestion() {
     });
 }
 function selectPinyin(sel, correct, btn) {
+    const config = DIFFICULTY_CONFIG[currentDifficulty];
+    const reward = Math.floor(5 * config.multiplier);
     document.querySelectorAll('.pinyin-option').forEach(o => o.style.pointerEvents = 'none');
-    if (sel === correct) { btn.classList.add('correct'); gameData.coins += 5; chineseCorrect++; saveGameData(); updateDisplay(); }
-    else { btn.classList.add('wrong'); document.querySelectorAll('.pinyin-option').forEach(o => { if (o.textContent === correct) o.classList.add('correct'); }); }
+    if (sel === correct) {
+        btn.classList.add('correct');
+        gameData.coins += reward;
+        chineseCorrect++;
+        saveGameData();
+        updateDisplay();
+    } else {
+        btn.classList.add('wrong');
+        document.querySelectorAll('.pinyin-option').forEach(o => { if (o.textContent === correct) o.classList.add('correct'); });
+    }
     setTimeout(() => {
         chineseIndex++;
         if (chineseIndex < 10) showChineseQuestion();
         else {
             closeChineseQuiz();
-            const totalReward = chineseCorrect * 5 + 50;
-            const bonus = chineseCorrect === 10 ? '🎉 全部答对！' : `答对 ${chineseCorrect}/10 题`;
+            const baseReward = Math.floor(chineseCorrect * 5 * config.multiplier);
+            const totalReward = baseReward + Math.floor(50 * config.multiplier);
+            let bonus = chineseCorrect === 10 ? '🎉 全部答对！' : `答对 ${chineseCorrect}/10 题`;
+
+            // 触发语文满分成就
+            if (chineseCorrect === 10) {
+                gameData.achievements.chinese_master = true;
+                checkStudyStar();
+            }
+
             showResult('📖', '语文挑战完成！', `完成10道题目`, `+${totalReward} 蛋币`, bonus);
-            gameData.coins += 50;
+            gameData.coins += Math.floor(50 * config.multiplier);
             saveGameData();
             updateDisplay();
+            checkAchievements();
         }
     }, 1000);
 }
 function closeChineseQuiz() { document.getElementById('chineseModal').classList.remove('active'); }
 
 // ===== 英语题 =====
-function startEnglishQuiz() { englishIndex = 0; document.getElementById('englishModal').classList.add('active'); showEnglishQuestion(); }
+function startEnglishQuiz() { englishIndex = 0; englishCorrect = 0; document.getElementById('englishModal').classList.add('active'); showEnglishQuestion(); }
 function showEnglishQuestion() {
     // 停止正在进行的录音
     if (currentMediaRecorder && currentMediaRecorder.state === 'recording') {
@@ -1232,12 +1271,15 @@ function startSpeaking() {
 
 // 确认发音正确
 function confirmEnglishCorrect() {
+    const config = DIFFICULTY_CONFIG[currentDifficulty];
+    const reward = Math.floor(8 * config.multiplier);
     const res = document.getElementById('speechResult');
     res.className = 'speech-result success';
     res.style.background = '#d4edda';
     res.style.color = '#155724';
     res.textContent = '✅ 太棒了！发音正确！';
-    gameData.coins += 8;
+    englishCorrect++;
+    gameData.coins += reward;
     saveGameData();
     updateDisplay();
     setTimeout(nextEnglishQuestion, 1500);
@@ -1267,7 +1309,28 @@ function levenshteinDistance(a, b) {
     }
     return m[b.length][a.length];
 }
-function nextEnglishQuestion() { englishIndex++; if (englishIndex < 10) showEnglishQuestion(); else { closeEnglishQuiz(); showResult('🔤', '英语挑战完成！', '完成10道题目', '+50 蛋币', ''); gameData.coins += 50; saveGameData(); updateDisplay(); } }
+function nextEnglishQuestion() {
+    englishIndex++;
+    if (englishIndex < 10) {
+        showEnglishQuestion();
+    } else {
+        closeEnglishQuiz();
+        const config = DIFFICULTY_CONFIG[currentDifficulty];
+        const bonus = Math.floor(50 * config.multiplier);
+
+        // 触发英语满分成就
+        if (englishCorrect === 10) {
+            gameData.achievements.english_master = true;
+            checkStudyStar();
+        }
+
+        showResult('🔤', '英语挑战完成！', `完成10道题目，正确${englishCorrect}题`, `+${bonus} 蛋币`, englishCorrect === 10 ? '🎉 全部正确！' : '');
+        gameData.coins += bonus;
+        saveGameData();
+        updateDisplay();
+        checkAchievements();
+    }
+}
 function closeEnglishQuiz() {
     // 停止正在进行的录音
     if (currentMediaRecorder && currentMediaRecorder.state === 'recording') {
