@@ -1697,6 +1697,7 @@ function drawSingle() {
     gameData.totalDraws++;
     saveGameData();
     updateDisplay();
+    checkAchievements(); // 检查抽卡相关成就
     showDrawAnimation([skin], 'single');
 }
 function drawTen() {
@@ -1712,6 +1713,7 @@ function drawTen() {
     }
     saveGameData();
     updateDisplay();
+    checkAchievements(); // 检查抽卡相关成就
     showDrawAnimation(results, 'ten');
 }
 function addSkinToCollection(skin) {
