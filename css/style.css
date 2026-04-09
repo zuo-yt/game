@@ -105,6 +105,22 @@
 /* 基础样式 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* 微信浏览器兼容性优化 */
+html, body {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+button, .quiz-btn, .draw-btn, .bonus-btn, .mode-btn, .achievement-btn, .difficulty-btn, .survival-option, .adventure-option {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
 /* CSS 变量 - 统一管理颜色 */
 :root {
     --rarity-c-start: #e0e0e0;

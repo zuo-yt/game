@@ -1,96 +1,124 @@
 // ===== 音效系统 =====
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let audioCtx = null;
+
+// 初始化音频上下文（需要在用户交互后调用）
+function initAudioContext() {
+    if (!audioCtx) {
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch(e) {
+            console.log('AudioContext not supported');
+        }
+    }
+    // 微信浏览器需要 resume
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+// 用户首次交互时初始化音频
+document.addEventListener('touchstart', initAudioContext, { once: true });
+document.addEventListener('click', initAudioContext, { once: true });
+
 function playDrawSound() {
-    // 抽卡音效 - 短促的魔法音
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-    osc.start(audioCtx.currentTime);
-    osc.stop(audioCtx.currentTime + 0.15);
+    if (!audioCtx) return;
+    try {
+        // 抽卡音效 - 短促的魔法音
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.15);
+    } catch(e) {}
 }
 function playFlipSound() {
-    // 翻卡音效 - 真实翻书声
-    const now = audioCtx.currentTime;
+    if (!audioCtx) return;
+    try {
+        // 翻卡音效 - 真实翻书声
+        const now = audioCtx.currentTime;
 
-    // 1. 纸页拍打声 - 轻柔的"扑"（低频噪声脉冲）
-    const flapBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
-    const flapData = flapBuffer.getChannelData(0);
-    for (let i = 0; i < flapData.length; i++) {
-        // 低频噪声，模拟纸页拍打
-        const t = i / flapData.length;
-        flapData[i] = (Math.random() * 2 - 1) * Math.sin(t * Math.PI * 2) * Math.exp(-t * 15);
-    }
-    const flapSource = audioCtx.createBufferSource();
-    flapSource.buffer = flapBuffer;
-    const flapFilter = audioCtx.createBiquadFilter();
-    flapFilter.type = 'lowpass';
-    flapFilter.frequency.value = 800;
-    const flapGain = audioCtx.createGain();
-    flapGain.gain.setValueAtTime(0.25, now);
-    flapGain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
-    flapSource.connect(flapFilter);
-    flapFilter.connect(flapGain);
-    flapGain.connect(audioCtx.destination);
-    flapSource.start(now);
-    flapSource.stop(now + 0.04);
+        // 1. 纸页拍打声 - 轻柔的"扑"（低频噪声脉冲）
+        const flapBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
+        const flapData = flapBuffer.getChannelData(0);
+        for (let i = 0; i < flapData.length; i++) {
+            // 低频噪声，模拟纸页拍打
+            const t = i / flapData.length;
+            flapData[i] = (Math.random() * 2 - 1) * Math.sin(t * Math.PI * 2) * Math.exp(-t * 15);
+        }
+        const flapSource = audioCtx.createBufferSource();
+        flapSource.buffer = flapBuffer;
+        const flapFilter = audioCtx.createBiquadFilter();
+        flapFilter.type = 'lowpass';
+        flapFilter.frequency.value = 800;
+        const flapGain = audioCtx.createGain();
+        flapGain.gain.setValueAtTime(0.25, now);
+        flapGain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+        flapSource.connect(flapFilter);
+        flapFilter.connect(flapGain);
+        flapGain.connect(audioCtx.destination);
+        flapSource.start(now);
+        flapSource.stop(now + 0.04);
 
-    // 2. 纸张摩擦声 - 翻页过程的质感（主要音色）
-    const rustleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.15, audioCtx.sampleRate);
-    const rustleData = rustleBuffer.getChannelData(0);
-    for (let i = 0; i < rustleData.length; i++) {
-        // 带调制的噪声，模拟纸张摩擦的不均匀质感
-        const t = i / rustleData.length;
-        const envelope = Math.sin(t * Math.PI) * Math.exp(-t * 3); // 中间强，两端弱
-        rustleData[i] = (Math.random() * 2 - 1) * envelope * 0.4;
-    }
-    const rustleSource = audioCtx.createBufferSource();
-    rustleSource.buffer = rustleBuffer;
-    const rustleFilter = audioCtx.createBiquadFilter();
-    rustleFilter.type = 'bandpass';
-    rustleFilter.frequency.setValueAtTime(1500, now);
-    rustleFilter.frequency.linearRampToValueAtTime(3000, now + 0.08);
-    rustleFilter.Q.value = 1.5;
-    const rustleGain = audioCtx.createGain();
-    rustleGain.gain.setValueAtTime(0, now);
-    rustleGain.gain.linearRampToValueAtTime(0.18, now + 0.02);
-    rustleGain.gain.setValueAtTime(0.18, now + 0.08);
-    rustleGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-    rustleSource.connect(rustleFilter);
-    rustleFilter.connect(rustleGain);
-    rustleGain.connect(audioCtx.destination);
-    rustleSource.start(now);
-    rustleSource.stop(now + 0.15);
+        // 2. 纸张摩擦声 - 翻页过程的质感（主要音色）
+        const rustleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.15, audioCtx.sampleRate);
+        const rustleData = rustleBuffer.getChannelData(0);
+        for (let i = 0; i < rustleData.length; i++) {
+            // 带调制的噪声，模拟纸张摩擦的不均匀质感
+            const t = i / rustleData.length;
+            const envelope = Math.sin(t * Math.PI) * Math.exp(-t * 3); // 中间强，两端弱
+            rustleData[i] = (Math.random() * 2 - 1) * envelope * 0.4;
+        }
+        const rustleSource = audioCtx.createBufferSource();
+        rustleSource.buffer = rustleBuffer;
+        const rustleFilter = audioCtx.createBiquadFilter();
+        rustleFilter.type = 'bandpass';
+        rustleFilter.frequency.setValueAtTime(1500, now);
+        rustleFilter.frequency.linearRampToValueAtTime(3000, now + 0.08);
+        rustleFilter.Q.value = 1.5;
+        const rustleGain = audioCtx.createGain();
+        rustleGain.gain.setValueAtTime(0, now);
+        rustleGain.gain.linearRampToValueAtTime(0.18, now + 0.02);
+        rustleGain.gain.setValueAtTime(0.18, now + 0.08);
+        rustleGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        rustleSource.connect(rustleFilter);
+        rustleFilter.connect(rustleGain);
+        rustleGain.connect(audioCtx.destination);
+        rustleSource.start(now);
+        rustleSource.stop(now + 0.15);
 
-    // 3. 书页落定声 - 翻页结束的轻微"啪"
-    const settleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.03, audioCtx.sampleRate);
-    const settleData = settleBuffer.getChannelData(0);
-    for (let i = 0; i < settleData.length; i++) {
-        const t = i / settleData.length;
-        settleData[i] = (Math.random() * 2 - 1) * Math.exp(-t * 20) * 0.3;
-    }
-    const settleSource = audioCtx.createBufferSource();
-    settleSource.buffer = settleBuffer;
-    const settleFilter = audioCtx.createBiquadFilter();
-    settleFilter.type = 'lowpass';
-    settleFilter.frequency.value = 600;
-    const settleGain = audioCtx.createGain();
-    settleGain.gain.setValueAtTime(0.15, now + 0.12);
-    settleGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-    settleSource.connect(settleFilter);
-    settleFilter.connect(settleGain);
-    settleGain.connect(audioCtx.destination);
-    settleSource.start(now + 0.12);
-    settleSource.stop(now + 0.15);
+        // 3. 书页落定声 - 翻页结束的轻微"啪"
+        const settleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.03, audioCtx.sampleRate);
+        const settleData = settleBuffer.getChannelData(0);
+        for (let i = 0; i < settleData.length; i++) {
+            const t = i / settleData.length;
+            settleData[i] = (Math.random() * 2 - 1) * Math.exp(-t * 20) * 0.3;
+        }
+        const settleSource = audioCtx.createBufferSource();
+        settleSource.buffer = settleBuffer;
+        const settleFilter = audioCtx.createBiquadFilter();
+        settleFilter.type = 'lowpass';
+        settleFilter.frequency.value = 600;
+        const settleGain = audioCtx.createGain();
+        settleGain.gain.setValueAtTime(0.15, now + 0.12);
+        settleGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        settleSource.connect(settleFilter);
+        settleFilter.connect(settleGain);
+        settleGain.connect(audioCtx.destination);
+        settleSource.start(now + 0.12);
+        settleSource.stop(now + 0.15);
+    } catch(e) {}
 }
 function playRareSound(rarity) {
-    // 高稀有度音效 - 喜庆庆祝音效
-    const now = audioCtx.currentTime;
+    if (!audioCtx) return;
+    try {
+        // 高稀有度音效 - 喜庆庆祝音效
+        const now = audioCtx.currentTime;
 
     if (rarity === 'sss') {
         // SSS级 - 盛大庆典音效（约2秒）
@@ -257,6 +285,7 @@ function playRareSound(rarity) {
         tailOsc.start(now + 0.35);
         tailOsc.stop(now + 0.58);
     }
+    } catch(e) {}
 }
 
 // ===== 皮肤数据 =====
@@ -891,13 +920,23 @@ function updateAchievementCount() {
     document.getElementById('achievementCount').textContent = `${unlocked}/${ACHIEVEMENTS.length}`;
 }
 function loadGameData() {
-    const s = localStorage.getItem('eggPartyGame');
-    if (s) {
-        const saved = JSON.parse(s);
-        gameData = { ...gameData, ...saved };
+    try {
+        const s = localStorage.getItem('eggPartyGame');
+        if (s) {
+            const saved = JSON.parse(s);
+            gameData = { ...gameData, ...saved };
+        }
+    } catch(e) {
+        console.log('localStorage not available');
     }
 }
-function saveGameData() { localStorage.setItem('eggPartyGame', JSON.stringify(gameData)); }
+function saveGameData() {
+    try {
+        localStorage.setItem('eggPartyGame', JSON.stringify(gameData));
+    } catch(e) {
+        console.log('localStorage not available');
+    }
+}
 function updateDisplay() {
     document.getElementById('coinAmount').textContent = gameData.coins;
     document.getElementById('charmAmount').textContent = gameData.charm;
