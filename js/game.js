@@ -1865,7 +1865,7 @@ function drawSingle() {
     updateDisplay();
     updateCollection();
     updateLatestItems();
-    showDrawAnimation([skin], 'single', true); // 动画结束后检查成就
+    showDrawAnimation([skin], 'single', true); // 卡牌翻完后检查成就
 }
 function drawTen() {
     if (gameData.coins < 90) { showResult('💸', '蛋币不足', `当前蛋币: ${gameData.coins}`, '需要 90 蛋币', '请先答题获取蛋币'); return; }
@@ -1882,7 +1882,7 @@ function drawTen() {
     updateDisplay();
     updateCollection();
     updateLatestItems();
-    showDrawAnimation(results, 'ten', true); // 动画结束后检查成就
+    showDrawAnimation(results, 'ten', true); // 卡牌翻完后检查成就
 }
 function addSkinToCollection(skin) {
     const key = `${skin.rarity}_${skin.index}`;
@@ -1910,7 +1910,7 @@ function updateLatestItems() {
 }
 
 // ===== 抽卡动画 =====
-function showDrawAnimation(skinList, drawType, checkAchievementOnClose = false) {
+function showDrawAnimation(skinList, drawType, checkAchievementAfter = false) {
     const overlay = document.getElementById('drawOverlay');
     overlay.innerHTML = '';
     overlay.classList.add('active');
@@ -1939,7 +1939,6 @@ function showDrawAnimation(skinList, drawType, checkAchievementOnClose = false) 
         updateCollection();
         updateStats();
         updateLatestItems();
-        if (checkAchievementOnClose) checkAchievements(); // 关闭动画后检查成就
     };
     btnContainer.appendChild(closeBtn);
     let lastIndex = skinList.length - 1;
@@ -1965,7 +1964,13 @@ function showDrawAnimation(skinList, drawType, checkAchievementOnClose = false) 
                 if (skin.rarity === 'sss') { createParticles(card, skin.rarity); createSSSFlash(); createConfetti(); createFireworks(); playRareSound('sss'); playCheerSound(); }
                 else if (skin.rarity === 'ss') { createParticles(card, skin.rarity); createSSLightBeams(); createConfettiSS(); playRareSound('ss'); }
                 else if (skin.rarity === 's') { playRareSound('s'); }
-                if (i === lastIndex) { setTimeout(() => btnContainer.classList.add('show'), 500); }
+                if (i === lastIndex) {
+                    setTimeout(() => btnContainer.classList.add('show'), 500);
+                    // 在卡牌翻完后检查成就（在抽卡遮罩之上显示）
+                    if (checkAchievementAfter) {
+                        setTimeout(() => checkAchievements(), 600);
+                    }
+                }
             }, 100);
         }, i * 300);
     });

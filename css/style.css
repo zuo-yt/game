@@ -491,7 +491,7 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .result-btn { padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, var(--danger), #ee5a5a); color: white; border: none; border-radius: 15px; cursor: pointer; }
 
 /* 成就解锁庆贺弹窗 */
-.achievement-unlock-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+.achievement-unlock-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10010; justify-content: center; align-items: center; padding: 20px; }
 .achievement-unlock-modal.active { display: flex; }
 .achievement-unlock-content {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
@@ -593,7 +593,7 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 }
 
 /* 称号解锁庆贺弹窗 */
-.title-unlock-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2100; justify-content: center; align-items: center; padding: 20px; }
+.title-unlock-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10020; justify-content: center; align-items: center; padding: 20px; }
 .title-unlock-modal.active { display: flex; }
 .title-unlock-content {
     background: linear-gradient(135deg, #2d1f3d 0%, #4a2c6a 50%, #6b3fa0 100%);
