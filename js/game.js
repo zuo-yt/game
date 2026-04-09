@@ -565,7 +565,6 @@ function init() {
     updateLatestItems();
     updateExchangeDisplay();
     checkAchievements();
-    generateShareQrcode(); // 生成分享二维码
 }
 
 // 生成分享二维码
@@ -1634,9 +1633,14 @@ function closeResultModal() { document.getElementById('resultModal').classList.r
 async function shareEggDisplay() {
     const section = document.querySelector('.egg-display-section');
     const shareBtn = document.querySelector('.share-btn');
+    const qrcodeArea = document.getElementById('shareQrcodeArea');
 
-    // 隐藏分享按钮
+    // 隐藏分享按钮，显示二维码区域
     shareBtn.style.display = 'none';
+    if (qrcodeArea) {
+        generateShareQrcode(); // 生成二维码
+        qrcodeArea.style.display = 'flex'; // 显示二维码
+    }
 
     try {
         // 检测是否在微信浏览器
@@ -1663,8 +1667,9 @@ async function shareEggDisplay() {
         console.error('分享失败:', e);
         showResult('❌', '分享失败', '请稍后再试', '', '');
     } finally {
-        // 恢复分享按钮
+        // 恢复分享按钮，隐藏二维码区域
         shareBtn.style.display = 'block';
+        if (qrcodeArea) qrcodeArea.style.display = 'none';
     }
 }
 
