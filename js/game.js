@@ -434,7 +434,7 @@ const englishWordBank = [
 ];
 
 // 游戏数据
-let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [] };
+let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null };
 let mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
 let chineseIndex = 0;
 let chineseCorrect = 0;
@@ -445,7 +445,9 @@ let pendingGift = null;
 function init() {
     createStars();
     loadGameData();
+    // 默认无皮肤状态（currentSkin为null）
     updateDisplay();
+    updateEggDisplay();
     updateCollection();
     updateStats();
     updateLatestItems();
@@ -473,6 +475,54 @@ function updateDisplay() {
     document.getElementById('coinAmount').textContent = gameData.coins;
     document.getElementById('charmAmount').textContent = gameData.charm;
     updateExchangeDisplay();
+}
+
+// ===== 蛋仔展示 =====
+function updateEggDisplay() {
+    const overlay = document.getElementById('eggSkinOverlay');
+    const nameEl = document.getElementById('eggDisplayName');
+    const rarityEl = document.getElementById('eggDisplayRarity');
+    const cardEl = document.getElementById('eggDisplayCard');
+
+    const skin = gameData.currentSkin;
+    if (!skin) {
+        // 无皮肤状态 - 只展示蛋仔
+        overlay.classList.remove('active');
+        overlay.textContent = '';
+        nameEl.textContent = '蛋仔';
+        rarityEl.textContent = '';
+        rarityEl.className = 'egg-display-rarity';
+        cardEl.className = 'egg-display-card';
+    } else {
+        // 有皮肤状态 - 蛋仔+皮肤叠加
+        overlay.classList.add('active');
+        overlay.textContent = skin.icon;
+        nameEl.textContent = skin.name;
+        rarityEl.textContent = skin.rarity.toUpperCase();
+        rarityEl.className = `egg-display-rarity ${skin.rarity}`;
+        cardEl.className = `egg-display-card rarity-${skin.rarity}`;
+    }
+}
+function changeSkin(rarity, index) {
+    // 点击当前装备的皮肤 -> 取消装备（回到无皮肤状态）
+    if (gameData.currentSkin && gameData.currentSkin.rarity === rarity && gameData.currentSkin.index === index) {
+        gameData.currentSkin = null;
+        saveGameData();
+        updateEggDisplay();
+        updateCollection();
+        playFlipSound();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
+
+    const skin = skins[rarity][index];
+    if (!skin) return;
+    gameData.currentSkin = { rarity, name: skin.name, icon: skin.icon, index };
+    saveGameData();
+    updateEggDisplay();
+    updateCollection();
+    playFlipSound();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ===== 数学题 =====
@@ -1475,6 +1525,14 @@ function updateCollection() {
             if (gameData.collected[key]) {
                 item.classList.add('collected', rarity);
                 item.innerHTML = `<div class="item-icon">${skin.icon}</div><div class="item-name">${skin.name}</div>`;
+                // 点击换装
+                item.style.cursor = 'pointer';
+                item.onclick = () => changeSkin(rarity, index);
+                // 高亮当前装备的皮肤
+                if (gameData.currentSkin && gameData.currentSkin.rarity === rarity && gameData.currentSkin.index === index) {
+                    item.style.boxShadow = '0 0 10px 3px #ffd700';
+                    item.style.transform = 'scale(1.1)';
+                }
                 count++;
             } else {
                 item.innerHTML = `<div class="item-icon">❓</div><div class="item-name">未获得</div>`;

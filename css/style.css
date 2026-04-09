@@ -1,3 +1,107 @@
+/* 蛋仔展示区域 - 突出显示 */
+.egg-display-section {
+    margin-bottom: 25px;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    border-radius: 25px;
+    position: relative;
+    overflow: hidden;
+}
+.egg-display-section::before {
+    content: '✨';
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-size: 20px;
+    opacity: 0.7;
+    animation: twinkle 1.5s infinite alternate;
+}
+.egg-display-section::after {
+    content: '🌟';
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 20px;
+    opacity: 0.7;
+    animation: twinkle 1.8s infinite alternate;
+}
+.egg-display-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    min-height: 180px;
+}
+.egg-visual {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 15px;
+}
+.egg-base {
+    font-size: 80px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: eggBounce 2s infinite;
+}
+.egg-skin-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 50px;
+    opacity: 0;
+    transition: all 0.3s;
+}
+.egg-skin-overlay.active {
+    opacity: 1;
+    animation: skinFloat 2s infinite;
+}
+@keyframes eggBounce {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, calc(-50% - 8px)) scale(1.03); }
+}
+@keyframes skinFloat {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, calc(-50% - 5px)) scale(1.05); }
+}
+.egg-display-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+.egg-display-rarity {
+    font-size: 16px;
+    padding: 5px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.egg-display-rarity.c { background: linear-gradient(180deg, var(--rarity-c-start), var(--rarity-c-end)); color: var(--text-dark); }
+.egg-display-rarity.b { background: linear-gradient(180deg, var(--rarity-b-start), var(--rarity-b-end)); color: white; }
+.egg-display-rarity.a { background: linear-gradient(180deg, var(--rarity-a-start), var(--rarity-a-end)); color: white; }
+.egg-display-rarity.s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); color: white; }
+.egg-display-rarity.ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); color: var(--text-dark); animation: goldGlow 1s infinite alternate; }
+.egg-display-rarity.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); color: white; animation: sssGlow 0.5s infinite alternate; }
+.egg-display-hint {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+}
+.egg-display-card.rarity-c { border: 3px solid #9e9e9e; }
+.egg-display-card.rarity-b { border: 3px solid #43a047; }
+.egg-display-card.rarity-a { border: 3px solid #1e88e5; }
+.egg-display-card.rarity-s { border: 3px solid #8e24aa; }
+.egg-display-card.rarity-ss { border: 3px solid #ff8f00; animation: goldGlow 1s infinite alternate; }
+.egg-display-card.rarity-sss { border: 3px solid #ff5252; animation: sssGlow 0.5s infinite alternate; }
+
 /* 基础样式 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -386,6 +490,17 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
     .container { padding: 20px 15px; border-radius: 20px; }
     .game-title h1 { font-size: 20px; }
     .game-title p { font-size: 12px; margin-bottom: 20px; }
+
+    /* 蛋仔展示区域 */
+    .egg-display-section { padding: 20px 15px; margin-bottom: 20px; }
+    .egg-display-card { padding: 20px 15px; min-height: 140px; }
+    .egg-visual { width: 80px; height: 80px; }
+    .egg-base { font-size: 65px; }
+    .egg-skin-overlay { font-size: 40px; }
+    .egg-skin-overlay.active { font-size: 40px; }
+    .egg-display-name { font-size: 18px; }
+    .egg-display-rarity { font-size: 14px; padding: 4px 12px; }
+    .egg-display-hint { font-size: 11px; }
 
     /* 蛋币余额+魅力值 一行展示 */
     .coin-section { flex-direction: row; gap: 12px; padding: 15px 12px; }
