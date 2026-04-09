@@ -856,7 +856,6 @@ function closeAdventureMode() {
 // ===== 成就系统 =====
 function showAchievementModal() {
     document.getElementById('achievementModal').classList.add('active');
-    currentAchievementTab = 'achievement';
     renderAchievementList();
 }
 function closeAchievementModal() {
@@ -864,12 +863,21 @@ function closeAchievementModal() {
 }
 function switchAchievementTab(tab) {
     currentAchievementTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
     renderAchievementList();
 }
 function renderAchievementList() {
     const container = document.getElementById('achievementList');
+
+    // 同步更新tab按钮状态
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach((btn, index) => {
+        if ((index === 0 && currentAchievementTab === 'achievement') ||
+            (index === 1 && currentAchievementTab === 'title')) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
 
     if (currentAchievementTab === 'achievement') {
         container.innerHTML = ACHIEVEMENTS.map(ach => {
