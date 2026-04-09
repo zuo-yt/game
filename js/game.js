@@ -1424,10 +1424,10 @@ function closeEnglishQuiz() {
 function showResult(icon, title, stats, reward, bonus) {
     document.getElementById('resultIcon').textContent = icon;
     document.getElementById('resultTitle').textContent = title;
-    document.getElementById('resultStats').textContent = stats;
+    document.getElementById('resultStats').innerHTML = stats;
     document.getElementById('resultReward').textContent = reward;
     const b = document.getElementById('resultBonus');
-    if (bonus) { b.textContent = bonus; b.style.display = 'block'; } else b.style.display = 'none';
+    if (bonus) { b.innerHTML = bonus; b.style.display = 'block'; } else b.style.display = 'none';
     document.getElementById('resultModal').classList.add('active');
 }
 function closeResultModal() { document.getElementById('resultModal').classList.remove('active'); }
