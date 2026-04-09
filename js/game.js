@@ -1606,6 +1606,9 @@ async function shareEggDisplay() {
     shareBtn.style.display = 'none';
 
     try {
+        // 检测是否在微信浏览器
+        const isWechat = /micromessenger/i.test(navigator.userAgent);
+
         // 使用 html2canvas 生成图片
         const canvas = await html2canvas(section, {
             backgroundColor: null,
@@ -1616,30 +1619,13 @@ async function shareEggDisplay() {
 
         const dataUrl = canvas.toDataURL('image/png');
 
-        // 尝试使用系统分享功能（支持Web Share API的设备）
-        if (navigator.share && navigator.canShare) {
-            try {
-                // 将base64转为blob用于分享
-                const blob = await (await fetch(dataUrl)).blob();
-                const file = new File([blob], '蛋仔形象.png', { type: 'image/png' });
-
-                await navigator.share({
-                    title: '蛋仔派对皮肤盲盒',
-                    text: '我的蛋仔形象',
-                    files: [file]
-                });
-
-                showResult('📤', '分享成功', '图片已分享', '', '');
-                return;
-            } catch (shareError) {
-                // 用户取消分享或分享失败，继续使用传统方式
-                console.log('系统分享取消或失败:', shareError);
-            }
+        if (isWechat) {
+            // 微信浏览器 - 显示分享提示
+            showShareGuide(dataUrl);
+        } else {
+            // 非微信浏览器 - 直接下载
+            downloadImage(dataUrl);
         }
-
-        // 系统分享不支持时，直接下载图片
-        downloadImage(dataUrl);
-
     } catch (e) {
         console.error('分享失败:', e);
         showResult('❌', '分享失败', '请稍后再试', '', '');
@@ -1649,12 +1635,170 @@ async function shareEggDisplay() {
     }
 }
 
+function showShareGuide(dataUrl) {
+    // 创建图片分享遮罩 - 用户可长按图片保存或分享
+    let overlay = document.getElementById('shareGuideOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'shareGuideOverlay';
+        overlay.innerHTML = `
+            <div class="share-guide-content">
+                <div class="share-guide-title">🎁 分享蛋仔形象</div>
+                <div class="share-guide-tip" id="shareGuideTip">点击下方按钮后，长按图片分享</div>
+                <div class="share-preview-large" id="sharePreviewBox"><img id="sharePreviewImg"></div>
+                <div class="share-guide-actions">
+                    <button class="share-friend-btn" onclick="triggerShareGuide()">📤 分享给好友</button>
+                    <button class="share-guide-btn" onclick="closeShareGuide()">✕ 关闭</button>
+                </div>
+            </div>
+        `;
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        `;
+        const content = overlay.querySelector('.share-guide-content');
+        content.style.cssText = `
+            text-align: center;
+            color: white;
+            max-width: 90vw;
+        `;
+        const title = overlay.querySelector('.share-guide-title');
+        title.style.cssText = `
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffd700;
+        `;
+        const tip = overlay.querySelector('.share-guide-tip');
+        tip.style.cssText = `
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #aaa;
+        `;
+        const preview = overlay.querySelector('.share-preview-large');
+        preview.style.cssText = `
+            margin: 15px auto;
+            max-width: 320px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        `;
+        const img = overlay.querySelector('#sharePreviewImg');
+        img.style.cssText = `
+            width: 100%;
+            display: block;
+            border-radius: 20px;
+        `;
+        const actions = overlay.querySelector('.share-guide-actions');
+        actions.style.cssText = `
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        `;
+        const friendBtn = overlay.querySelector('.share-friend-btn');
+        friendBtn.style.cssText = `
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #07C160, #06AD56);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+        `;
+        const closeBtn = overlay.querySelector('.share-guide-btn');
+        closeBtn.style.cssText = `
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    // 设置预览图片
+    document.getElementById('sharePreviewImg').src = dataUrl;
+    overlay.style.display = 'flex';
+
+    // 保存当前图片URL供下载使用
+    window.currentShareDataUrl = dataUrl;
+}
+
+// 点击"分享给好友"按钮，高亮图片区域引导用户长按
+function triggerShareGuide() {
+    const tipEl = document.getElementById('shareGuideTip');
+    const previewBox = document.getElementById('sharePreviewBox');
+
+    // 更新提示文字
+    tipEl.textContent = '👆 请长按上方图片，选择"发送给朋友"';
+    tipEl.style.color = '#ffd700';
+    tipEl.style.fontSize = '16px';
+    tipEl.style.fontWeight = 'bold';
+
+    // 图片区域高亮闪烁效果
+    previewBox.style.animation = 'pulse-highlight 1s ease-in-out 3';
+    previewBox.style.borderColor = '#ffd700';
+    previewBox.style.border = '3px solid #ffd700';
+
+    // 添加动画样式（如果不存在）
+    if (!document.getElementById('shareGuideAnimStyle')) {
+        const style = document.createElement('style');
+        style.id = 'shareGuideAnimStyle';
+        style.textContent = `
+            @keyframes pulse-highlight {
+                0%, 100% { box-shadow: 0 10px 30px rgba(255,215,0,0.3); transform: scale(1); }
+                50% { box-shadow: 0 0 40px rgba(255,215,0,0.8); transform: scale(1.02); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+function closeShareGuide() {
+    const overlay = document.getElementById('shareGuideOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
 function downloadImage(dataUrl) {
     const link = document.createElement('a');
     link.download = `蛋仔派对_${new Date().getTime()}.png`;
     link.href = dataUrl;
     link.click();
     showResult('📤', '分享成功', '图片已保存到相册', '快去分享给好友吧！', '');
+}
+
+function saveImageForShare(dataUrl) {
+    // 在微信中，用户需要长按图片保存
+    // 这里创建一个临时图片供用户长按保存
+    let tempImg = document.getElementById('tempShareImg');
+    if (!tempImg) {
+        tempImg = document.createElement('img');
+        tempImg.id = 'tempShareImg';
+        tempImg.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+        `;
+        document.body.appendChild(tempImg);
+    }
+    tempImg.src = dataUrl;
 }
 
 // ===== 抽奖系统 =====
