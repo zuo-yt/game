@@ -434,12 +434,74 @@ const englishWordBank = [
 ];
 
 // 游戏数据
-let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null };
+let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null, achievements: {}, currentTitle: null, survivalBest: 0, adventureLevel: 0 };
 let mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
 let chineseIndex = 0;
 let chineseCorrect = 0;
 let englishIndex = 0;
 let pendingGift = null;
+
+// ===== 难度配置 =====
+const DIFFICULTY_CONFIG = {
+    easy: { name: '简单', multiplier: 1, mathRange: 10, desc: '10以内加减法', reward: '×1' },
+    normal: { name: '普通', multiplier: 1.5, mathRange: 20, desc: '20以内加减法', reward: '×1.5' },
+    hard: { name: '困难', multiplier: 2, mathRange: 100, desc: '100以内四则运算', reward: '×2' }
+};
+
+// ===== 成就配置 =====
+const ACHIEVEMENTS = [
+    { id: 'first_sss', name: '欧皇降临', desc: '首次获得SSS皮肤', icon: '🌟', condition: (d) => d.stats.sss > 0 },
+    { id: 'collect_10', name: '收藏家', desc: '收集10种皮肤', icon: '📦', condition: (d) => Object.keys(d.collected).length >= 10 },
+    { id: 'collect_all', name: '大满贯', desc: '收集全部30种皮肤', icon: '🏆', condition: (d) => Object.keys(d.collected).length >= 30 },
+    { id: 'math_master', name: '数学小天才', desc: '数学挑战满分', icon: '🔢', condition: (d) => d.achievements.math_master },
+    { id: 'chinese_master', name: '语文小博士', desc: '语文挑战连续10题全对', icon: '📖', condition: (d) => d.achievements.chinese_master },
+    { id: 'english_master', name: '英语达人', desc: '英语挑战满分', icon: '🔤', condition: (d) => d.achievements.english_master },
+    { id: 'survival_20', name: '生存专家', desc: '生存模式答对20题', icon: '⏱️', condition: (d) => d.survivalBest >= 20 },
+    { id: 'survival_50', name: '生存大师', desc: '生存模式答对50题', icon: '🔥', condition: (d) => d.survivalBest >= 50 },
+    { id: 'adventure_5', name: '闯关新手', desc: '闯关模式通过5关', icon: '🎯', condition: (d) => d.adventureLevel >= 5 },
+    { id: 'adventure_10', name: '闯关王者', desc: '闯关模式通关', icon: '👑', condition: (d) => d.adventureLevel >= 10 },
+    { id: 'draw_100', name: '抽卡狂魔', desc: '累计抽卡100次', icon: '🎰', condition: (d) => d.totalDraws >= 100 },
+    { id: 'draw_500', name: '赌神', desc: '累计抽卡500次', icon: '💎', condition: (d) => d.totalDraws >= 500 },
+    { id: 'charm_1000', name: '魅力四射', desc: '魅力值达到1000', icon: '✨', condition: (d) => d.charm >= 1000 },
+    { id: 'charm_10000', name: '魅力之王', desc: '魅力值达到10000', icon: '💫', condition: (d) => d.charm >= 10000 },
+    { id: 'combo_10', name: '连击新手', desc: '达成10连击', icon: '⚡', condition: (d) => d.achievements.combo_10 },
+    { id: 'combo_30', name: '连击大师', desc: '达成30连击', icon: '💥', condition: (d) => d.achievements.combo_30 },
+    { id: 'rich', name: '富翁', desc: '蛋币达到10000', icon: '💰', condition: (d) => d.coins >= 10000 },
+    { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', condition: (d) => d.achievements.study_star },
+    { id: 'ss_collector', name: 'SS收藏家', desc: '收集5种SS皮肤', icon: '🟡', condition: (d) => countRarity(d.collected, 'ss') >= 5 },
+    { id: 's_collector', name: 'S收藏家', desc: '收集5种S皮肤', icon: '🟣', condition: (d) => countRarity(d.collected, 's') >= 5 }
+];
+
+// 称号列表（从成就转化）
+const TITLES = [
+    { id: 'first_sss', name: '欧皇', icon: '🌟' },
+    { id: 'collect_all', name: '大满贯', icon: '🏆' },
+    { id: 'math_master', name: '数学天才', icon: '🔢' },
+    { id: 'chinese_master', name: '语文博士', icon: '📖' },
+    { id: 'english_master', name: '英语达人', icon: '🔤' },
+    { id: 'survival_50', name: '生存大师', icon: '🔥' },
+    { id: 'adventure_10', name: '闯关王者', icon: '👑' },
+    { id: 'draw_500', name: '赌神', icon: '💎' },
+    { id: 'charm_10000', name: '魅力之王', icon: '💫' },
+    { id: 'combo_30', name: '连击大师', icon: '💥' }
+];
+
+function countRarity(collected, rarity) {
+    return Object.keys(collected).filter(k => k.startsWith(rarity + '_')).length;
+}
+
+// 当前挑战难度
+let currentDifficulty = 'normal';
+let currentChallengeType = null;
+
+// 生存模式数据
+let survivalData = { timer: null, timeLeft: 60, correct: 0, combo: 0, maxCombo: 0, currentQuestion: null };
+
+// 闯关模式数据
+let adventureData = { level: 1, hearts: 3, correct: 0, currentQuestion: null };
+
+// 当前弹窗类型
+let currentAchievementTab = 'achievement';
 
 // ===== 初始化 =====
 function init() {
@@ -448,10 +510,12 @@ function init() {
     // 默认无皮肤状态（currentSkin为null）
     updateDisplay();
     updateEggDisplay();
+    updateAchievementCount();
     updateCollection();
     updateStats();
     updateLatestItems();
     updateExchangeDisplay();
+    checkAchievements();
 }
 function createStars() {
     for (let i = 0; i < 30; i++) {
@@ -462,6 +526,361 @@ function createStars() {
         star.style.animationDelay = Math.random() * 2 + 's';
         document.getElementById('stars').appendChild(star);
     }
+}
+
+// ===== 难度选择 =====
+function showChallengeMode(type) {
+    currentChallengeType = type;
+    const modal = document.getElementById('difficultyModal');
+    const container = document.getElementById('difficultyOptions');
+
+    let html = '';
+    for (const [key, config] of Object.entries(DIFFICULTY_CONFIG)) {
+        html += `<button class="difficulty-btn ${key}" onclick="startChallengeWithDifficulty('${key}')">
+            <div class="difficulty-name">${config.name}</div>
+            <div class="difficulty-desc">${config.desc}</div>
+            <div class="difficulty-reward">奖励 ${config.reward}</div>
+        </button>`;
+    }
+    container.innerHTML = html;
+    modal.classList.add('active');
+}
+function closeDifficultyModal() {
+    document.getElementById('difficultyModal').classList.remove('active');
+}
+function startChallengeWithDifficulty(difficulty) {
+    currentDifficulty = difficulty;
+    closeDifficultyModal();
+
+    if (currentChallengeType === 'math') startMathQuiz();
+    else if (currentChallengeType === 'chinese') startChineseQuiz();
+    else if (currentChallengeType === 'english') startEnglishQuiz();
+}
+
+// ===== 生存模式 =====
+function startSurvivalMode() {
+    survivalData = { timer: null, timeLeft: 60, correct: 0, combo: 0, maxCombo: 0, currentQuestion: null };
+    document.getElementById('survivalModal').classList.add('active');
+    document.getElementById('survivalCorrect').textContent = '0';
+    document.getElementById('survivalCombo').textContent = '0';
+    document.getElementById('survivalTimer').textContent = '60';
+    generateSurvivalQuestion();
+    startSurvivalTimer();
+}
+function startSurvivalTimer() {
+    survivalData.timer = setInterval(() => {
+        survivalData.timeLeft--;
+        document.getElementById('survivalTimer').textContent = survivalData.timeLeft;
+        if (survivalData.timeLeft <= 0) {
+            endSurvivalMode();
+        }
+    }, 1000);
+}
+function generateSurvivalQuestion() {
+    const types = ['math', 'chinese'];
+    const type = types[Math.floor(Math.random() * types.length)];
+
+    if (type === 'math') {
+        const a = Math.floor(Math.random() * 20);
+        const b = Math.floor(Math.random() * 20);
+        const op = Math.random() > 0.5 ? '+' : '-';
+        const answer = op === '+' ? a + b : (a >= b ? a - b : b - a);
+        const displayA = op === '-' && a < b ? b : a;
+        const displayB = op === '-' && a < b ? a : b;
+
+        survivalData.currentQuestion = { type: 'math', answer };
+        document.getElementById('survivalQuestion').textContent = `${displayA} ${op} ${displayB} = ?`;
+
+        const options = [answer];
+        while (options.length < 4) {
+            const wrong = answer + Math.floor(Math.random() * 10) - 5;
+            if (wrong !== answer && wrong >= 0 && !options.includes(wrong)) options.push(wrong);
+        }
+        options.sort(() => Math.random() - 0.5);
+        document.getElementById('survivalOptions').innerHTML = options.map(o =>
+            `<div class="survival-option" onclick="selectSurvivalAnswer(${o})">${o}</div>`
+        ).join('');
+    } else {
+        const chars = Object.keys(pinyinData);
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        const correctPinyin = pinyinData[char];
+
+        survivalData.currentQuestion = { type: 'chinese', answer: correctPinyin };
+        document.getElementById('survivalQuestion').textContent = char;
+
+        const allPinyins = Object.values(pinyinData).filter(p => p !== correctPinyin);
+        const options = [correctPinyin];
+        while (options.length < 4) {
+            const wrong = allPinyins[Math.floor(Math.random() * allPinyins.length)];
+            if (!options.includes(wrong)) options.push(wrong);
+        }
+        options.sort(() => Math.random() - 0.5);
+        document.getElementById('survivalOptions').innerHTML = options.map(o =>
+            `<div class="survival-option" onclick="selectSurvivalAnswer('${o}')">${o}</div>`
+        ).join('');
+    }
+}
+function selectSurvivalAnswer(answer) {
+    const correct = String(answer) === String(survivalData.currentQuestion.answer);
+    const options = document.querySelectorAll('.survival-option');
+
+    options.forEach(opt => {
+        if (opt.textContent === String(survivalData.currentQuestion.answer)) {
+            opt.classList.add('correct');
+        } else if (opt.textContent === String(answer) && !correct) {
+            opt.classList.add('wrong');
+        }
+        opt.style.pointerEvents = 'none';
+    });
+
+    if (correct) {
+        survivalData.correct++;
+        survivalData.combo++;
+        if (survivalData.combo > survivalData.maxCombo) survivalData.maxCombo = survivalData.combo;
+
+        // 连击奖励
+        let bonus = 5;
+        if (survivalData.combo >= 10) bonus = 10;
+        if (survivalData.combo >= 20) bonus = 15;
+        if (survivalData.combo >= 30) bonus = 20;
+        gameData.coins += bonus;
+        saveGameData();
+        updateDisplay();
+
+        // 连击动画
+        const comboEl = document.getElementById('survivalCombo');
+        comboEl.textContent = survivalData.combo;
+        comboEl.classList.add('combo-fire');
+        setTimeout(() => comboEl.classList.remove('combo-fire'), 300);
+
+        // 检查连击成就
+        if (survivalData.combo >= 10 && !gameData.achievements.combo_10) {
+            gameData.achievements.combo_10 = true;
+            saveGameData();
+        }
+        if (survivalData.combo >= 30 && !gameData.achievements.combo_30) {
+            gameData.achievements.combo_30 = true;
+            saveGameData();
+        }
+    } else {
+        survivalData.combo = 0;
+        document.getElementById('survivalCombo').textContent = '0';
+    }
+
+    document.getElementById('survivalCorrect').textContent = survivalData.correct;
+
+    setTimeout(() => {
+        if (survivalData.timeLeft > 0) {
+            generateSurvivalQuestion();
+        }
+    }, 300);
+}
+function endSurvivalMode() {
+    clearInterval(survivalData.timer);
+    document.getElementById('survivalModal').classList.remove('active');
+
+    // 更新最佳记录
+    if (survivalData.correct > gameData.survivalBest) {
+        gameData.survivalBest = survivalData.correct;
+        saveGameData();
+    }
+
+    checkAchievements();
+
+    const bonus = survivalData.correct * 5 + survivalData.maxCombo * 2;
+    showResult('⏱️', '生存结束！', `答对 ${survivalData.correct} 题 | 最高连击 ${survivalData.maxCombo}`, `+${bonus} 蛋币`, survivalData.maxCombo >= 20 ? '🔥 连击大师！' : '');
+}
+function closeSurvivalMode() {
+    clearInterval(survivalData.timer);
+    document.getElementById('survivalModal').classList.remove('active');
+}
+
+// ===== 闯关模式 =====
+function startAdventureMode() {
+    adventureData = { level: 1, hearts: 3, correct: 0, currentQuestion: null };
+    document.getElementById('adventureModal').classList.add('active');
+    updateAdventureUI();
+    generateAdventureQuestion();
+}
+function updateAdventureUI() {
+    document.getElementById('adventureLevel').textContent = adventureData.level;
+    document.getElementById('adventureHearts').textContent = '❤️'.repeat(adventureData.hearts) + '🖤'.repeat(3 - adventureData.hearts);
+}
+function generateAdventureQuestion() {
+    const level = adventureData.level;
+    const difficulty = level <= 3 ? 'easy' : (level <= 7 ? 'normal' : 'hard');
+    const config = DIFFICULTY_CONFIG[difficulty];
+
+    // 数学题
+    const maxNum = config.mathRange;
+    const a = Math.floor(Math.random() * maxNum);
+    const b = Math.floor(Math.random() * Math.min(maxNum, 20));
+    const ops = level <= 5 ? ['+', '-'] : ['+', '-', '×', '÷'];
+    const op = ops[Math.floor(Math.random() * ops.length)];
+    let answer;
+    let displayA = a, displayB = b;
+
+    if (op === '+') answer = a + b;
+    else if (op === '-') { if (a < b) { displayA = b; displayB = a; } answer = displayA - displayB; }
+    else if (op === '×') { displayA = Math.floor(Math.random() * 10) + 1; displayB = Math.floor(Math.random() * 10) + 1; answer = displayA * displayB; }
+    else { displayB = Math.floor(Math.random() * 9) + 1; answer = Math.floor(Math.random() * 10) + 1; displayA = displayB * answer; }
+
+    adventureData.currentQuestion = { answer, op };
+    document.getElementById('adventureQuestion').textContent = `${displayA} ${op} ${displayB} = ?`;
+
+    const options = [answer];
+    while (options.length < 4) {
+        const wrong = answer + Math.floor(Math.random() * 10) - 5;
+        if (wrong !== answer && wrong >= 0 && !options.includes(wrong)) options.push(wrong);
+    }
+    options.sort(() => Math.random() - 0.5);
+    document.getElementById('adventureOptions').innerHTML = options.map(o =>
+        `<div class="adventure-option" onclick="selectAdventureAnswer(${o})">${o}</div>`
+    ).join('');
+}
+function selectAdventureAnswer(answer) {
+    const correct = answer === adventureData.currentQuestion.answer;
+    const options = document.querySelectorAll('.adventure-option');
+
+    options.forEach(opt => {
+        if (parseInt(opt.textContent) === adventureData.currentQuestion.answer) {
+            opt.classList.add('correct');
+        } else if (parseInt(opt.textContent) === answer && !correct) {
+            opt.classList.add('wrong');
+        }
+        opt.style.pointerEvents = 'none';
+    });
+
+    if (correct) {
+        adventureData.correct++;
+        gameData.coins += 10 * adventureData.level;
+
+        if (adventureData.correct >= 3) {
+            // 通关当前关卡
+            adventureData.level++;
+            adventureData.correct = 0;
+
+            if (adventureData.level > gameData.adventureLevel) {
+                gameData.adventureLevel = adventureData.level;
+            }
+            saveGameData();
+
+            if (adventureData.level > 10) {
+                // 全部通关
+                setTimeout(() => {
+                    closeAdventureMode();
+                    gameData.coins += 500;
+                    saveGameData();
+                    updateDisplay();
+                    checkAchievements();
+                    showResult('👑', '恭喜通关！', '闯过全部10关！', '+500 蛋币', '🏆 闯关王者！');
+                }, 500);
+                return;
+            }
+        }
+
+        saveGameData();
+        updateDisplay();
+        updateAdventureUI();
+
+        setTimeout(generateAdventureQuestion, 500);
+    } else {
+        adventureData.hearts--;
+        updateAdventureUI();
+
+        if (adventureData.hearts <= 0) {
+            setTimeout(() => {
+                closeAdventureMode();
+                checkAchievements();
+                showResult('💔', '闯关失败', `到达第 ${adventureData.level} 关`, `+${adventureData.level * 20} 蛋币`, '再接再厉！');
+            }, 500);
+        } else {
+            setTimeout(generateAdventureQuestion, 500);
+        }
+    }
+}
+function closeAdventureMode() {
+    document.getElementById('adventureModal').classList.remove('active');
+}
+
+// ===== 成就系统 =====
+function showAchievementModal() {
+    document.getElementById('achievementModal').classList.add('active');
+    currentAchievementTab = 'achievement';
+    renderAchievementList();
+}
+function closeAchievementModal() {
+    document.getElementById('achievementModal').classList.remove('active');
+}
+function switchAchievementTab(tab) {
+    currentAchievementTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    renderAchievementList();
+}
+function renderAchievementList() {
+    const container = document.getElementById('achievementList');
+
+    if (currentAchievementTab === 'achievement') {
+        container.innerHTML = ACHIEVEMENTS.map(ach => {
+            const unlocked = ach.condition(gameData);
+            return `<div class="achievement-item ${unlocked ? 'unlocked' : 'locked'}">
+                <div class="achievement-item-icon">${unlocked ? ach.icon : '🔒'}</div>
+                <div class="achievement-item-info">
+                    <div class="achievement-item-name">${ach.name}</div>
+                    <div class="achievement-item-desc">${ach.desc}</div>
+                </div>
+                <div class="achievement-item-status ${unlocked ? 'unlocked' : 'locked'}">${unlocked ? '已解锁' : '未解锁'}</div>
+            </div>`;
+        }).join('');
+    } else {
+        // 称号列表
+        container.innerHTML = TITLES.map(title => {
+            const unlocked = ACHIEVEMENTS.find(a => a.id === title.id)?.condition(gameData);
+            const equipped = gameData.currentTitle === title.id;
+            return `<div class="achievement-item title-item ${unlocked ? 'unlocked' : 'locked'} ${equipped ? 'equipped' : ''}" onclick="equipTitle('${title.id}')">
+                <div class="achievement-item-icon">${unlocked ? title.icon : '🔒'}</div>
+                <div class="achievement-item-info">
+                    <div class="achievement-item-name">${title.name}</div>
+                    <div class="achievement-item-desc">${ACHIEVEMENTS.find(a => a.id === title.id)?.desc || ''}</div>
+                </div>
+                ${unlocked ? `<button class="equip-btn ${equipped ? 'equipped' : ''}">${equipped ? '已装备' : '装备'}</button>` : '<div class="achievement-item-status locked">未解锁</div>'}
+            </div>`;
+        }).join('');
+    }
+}
+function equipTitle(titleId) {
+    const title = TITLES.find(t => t.id === titleId);
+    if (!title) return;
+
+    const unlocked = ACHIEVEMENTS.find(a => a.id === titleId)?.condition(gameData);
+    if (!unlocked) return;
+
+    if (gameData.currentTitle === titleId) {
+        gameData.currentTitle = null;
+    } else {
+        gameData.currentTitle = titleId;
+    }
+    saveGameData();
+    updateEggDisplay();
+    renderAchievementList();
+}
+function checkAchievements() {
+    let newAchievement = false;
+    ACHIEVEMENTS.forEach(ach => {
+        if (!gameData.achievements[ach.id] && ach.condition(gameData)) {
+            gameData.achievements[ach.id] = true;
+            newAchievement = true;
+        }
+    });
+    if (newAchievement) {
+        saveGameData();
+        updateAchievementCount();
+    }
+}
+function updateAchievementCount() {
+    const unlocked = ACHIEVEMENTS.filter(a => a.condition(gameData)).length;
+    document.getElementById('achievementCount').textContent = `${unlocked}/${ACHIEVEMENTS.length}`;
 }
 function loadGameData() {
     const s = localStorage.getItem('eggPartyGame');
@@ -483,6 +902,18 @@ function updateEggDisplay() {
     const nameEl = document.getElementById('eggDisplayName');
     const rarityEl = document.getElementById('eggDisplayRarity');
     const cardEl = document.getElementById('eggDisplayCard');
+    const titleEl = document.getElementById('eggDisplayTitle');
+
+    // 显示称号
+    if (gameData.currentTitle) {
+        const title = TITLES.find(t => t.id === gameData.currentTitle);
+        if (title) {
+            titleEl.textContent = `${title.icon} ${title.name}`;
+            titleEl.style.display = 'block';
+        }
+    } else {
+        titleEl.style.display = 'none';
+    }
 
     const skin = gameData.currentSkin;
     if (!skin) {

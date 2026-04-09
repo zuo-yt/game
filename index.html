@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>蛋仔派对皮肤盲盒</title>
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20260409">
+    <link rel="stylesheet" href="css/style.css?v=20260410">
 </head>
 <body>
     <div class="stars" id="stars"></div>
@@ -18,16 +18,38 @@
                     <div class="egg-base">🥚</div>
                     <div class="egg-skin-overlay" id="eggSkinOverlay"></div>
                 </div>
+                <div class="egg-display-title" id="eggDisplayTitle"></div>
                 <div class="egg-display-name" id="eggDisplayName">蛋仔</div>
                 <div class="egg-display-rarity" id="eggDisplayRarity"></div>
                 <div class="egg-display-hint">点击下方已收集皮肤换装，点击当前装备取消</div>
             </div>
         </div>
+        <!-- 成就入口 -->
+        <div class="achievement-entry">
+            <button class="achievement-btn" onclick="showAchievementModal()">
+                <span class="achievement-icon">🏅</span>
+                <span>成就称号</span>
+                <span class="achievement-count" id="achievementCount">0/20</span>
+            </button>
+        </div>
         <div class="coin-section"><div class="coin-display"><div class="coin-icon">💰</div><div><div class="coin-amount" id="coinAmount">0</div><div class="coin-label">蛋币余额</div></div></div><div class="charm-section"><div class="charm-icon">💎</div><div><div class="charm-amount" id="charmAmount">0</div><div class="charm-label">魅力值</div></div></div></div>
         <div class="quiz-entry">
-            <button class="quiz-btn math" onclick="startMathQuiz()"><span class="icon">🔢</span><span>数学挑战</span><span class="reward">满分+200蛋币<br>⚡2分钟限时</span></button>
-            <button class="quiz-btn chinese" onclick="startChineseQuiz()"><span class="icon">📖</span><span>语文挑战</span><span class="reward">一年级生字<br>每题+5蛋币</span></button>
-            <button class="quiz-btn english" onclick="startEnglishQuiz()"><span class="icon">🔤</span><span>英语挑战</span><span class="reward">小学词汇<br>每题+8蛋币</span></button>
+            <button class="quiz-btn math" onclick="showChallengeMode('math')"><span class="icon">🔢</span><span>数学挑战</span><span class="reward">多难度可选<br>奖励翻倍</span></button>
+            <button class="quiz-btn chinese" onclick="showChallengeMode('chinese')"><span class="icon">📖</span><span>语文挑战</span><span class="reward">多难度可选<br>奖励翻倍</span></button>
+            <button class="quiz-btn english" onclick="showChallengeMode('english')"><span class="icon">🔤</span><span>英语挑战</span><span class="reward">多难度可选<br>奖励翻倍</span></button>
+        </div>
+        <!-- 游戏模式入口 -->
+        <div class="game-modes">
+            <button class="mode-btn survival" onclick="startSurvivalMode()">
+                <span class="mode-icon">⏱️</span>
+                <span class="mode-name">限时生存</span>
+                <span class="mode-desc">60秒挑战 连击加成</span>
+            </button>
+            <button class="mode-btn adventure" onclick="startAdventureMode()">
+                <span class="mode-icon">🏆</span>
+                <span class="mode-name">闯关模式</span>
+                <span class="mode-desc">10关递进难度</span>
+            </button>
         </div>
         <!-- 蛋币获取按钮 -->
         <div class="bonus-section">
@@ -142,9 +164,66 @@
     <!-- 结果弹窗 -->
     <div class="result-modal" id="resultModal"><div class="result-content"><div class="result-icon" id="resultIcon">🎉</div><div class="result-title" id="resultTitle">完成！</div><div class="result-stats" id="resultStats"></div><div class="result-reward" id="resultReward">+100 蛋币</div><div id="resultBonus" style="display:none;"></div><button class="result-btn" onclick="closeResultModal()">确定</button></div></div>
 
+    <!-- 难度选择弹窗 -->
+    <div class="quiz-modal" id="difficultyModal">
+        <div class="quiz-content" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeDifficultyModal()">&times;</span>
+            <div class="quiz-header"><h2>🎯 选择难度</h2></div>
+            <div class="difficulty-options" id="difficultyOptions"></div>
+        </div>
+    </div>
+
+    <!-- 生存模式弹窗 -->
+    <div class="quiz-modal" id="survivalModal">
+        <div class="quiz-content">
+            <span class="close-btn" onclick="closeSurvivalMode()">&times;</span>
+            <div class="quiz-header">
+                <h2>⏱️ 限时生存</h2>
+                <div class="survival-timer" id="survivalTimer">60</div>
+                <div class="survival-stats">
+                    <span>连击: <strong id="survivalCombo">0</strong></span>
+                    <span>正确: <strong id="survivalCorrect">0</strong></span>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <div class="survival-question" id="survivalQuestion"></div>
+                <div class="survival-options" id="survivalOptions"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 闯关模式弹窗 -->
+    <div class="quiz-modal" id="adventureModal">
+        <div class="quiz-content">
+            <span class="close-btn" onclick="closeAdventureMode()">&times;</span>
+            <div class="quiz-header">
+                <h2>🏆 闯关模式</h2>
+                <div class="adventure-progress">第 <span id="adventureLevel">1</span>/10 关</div>
+            </div>
+            <div class="adventure-hearts" id="adventureHearts">❤️❤️❤️</div>
+            <div style="text-align:center;">
+                <div class="adventure-question" id="adventureQuestion"></div>
+                <div class="adventure-options" id="adventureOptions"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成就弹窗 -->
+    <div class="quiz-modal" id="achievementModal">
+        <div class="quiz-content" style="max-width: 500px;">
+            <span class="close-btn" onclick="closeAchievementModal()">&times;</span>
+            <div class="quiz-header"><h2>🏅 成就称号</h2></div>
+            <div class="achievement-tabs">
+                <button class="tab-btn active" onclick="switchAchievementTab('achievement')">成就</button>
+                <button class="tab-btn" onclick="switchAchievementTab('title')">称号</button>
+            </div>
+            <div class="achievement-list" id="achievementList"></div>
+        </div>
+    </div>
+
     <!-- 抽卡动画遮罩 -->
     <div class="draw-overlay" id="drawOverlay"></div>
 
-    <script src="js/game.js?v=20260409b"></script>
+    <script src="js/game.js?v=20260410"></script>
 </body>
 </html>

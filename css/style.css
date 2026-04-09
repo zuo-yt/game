@@ -591,3 +591,120 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
         opacity: 0.9;
     }
 }
+
+/* ===== 新增挑战功能样式 ===== */
+
+/* 游戏模式入口 */
+.game-modes {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.mode-btn {
+    flex: 1;
+    padding: 20px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.mode-btn:hover { transform: translateY(-3px); }
+.mode-btn.survival { background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: white; }
+.mode-btn.adventure { background: linear-gradient(135deg, #ffd700, #ff8c00); color: white; }
+.mode-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+.mode-name { font-size: 18px; font-weight: bold; display: block; }
+.mode-desc { font-size: 12px; opacity: 0.9; margin-top: 5px; }
+
+/* 成就入口 */
+.achievement-entry { margin-bottom: 20px; text-align: center; }
+.achievement-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+    transition: all 0.3s;
+}
+.achievement-btn:hover { transform: scale(1.05); }
+.achievement-icon { margin-right: 8px; }
+.achievement-count { margin-left: 10px; background: rgba(255,255,255,0.3); padding: 2px 10px; border-radius: 10px; font-size: 14px; }
+
+/* 称号展示 */
+.egg-display-title {
+    font-size: 14px;
+    color: #ffd700;
+    background: linear-gradient(135deg, #333, #555);
+    padding: 5px 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* 难度选择 */
+.difficulty-options { display: flex; flex-direction: column; gap: 12px; padding: 20px 0; }
+.difficulty-btn {
+    padding: 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+    font-size: 16px;
+}
+.difficulty-btn:hover { transform: scale(1.02); }
+.difficulty-btn.easy { background: linear-gradient(135deg, #a8e6cf, #56ab91); color: white; }
+.difficulty-btn.normal { background: linear-gradient(135deg, #64b5f6, #1e88e5); color: white; }
+.difficulty-btn.hard { background: linear-gradient(135deg, #ba68c8, #8e24aa); color: white; }
+.difficulty-name { font-size: 20px; font-weight: bold; }
+.difficulty-desc { font-size: 13px; opacity: 0.9; margin-top: 5px; }
+.difficulty-reward { font-size: 12px; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 10px; margin-top: 8px; display: inline-block; }
+
+/* 生存模式 */
+.survival-timer { font-size: 48px; font-weight: bold; color: #ff6b6b; }
+.survival-stats { display: flex; justify-content: center; gap: 30px; margin-top: 10px; font-size: 14px; color: #666; }
+.survival-stats strong { color: #667eea; font-size: 20px; }
+.survival-question { font-size: 36px; font-weight: bold; color: var(--text-dark); margin: 30px 0; padding: 25px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border-radius: 20px; }
+.survival-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.survival-option { padding: 20px; font-size: 24px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border: 3px solid #ddd; border-radius: 15px; cursor: pointer; transition: all 0.2s; }
+.survival-option:hover { border-color: var(--primary-purple); background: linear-gradient(135deg, #f0f4ff, #e8ecff); }
+.survival-option.correct { background: linear-gradient(135deg, #d4edda, #c3e6cb); border-color: #28a745; }
+.survival-option.wrong { background: linear-gradient(135deg, #f8d7da, #f5c6cb); border-color: #dc3545; }
+.combo-fire { animation: comboFire 0.3s ease-out; }
+@keyframes comboFire { 0% { transform: scale(1); } 50% { transform: scale(1.2); color: #ff6b6b; } 100% { transform: scale(1); } }
+
+/* 闯关模式 */
+.adventure-progress { font-size: 18px; color: var(--text-gray); margin-top: 10px; }
+.adventure-hearts { font-size: 28px; margin: 15px 0; }
+.adventure-question { font-size: 36px; font-weight: bold; color: var(--text-dark); margin: 25px 0; padding: 25px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border-radius: 20px; }
+.adventure-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.adventure-option { padding: 20px; font-size: 24px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border: 3px solid #ddd; border-radius: 15px; cursor: pointer; transition: all 0.2s; }
+.adventure-option:hover { border-color: var(--primary-purple); background: linear-gradient(135deg, #f0f4ff, #e8ecff); }
+.adventure-option.correct { background: linear-gradient(135deg, #d4edda, #c3e6cb); border-color: #28a745; }
+.adventure-option.wrong { background: linear-gradient(135deg, #f8d7da, #f5c6cb); border-color: #dc3545; }
+
+/* 成就弹窗 */
+.achievement-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+.tab-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; background: var(--bg-light); cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.3s; }
+.tab-btn.active { background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; }
+.achievement-list { max-height: 400px; overflow-y: auto; }
+.achievement-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--bg-light); border-radius: 12px; margin-bottom: 10px; }
+.achievement-item.unlocked { background: linear-gradient(135deg, #fff9e6, #ffecb3); border: 2px solid #ffd700; }
+.achievement-item.locked { opacity: 0.6; }
+.achievement-item-icon { font-size: 32px; }
+.achievement-item-info { flex: 1; }
+.achievement-item-name { font-weight: bold; color: var(--text-dark); }
+.achievement-item-desc { font-size: 12px; color: var(--text-gray); margin-top: 3px; }
+.achievement-item-status { font-size: 12px; padding: 5px 12px; border-radius: 15px; }
+.achievement-item-status.unlocked { background: #28a745; color: white; }
+.achievement-item-status.locked { background: #ddd; color: #666; }
+.title-item { cursor: pointer; transition: all 0.3s; }
+.title-item:hover { transform: scale(1.02); }
+.title-item.equipped { background: linear-gradient(135deg, #ffd700, #ff8c00) !important; border: 2px solid #ff6b6b !important; }
+.equip-btn { padding: 8px 15px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; }
+.equip-btn.equipped { background: #28a745; }
