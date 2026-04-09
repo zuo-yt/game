@@ -8,8 +8,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>蛋仔派对皮肤盲盒</title>
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20260410f">
+    <link rel="stylesheet" href="css/style.css?v=20260410g">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <div class="stars" id="stars"></div>
@@ -17,6 +18,7 @@
         <div class="game-title"><h1>🥚 蛋仔派对皮肤盲盒</h1><p>答题获取蛋币，收集30款精美皮肤</p></div>
         <!-- 蛋仔展示区域 -->
         <div class="egg-display-section">
+            <button class="share-btn" onclick="shareEggDisplay()">📤 分享</button>
             <div class="egg-display-card" id="eggDisplayCard">
                 <div class="egg-display-rarity" id="eggDisplayRarity"></div>
                 <div class="egg-display-title" id="eggDisplayTitle"></div>
@@ -241,6 +243,6 @@
     <!-- 抽卡动画遮罩 -->
     <div class="draw-overlay" id="drawOverlay"></div>
 
-    <script src="js/game.js?v=20260410l"></script>
+    <script src="js/game.js?v=20260410m"></script>
 </body>
 </html>

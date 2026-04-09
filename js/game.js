@@ -1517,6 +1517,162 @@ function showResult(icon, title, stats, reward, bonus) {
 }
 function closeResultModal() { document.getElementById('resultModal').classList.remove('active'); }
 
+// ===== 分享蛋仔展示 =====
+async function shareEggDisplay() {
+    const section = document.querySelector('.egg-display-section');
+    const shareBtn = document.querySelector('.share-btn');
+
+    // 隐藏分享按钮
+    shareBtn.style.display = 'none';
+
+    try {
+        // 检测是否在微信浏览器
+        const isWechat = /micromessenger/i.test(navigator.userAgent);
+
+        // 使用 html2canvas 生成图片
+        const canvas = await html2canvas(section, {
+            backgroundColor: null,
+            scale: 2,
+            useCORS: true,
+            allowTaint: true
+        });
+
+        const dataUrl = canvas.toDataURL('image/png');
+
+        if (isWechat) {
+            // 微信浏览器 - 显示分享提示
+            showShareGuide(dataUrl);
+        } else {
+            // 非微信浏览器 - 直接下载
+            downloadImage(dataUrl);
+        }
+    } catch (e) {
+        console.error('分享失败:', e);
+        showResult('❌', '分享失败', '请稍后再试', '', '');
+    } finally {
+        // 恢复分享按钮
+        shareBtn.style.display = 'block';
+    }
+}
+
+function showShareGuide(dataUrl) {
+    // 创建分享引导遮罩
+    let overlay = document.getElementById('shareGuideOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'shareGuideOverlay';
+        overlay.innerHTML = `
+            <div class="share-guide-content">
+                <div class="share-guide-arrow">👆</div>
+                <div class="share-guide-text">点击右上角「...」分享给好友</div>
+                <div class="share-preview"><img id="sharePreviewImg" style="max-width: 100%; border-radius: 15px;"></div>
+                <button class="share-guide-btn" onclick="closeShareGuide()">我知道了</button>
+            </div>
+        `;
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        `;
+        const content = overlay.querySelector('.share-guide-content');
+        content.style.cssText = `
+            text-align: center;
+            color: white;
+        `;
+        const arrow = overlay.querySelector('.share-guide-arrow');
+        arrow.style.cssText = `
+            font-size: 50px;
+            position: absolute;
+            top: 50px;
+            right: 30px;
+            animation: bounce 1s infinite;
+        `;
+        const text = overlay.querySelector('.share-guide-text');
+        text.style.cssText = `
+            font-size: 20px;
+            margin-top: 60px;
+            margin-bottom: 20px;
+            color: #ffd700;
+        `;
+        const preview = overlay.querySelector('.share-preview');
+        preview.style.cssText = `
+            margin: 20px 0;
+            max-height: 50vh;
+            overflow: hidden;
+        `;
+        const btn = overlay.querySelector('.share-guide-btn');
+        btn.style.cssText = `
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+        `;
+        document.body.appendChild(overlay);
+
+        // 添加弹跳动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-15px); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // 设置预览图片
+    document.getElementById('sharePreviewImg').src = dataUrl;
+    overlay.style.display = 'flex';
+
+    // 保存图片到本地供分享
+    saveImageForShare(dataUrl);
+}
+
+function closeShareGuide() {
+    const overlay = document.getElementById('shareGuideOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
+function downloadImage(dataUrl) {
+    const link = document.createElement('a');
+    link.download = `蛋仔派对_${new Date().getTime()}.png`;
+    link.href = dataUrl;
+    link.click();
+    showResult('📤', '分享成功', '图片已保存到相册', '快去分享给好友吧！', '');
+}
+
+function saveImageForShare(dataUrl) {
+    // 在微信中，用户需要长按图片保存
+    // 这里创建一个临时图片供用户长按保存
+    let tempImg = document.getElementById('tempShareImg');
+    if (!tempImg) {
+        tempImg = document.createElement('img');
+        tempImg.id = 'tempShareImg';
+        tempImg.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+        `;
+        document.body.appendChild(tempImg);
+    }
+    tempImg.src = dataUrl;
+}
+
 // ===== 抽奖系统 =====
 function getRandomSkin() {
     const rand = Math.random() * 100;
