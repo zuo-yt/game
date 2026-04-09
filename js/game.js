@@ -481,9 +481,9 @@ const DIFFICULTY_CONFIG = {
 // 不同挑战类型的难度描述
 const CHALLENGE_DESC = {
     math: {
-        easy: '10以内加减法',
-        normal: '20以内加减法',
-        hard: '100以内四则运算'
+        easy: '20以内两数加减',
+        normal: '20以内三数运算',
+        hard: '50以内两数加减'
     },
     chinese: {
         easy: '常用100字拼音',
