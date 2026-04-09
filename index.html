@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>蛋仔派对皮肤盲盒</title>
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20260410g">
+    <link rel="stylesheet" href="css/style.css?v=20260410h">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
@@ -240,9 +240,23 @@
         </div>
     </div>
 
+    <!-- 称号解锁庆贺弹窗 -->
+    <div class="title-unlock-modal" id="titleUnlockModal">
+        <div class="title-unlock-content">
+            <div class="title-unlock-glow"></div>
+            <div class="title-unlock-crown">👑</div>
+            <div class="title-unlock-badge">🎊 获得称号 🎊</div>
+            <div class="title-unlock-icon" id="titleUnlockIcon">🌟</div>
+            <div class="title-unlock-name" id="titleUnlockName">称号名称</div>
+            <div class="title-unlock-desc">快去成就面板装备称号吧！</div>
+            <button class="title-unlock-btn" onclick="closeTitleUnlockAndEquip()">立即装备</button>
+            <button class="title-unlock-btn-skip" onclick="closeTitleUnlock()">稍后再说</button>
+        </div>
+    </div>
+
     <!-- 抽卡动画遮罩 -->
     <div class="draw-overlay" id="drawOverlay"></div>
 
-    <script src="js/game.js?v=20260410n"></script>
+    <script src="js/game.js?v=20260410p"></script>
 </body>
 </html>

@@ -463,7 +463,7 @@ const englishWordBank = [
 ];
 
 // 游戏数据
-let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null, achievements: {}, currentTitle: null, survivalBest: 0, adventureLevel: 0 };
+let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null, achievements: {}, currentTitle: null, survivalBest: 0, adventureLevel: 0, maxCombo: 0, mathPerfect: false, chinesePerfect: false, englishPerfect: false, unlockedTitles: [] };
 let mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
 let chineseIndex = 0;
 let chineseCorrect = 0;
@@ -502,9 +502,9 @@ const ACHIEVEMENTS = [
     { id: 'first_sss', name: '欧皇降临', desc: '首次获得SSS皮肤', icon: '🌟', condition: (d) => d.stats.sss > 0 },
     { id: 'collect_10', name: '收藏家', desc: '收集10种皮肤', icon: '📦', condition: (d) => Object.keys(d.collected).length >= 10 },
     { id: 'collect_all', name: '大满贯', desc: '收集全部30种皮肤', icon: '🏆', condition: (d) => Object.keys(d.collected).length >= 30 },
-    { id: 'math_master', name: '数学小天才', desc: '数学挑战满分', icon: '🔢', condition: (d) => d.achievements.math_master },
-    { id: 'chinese_master', name: '语文小博士', desc: '语文挑战连续10题全对', icon: '📖', condition: (d) => d.achievements.chinese_master },
-    { id: 'english_master', name: '英语达人', desc: '英语挑战满分', icon: '🔤', condition: (d) => d.achievements.english_master },
+    { id: 'math_master', name: '数学小天才', desc: '数学挑战满分', icon: '🔢', condition: (d) => d.mathPerfect },
+    { id: 'chinese_master', name: '语文小博士', desc: '语文挑战连续10题全对', icon: '📖', condition: (d) => d.chinesePerfect },
+    { id: 'english_master', name: '英语达人', desc: '英语挑战满分', icon: '🔤', condition: (d) => d.englishPerfect },
     { id: 'survival_20', name: '生存专家', desc: '生存模式答对20题', icon: '⏱️', condition: (d) => d.survivalBest >= 20 },
     { id: 'survival_50', name: '生存大师', desc: '生存模式答对50题', icon: '🔥', condition: (d) => d.survivalBest >= 50 },
     { id: 'adventure_5', name: '闯关新手', desc: '闯关模式通过5关', icon: '🎯', condition: (d) => d.adventureLevel >= 5 },
@@ -513,10 +513,10 @@ const ACHIEVEMENTS = [
     { id: 'draw_500', name: '赌神', desc: '累计抽卡500次', icon: '💎', condition: (d) => d.totalDraws >= 500 },
     { id: 'charm_1000', name: '魅力四射', desc: '魅力值达到1000', icon: '✨', condition: (d) => d.charm >= 1000 },
     { id: 'charm_10000', name: '魅力之王', desc: '魅力值达到10000', icon: '💫', condition: (d) => d.charm >= 10000 },
-    { id: 'combo_10', name: '连击新手', desc: '达成10连击', icon: '⚡', condition: (d) => d.achievements.combo_10 },
-    { id: 'combo_30', name: '连击大师', desc: '达成30连击', icon: '💥', condition: (d) => d.achievements.combo_30 },
+    { id: 'combo_10', name: '连击新手', desc: '达成10连击', icon: '⚡', condition: (d) => d.maxCombo >= 10 },
+    { id: 'combo_30', name: '连击大师', desc: '达成30连击', icon: '💥', condition: (d) => d.maxCombo >= 30 },
     { id: 'rich', name: '富翁', desc: '蛋币达到10000', icon: '💰', condition: (d) => d.coins >= 10000 },
-    { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', condition: (d) => d.achievements.study_star },
+    { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', condition: (d) => d.achievements.math_master && d.achievements.chinese_master && d.achievements.english_master },
     { id: 'ss_collector', name: 'SS收藏家', desc: '收集5种SS皮肤', icon: '🟡', condition: (d) => countRarity(d.collected, 'ss') >= 5 },
     { id: 's_collector', name: 'S收藏家', desc: '收集5种S皮肤', icon: '🟣', condition: (d) => countRarity(d.collected, 's') >= 5 }
 ];
@@ -688,6 +688,13 @@ function selectSurvivalAnswer(answer) {
         survivalData.combo++;
         if (survivalData.combo > survivalData.maxCombo) survivalData.maxCombo = survivalData.combo;
 
+        // 更新历史最大连击
+        if (survivalData.combo > gameData.maxCombo) {
+            gameData.maxCombo = survivalData.combo;
+            saveGameData();
+            checkAchievements(); // 触发连击成就弹框
+        }
+
         // 连击奖励
         let bonus = 5;
         if (survivalData.combo >= 10) bonus = 10;
@@ -702,16 +709,6 @@ function selectSurvivalAnswer(answer) {
         comboEl.textContent = survivalData.combo;
         comboEl.classList.add('combo-fire');
         setTimeout(() => comboEl.classList.remove('combo-fire'), 300);
-
-        // 检查连击成就
-        if (survivalData.combo >= 10 && !gameData.achievements.combo_10) {
-            gameData.achievements.combo_10 = true;
-            saveGameData();
-        }
-        if (survivalData.combo >= 30 && !gameData.achievements.combo_30) {
-            gameData.achievements.combo_30 = true;
-            saveGameData();
-        }
     } else {
         survivalData.combo = 0;
         document.getElementById('survivalCombo').textContent = '0';
@@ -924,28 +921,43 @@ function equipTitle(titleId) {
     updateEggDisplay();
     renderAchievementList();
 }
-function checkStudyStar() {
-    // 检查三种挑战是否都满分过
-    if (gameData.achievements.math_master && gameData.achievements.chinese_master && gameData.achievements.english_master) {
-        gameData.achievements.study_star = true;
-    }
-}
 
 function checkAchievements() {
     let newAchievements = [];
+    let newTitles = [];
+
     ACHIEVEMENTS.forEach(ach => {
         if (!gameData.achievements[ach.id] && ach.condition(gameData)) {
             gameData.achievements[ach.id] = true;
             newAchievements.push(ach);
+
+            // 检查是否解锁对应称号
+            const title = TITLES.find(t => t.id === ach.id);
+            if (title && !gameData.unlockedTitles?.includes(title.id)) {
+                if (!gameData.unlockedTitles) gameData.unlockedTitles = [];
+                gameData.unlockedTitles.push(title.id);
+                newTitles.push(title);
+            }
         }
     });
-    if (newAchievements.length > 0) {
+
+    if (newAchievements.length > 0 || newTitles.length > 0) {
         saveGameData();
-        // 显示庆贺弹窗
-        showAchievementUnlock(newAchievements[0]);
     }
+
+    // 先显示成就弹框，然后显示称号弹框
+    if (newAchievements.length > 0) {
+        pendingTitlesAfterAchievement = newTitles;
+        showAchievementUnlock(newAchievements[0]);
+    } else if (newTitles.length > 0) {
+        showTitleUnlock(newTitles[0]);
+    }
+
     updateAchievementCount();
 }
+
+// 待显示的称号队列
+let pendingTitlesAfterAchievement = [];
 
 // 显示成就解锁庆贺弹窗
 let pendingAchievements = [];
@@ -963,18 +975,88 @@ function showAchievementUnlock(achievement) {
     document.getElementById('unlockDesc').textContent = achievement.desc;
     document.getElementById('achievementUnlockModal').classList.add('active');
 
-    // 播放庆贺音效（如果有）
+    // 播放庆贺音效
     playUnlockSound();
 }
 
 function closeAchievementUnlock() {
     document.getElementById('achievementUnlockModal').classList.remove('active');
 
+    // 检查是否有待显示的称号
+    if (pendingTitlesAfterAchievement.length > 0) {
+        const title = pendingTitlesAfterAchievement.shift();
+        setTimeout(() => showTitleUnlock(title), 300);
+        return;
+    }
+
     // 检查是否有待显示的成就
     if (pendingAchievements.length > 0) {
         const next = pendingAchievements.shift();
         setTimeout(() => showAchievementUnlock(next), 300);
     }
+}
+
+// 显示称号解锁弹框
+let pendingTitles = [];
+let currentShowingTitle = null;
+function showTitleUnlock(title) {
+    if (!title) return;
+
+    // 如果已有弹窗显示，加入队列
+    if (document.getElementById('titleUnlockModal').classList.contains('active')) {
+        pendingTitles.push(title);
+        return;
+    }
+
+    currentShowingTitle = title;
+    document.getElementById('titleUnlockIcon').textContent = title.icon;
+    document.getElementById('titleUnlockName').textContent = title.name;
+    document.getElementById('titleUnlockModal').classList.add('active');
+
+    // 播放称号解锁音效
+    playTitleUnlockSound();
+}
+
+function closeTitleUnlockAndEquip() {
+    // 装备当前称号
+    if (currentShowingTitle) {
+        gameData.currentTitle = currentShowingTitle.id;
+        saveGameData();
+        updateEggDisplay();
+    }
+    closeTitleUnlock();
+}
+
+function closeTitleUnlock() {
+    document.getElementById('titleUnlockModal').classList.remove('active');
+    currentShowingTitle = null;
+
+    // 检查是否有待显示的称号
+    if (pendingTitles.length > 0) {
+        const next = pendingTitles.shift();
+        setTimeout(() => showTitleUnlock(next), 300);
+    }
+}
+
+function playTitleUnlockSound() {
+    if (!audioCtx) initAudioContext();
+    if (!audioCtx) return;
+
+    try {
+        // 称号解锁特殊音效
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, i) => {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.15);
+            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.15);
+            gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime + i * 0.15 + 0.3);
+            oscillator.start(audioCtx.currentTime + i * 0.15);
+            oscillator.stop(audioCtx.currentTime + i * 0.15 + 0.3);
+        });
+    } catch(e) {}
 }
 
 function playUnlockSound() {
@@ -1199,9 +1281,8 @@ function finishMathQuiz() {
     if (mathData.correct === 20) {
         extraBonus = 100;
         bonus += '<br>🏆 全部答对！额外+100蛋币';
-        // 触发数学满分成就
-        gameData.achievements.math_master = true;
-        checkStudyStar();
+        // 标记数学满分，checkAchievements 会检测并触发弹框
+        gameData.mathPerfect = true;
     }
     const efficiencyReward = Math.floor(mathData.earned * mult);
     const totalReward = efficiencyReward + extraBonus;
@@ -1267,10 +1348,9 @@ function selectPinyin(sel, correct, btn) {
             const totalReward = baseReward + Math.floor(50 * config.multiplier);
             let bonus = chineseCorrect === 10 ? '🎉 全部答对！' : `答对 ${chineseCorrect}/10 题`;
 
-            // 触发语文满分成就
+            // 标记语文满分
             if (chineseCorrect === 10) {
-                gameData.achievements.chinese_master = true;
-                checkStudyStar();
+                gameData.chinesePerfect = true;
             }
 
             showResult('📖', '语文挑战完成！', `完成10道题目`, `+${totalReward} 蛋币`, bonus);
@@ -1483,10 +1563,9 @@ function nextEnglishQuestion() {
         const config = DIFFICULTY_CONFIG[currentDifficulty];
         const bonus = Math.floor(50 * config.multiplier);
 
-        // 触发英语满分成就
+        // 标记英语满分
         if (englishCorrect === 10) {
-            gameData.achievements.english_master = true;
-            checkStudyStar();
+            gameData.englishPerfect = true;
         }
 
         showResult('🔤', '英语挑战完成！', `完成10道题目，正确${englishCorrect}题`, `+${bonus} 蛋币`, englishCorrect === 10 ? '🎉 全部正确！' : '');
