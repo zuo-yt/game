@@ -498,27 +498,30 @@ const CHALLENGE_DESC = {
 };
 
 // ===== 成就配置 =====
+// 成就奖励等级：简单50，中等100，困难200
+const ACHIEVEMENT_REWARD = { easy: 50, medium: 100, hard: 200 };
+
 const ACHIEVEMENTS = [
-    { id: 'first_sss', name: '欧皇降临', desc: '首次获得SSS皮肤', icon: '🌟', condition: (d) => d.stats.sss > 0 },
-    { id: 'collect_10', name: '收藏家', desc: '收集10种皮肤', icon: '📦', condition: (d) => Object.keys(d.collected).length >= 10 },
-    { id: 'collect_all', name: '大满贯', desc: '收集全部30种皮肤', icon: '🏆', condition: (d) => Object.keys(d.collected).length >= 30 },
-    { id: 'math_master', name: '数学小天才', desc: '数学挑战满分', icon: '🔢', condition: (d) => d.mathPerfect },
-    { id: 'chinese_master', name: '语文小博士', desc: '语文挑战连续10题全对', icon: '📖', condition: (d) => d.chinesePerfect },
-    { id: 'english_master', name: '英语达人', desc: '英语挑战满分', icon: '🔤', condition: (d) => d.englishPerfect },
-    { id: 'survival_20', name: '生存专家', desc: '生存模式答对20题', icon: '⏱️', condition: (d) => d.survivalBest >= 20 },
-    { id: 'survival_50', name: '生存大师', desc: '生存模式答对50题', icon: '🔥', condition: (d) => d.survivalBest >= 50 },
-    { id: 'adventure_5', name: '闯关新手', desc: '闯关模式通过5关', icon: '🎯', condition: (d) => d.adventureLevel >= 5 },
-    { id: 'adventure_10', name: '闯关王者', desc: '闯关模式通关', icon: '👑', condition: (d) => d.adventureLevel >= 10 },
-    { id: 'draw_100', name: '抽卡狂魔', desc: '累计抽卡100次', icon: '🎰', condition: (d) => d.totalDraws >= 100 },
-    { id: 'draw_500', name: '赌神', desc: '累计抽卡500次', icon: '💎', condition: (d) => d.totalDraws >= 500 },
-    { id: 'charm_1000', name: '魅力四射', desc: '魅力值达到1000', icon: '✨', condition: (d) => d.charm >= 1000 },
-    { id: 'charm_10000', name: '魅力之王', desc: '魅力值达到10000', icon: '💫', condition: (d) => d.charm >= 10000 },
-    { id: 'combo_10', name: '连击新手', desc: '达成10连击', icon: '⚡', condition: (d) => d.maxCombo >= 10 },
-    { id: 'combo_30', name: '连击大师', desc: '达成30连击', icon: '💥', condition: (d) => d.maxCombo >= 30 },
-    { id: 'rich', name: '富翁', desc: '蛋币达到10000', icon: '💰', condition: (d) => d.coins >= 10000 },
-    { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', condition: (d) => d.achievements.math_master && d.achievements.chinese_master && d.achievements.english_master },
-    { id: 'ss_collector', name: 'SS收藏家', desc: '收集5种SS皮肤', icon: '🟡', condition: (d) => countRarity(d.collected, 'ss') >= 5 },
-    { id: 's_collector', name: 'S收藏家', desc: '收集5种S皮肤', icon: '🟣', condition: (d) => countRarity(d.collected, 's') >= 5 }
+    { id: 'first_sss', name: '欧皇降临', desc: '首次获得SSS皮肤', icon: '🌟', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.stats.sss > 0 },
+    { id: 'collect_10', name: '收藏家', desc: '收集10种皮肤', icon: '📦', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => Object.keys(d.collected).length >= 10 },
+    { id: 'collect_all', name: '大满贯', desc: '收集全部30种皮肤', icon: '🏆', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => Object.keys(d.collected).length >= 30 },
+    { id: 'math_master', name: '数学小天才', desc: '数学挑战满分', icon: '🔢', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.mathPerfect },
+    { id: 'chinese_master', name: '语文小博士', desc: '语文挑战连续10题全对', icon: '📖', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.chinesePerfect },
+    { id: 'english_master', name: '英语达人', desc: '英语挑战满分', icon: '🔤', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.englishPerfect },
+    { id: 'survival_20', name: '生存专家', desc: '生存模式答对20题', icon: '⏱️', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.survivalBest >= 20 },
+    { id: 'survival_50', name: '生存大师', desc: '生存模式答对50题', icon: '🔥', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.survivalBest >= 50 },
+    { id: 'adventure_5', name: '闯关新手', desc: '闯关模式通过5关', icon: '🎯', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.adventureLevel >= 5 },
+    { id: 'adventure_10', name: '闯关王者', desc: '闯关模式通关', icon: '👑', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.adventureLevel >= 10 },
+    { id: 'draw_100', name: '抽卡狂魔', desc: '累计抽卡100次', icon: '🎰', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.totalDraws >= 100 },
+    { id: 'draw_500', name: '赌神', desc: '累计抽卡500次', icon: '💎', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.totalDraws >= 500 },
+    { id: 'charm_1000', name: '魅力四射', desc: '魅力值达到1000', icon: '✨', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.charm >= 1000 },
+    { id: 'charm_10000', name: '魅力之王', desc: '魅力值达到10000', icon: '💫', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.charm >= 10000 },
+    { id: 'combo_10', name: '连击新手', desc: '达成10连击', icon: '⚡', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.maxCombo >= 10 },
+    { id: 'combo_30', name: '连击大师', desc: '达成30连击', icon: '💥', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.maxCombo >= 30 },
+    { id: 'rich', name: '富翁', desc: '蛋币达到10000', icon: '💰', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.coins >= 10000 },
+    { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.achievements.math_master && d.achievements.chinese_master && d.achievements.english_master },
+    { id: 'ss_collector', name: 'SS收藏家', desc: '收集5种SS皮肤', icon: '🟡', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => countRarity(d.collected, 'ss') >= 5 },
+    { id: 's_collector', name: 'S收藏家', desc: '收集5种S皮肤', icon: '🟣', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => countRarity(d.collected, 's') >= 5 }
 ];
 
 // 称号列表（从成就转化）
@@ -727,11 +730,12 @@ function selectSurvivalAnswer(answer) {
             checkAchievements(); // 触发连击成就弹框
         }
 
-        // 连击奖励
-        let bonus = 5;
-        if (survivalData.combo >= 10) bonus = 10;
-        if (survivalData.combo >= 20) bonus = 15;
-        if (survivalData.combo >= 30) bonus = 20;
+        // 连击奖励：基础2蛋币，连击越高奖励越高
+        let bonus = 2; // 基础2蛋币
+        if (survivalData.combo >= 5) bonus = 3;
+        if (survivalData.combo >= 10) bonus = 5;
+        if (survivalData.combo >= 20) bonus = 8;
+        if (survivalData.combo >= 30) bonus = 12;
         gameData.coins += bonus;
         saveGameData();
         updateDisplay();
@@ -766,7 +770,7 @@ function endSurvivalMode() {
 
     checkAchievements();
 
-    const bonus = survivalData.correct * 5 + survivalData.maxCombo * 2;
+    const bonus = survivalData.correct * 2 + survivalData.maxCombo * 2; // 基础奖励 + 连击奖励
     showResult('⏱️', '生存结束！', `答对 ${survivalData.correct} 题 | 最高连击 ${survivalData.maxCombo}`, `+${bonus} 蛋币`, survivalData.maxCombo >= 20 ? '🔥 连击大师！' : '');
 }
 function closeSurvivalMode() {
@@ -832,12 +836,15 @@ function selectAdventureAnswer(answer) {
 
     if (correct) {
         adventureData.correct++;
-        gameData.coins += 10 * adventureData.level;
+        // 答对题目不直接给蛋币，通关才给
 
-        if (adventureData.correct >= 3) {
-            // 通关当前关卡
+        if (adventureData.correct >= 5) {
+            // 通关当前关卡（每关5题）
             adventureData.level++;
             adventureData.correct = 0;
+
+            // 通关奖励10蛋币
+            gameData.coins += 10;
 
             if (adventureData.level > gameData.adventureLevel) {
                 gameData.adventureLevel = adventureData.level;
@@ -845,14 +852,14 @@ function selectAdventureAnswer(answer) {
             saveGameData();
 
             if (adventureData.level > 10) {
-                // 全部通关
+                // 全部通关，额外+100蛋币
                 setTimeout(() => {
                     closeAdventureMode();
-                    gameData.coins += 500;
+                    gameData.coins += 100;
                     saveGameData();
                     updateDisplay();
                     checkAchievements();
-                    showResult('👑', '恭喜通关！', '闯过全部10关！', '+500 蛋币', '🏆 闯关王者！');
+                    showResult('👑', '恭喜通关！', '闯过全部10关！', '+110 蛋币', '🏆 闯关王者！');
                 }, 500);
                 return;
             }
@@ -871,7 +878,7 @@ function selectAdventureAnswer(answer) {
             setTimeout(() => {
                 closeAdventureMode();
                 checkAchievements();
-                showResult('💔', '闯关失败', `到达第 ${adventureData.level} 关`, `+${adventureData.level * 20} 蛋币`, '再接再厉！');
+                showResult('💔', '闯关失败', `到达第 ${adventureData.level} 关`, '', '再接再厉！');
             }, 500);
         } else {
             setTimeout(generateAdventureQuestion, 500);
@@ -963,6 +970,11 @@ function checkAchievements() {
             gameData.achievements[ach.id] = true;
             newAchievements.push(ach);
 
+            // 发放成就奖励蛋币
+            if (ach.reward) {
+                gameData.coins += ach.reward;
+            }
+
             // 检查是否解锁对应称号
             const title = TITLES.find(t => t.id === ach.id);
             if (title && !gameData.unlockedTitles?.includes(title.id)) {
@@ -1005,6 +1017,7 @@ function showAchievementUnlock(achievement) {
     document.getElementById('unlockIcon').textContent = achievement.icon;
     document.getElementById('unlockName').textContent = achievement.name;
     document.getElementById('unlockDesc').textContent = achievement.desc;
+    document.getElementById('unlockReward').textContent = `+${achievement.reward || 50} 蛋币`;
     document.getElementById('achievementUnlockModal').classList.add('active');
 
     // 播放庆贺音效
@@ -1280,7 +1293,7 @@ function submitMathAnswer() {
     if (isNaN(ans)) return;
     const config = DIFFICULTY_CONFIG[currentDifficulty];
     const q = mathData.questions[mathData.currentIndex];
-    const reward = Math.floor(5 * config.multiplier);
+    const reward = Math.floor(2 * config.multiplier); // 每题2蛋币
     if (ans === q.ans) {
         mathData.correct++;
         mathData.earned += reward;
@@ -1312,8 +1325,8 @@ function finishMathQuiz() {
     else { bonus = `⏱️ 用时: ${Math.floor(timeUsed/60)}分${timeUsed%60}秒`; }
     let extraBonus = 0;
     if (mathData.correct === 20) {
-        extraBonus = 100;
-        bonus += '<br>🏆 全部答对！额外+100蛋币';
+        extraBonus = Math.floor(20 * config.multiplier); // 满分额外+20蛋币
+        bonus += '<br>🏆 全部答对！额外+20蛋币';
         // 标记数学满分，checkAchievements 会检测并触发弹框
         gameData.mathPerfect = true;
     }
@@ -1360,7 +1373,7 @@ function showChineseQuestion() {
 }
 function selectPinyin(sel, correct, btn) {
     const config = DIFFICULTY_CONFIG[currentDifficulty];
-    const reward = Math.floor(5 * config.multiplier);
+    const reward = Math.floor(2 * config.multiplier); // 每题2蛋币
     document.querySelectorAll('.pinyin-option').forEach(o => o.style.pointerEvents = 'none');
     if (sel === correct) {
         btn.classList.add('correct');
@@ -1377,17 +1390,18 @@ function selectPinyin(sel, correct, btn) {
         if (chineseIndex < 10) showChineseQuestion();
         else {
             closeChineseQuiz();
-            const baseReward = Math.floor(chineseCorrect * 5 * config.multiplier);
-            const totalReward = baseReward + Math.floor(50 * config.multiplier);
-            let bonus = chineseCorrect === 10 ? '🎉 全部答对！' : `答对 ${chineseCorrect}/10 题`;
+            const config = DIFFICULTY_CONFIG[currentDifficulty];
+            const totalReward = Math.floor(chineseCorrect * 2 * config.multiplier); // 每题2蛋币
+            let bonusText = `答对 ${chineseCorrect}/10 题`;
 
             // 标记语文满分
             if (chineseCorrect === 10) {
                 gameData.chinesePerfect = true;
+                gameData.coins += Math.floor(10 * config.multiplier); // 满分额外+10蛋币
+                bonusText = '🎉 全部答对！额外+10蛋币';
             }
 
-            showResult('📖', '语文挑战完成！', `完成10道题目`, `+${totalReward} 蛋币`, bonus);
-            gameData.coins += Math.floor(50 * config.multiplier);
+            showResult('📖', '语文挑战完成！', `完成10道题目`, `+${totalReward + (chineseCorrect === 10 ? Math.floor(10 * config.multiplier) : 0)} 蛋币`, bonusText);
             saveGameData();
             updateDisplay();
             checkAchievements();
@@ -1550,7 +1564,7 @@ function startSpeaking() {
 // 确认发音正确
 function confirmEnglishCorrect() {
     const config = DIFFICULTY_CONFIG[currentDifficulty];
-    const reward = Math.floor(8 * config.multiplier);
+    const reward = Math.floor(5 * config.multiplier); // 每题5蛋币
     const res = document.getElementById('speechResult');
     res.className = 'speech-result success';
     res.style.background = '#d4edda';
@@ -1594,15 +1608,17 @@ function nextEnglishQuestion() {
     } else {
         closeEnglishQuiz();
         const config = DIFFICULTY_CONFIG[currentDifficulty];
-        const bonus = Math.floor(50 * config.multiplier);
+        const totalReward = Math.floor(englishCorrect * 5 * config.multiplier); // 每题5蛋币
+        let bonusText = `正确${englishCorrect}/10题`;
 
         // 标记英语满分
         if (englishCorrect === 10) {
             gameData.englishPerfect = true;
+            gameData.coins += Math.floor(25 * config.multiplier); // 满分额外+25蛋币
+            bonusText = '🎉 全部正确！额外+25蛋币';
         }
 
-        showResult('🔤', '英语挑战完成！', `完成10道题目，正确${englishCorrect}题`, `+${bonus} 蛋币`, englishCorrect === 10 ? '🎉 全部正确！' : '');
-        gameData.coins += bonus;
+        showResult('🔤', '英语挑战完成！', `完成10道题目`, `+${totalReward + (englishCorrect === 10 ? Math.floor(25 * config.multiplier) : 0)} 蛋币`, bonusText);
         saveGameData();
         updateDisplay();
         checkAchievements();
