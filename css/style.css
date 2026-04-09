@@ -127,6 +127,28 @@
     color: #999;
     margin-top: 5px;
 }
+.egg-display-qrcode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 12px;
+    border-top: 1px dashed #ddd;
+}
+.egg-display-qrcode #shareQrcode {
+    padding: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.egg-display-qrcode #shareQrcode table {
+    margin: 0 !important;
+}
+.egg-display-qrcode .qrcode-tip {
+    font-size: 11px;
+    color: #888;
+    margin-top: 6px;
+}
 .egg-display-card.rarity-c { border: 3px solid #9e9e9e; }
 .egg-display-card.rarity-b { border: 3px solid #43a047; }
 .egg-display-card.rarity-a { border: 3px solid #1e88e5; }

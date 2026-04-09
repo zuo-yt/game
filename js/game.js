@@ -565,6 +565,39 @@ function init() {
     updateLatestItems();
     updateExchangeDisplay();
     checkAchievements();
+    generateShareQrcode(); // 生成分享二维码
+}
+
+// 生成分享二维码
+function generateShareQrcode() {
+    const container = document.getElementById('shareQrcode');
+    if (!container) return;
+
+    // 清空容器
+    container.innerHTML = '';
+
+    // 使用 qrcode-generator 生成二维码
+    const qr = qrcode(0, 'M');
+    qr.addData('https://frame-srdi.upma.site/');
+    qr.make();
+
+    // 创建 table 格式的二维码
+    container.innerHTML = qr.createImgTag(3, 80);
+
+    // 或者使用 table 格式（更清晰）
+    const size = 80;
+    const cellSize = size / qr.getModuleCount();
+    let html = '<table style="border:0;border-collapse:collapse;">';
+    for (let row = 0; row < qr.getModuleCount(); row++) {
+        html += '<tr>';
+        for (let col = 0; col < qr.getModuleCount(); col++) {
+            const color = qr.isDark(row, col) ? '#333' : '#fff';
+            html += `<td style="width:${cellSize}px;height:${cellSize}px;background:${color};"></td>`;
+        }
+        html += '</tr>';
+    }
+    html += '</table>';
+    container.innerHTML = html;
 }
 function createStars() {
     for (let i = 0; i < 30; i++) {

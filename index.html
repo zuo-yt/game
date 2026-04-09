@@ -8,9 +8,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>蛋仔派对皮肤盲盒</title>
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20260410h">
+    <link rel="stylesheet" href="css/style.css?v=20260410i">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 </head>
 <body>
     <div class="stars" id="stars"></div>
@@ -28,6 +29,10 @@
                 </div>
                 <div class="egg-display-name" id="eggDisplayName">蛋仔</div>
                 <div class="egg-display-hint">点击下方已收集皮肤换装，点击当前装备取消</div>
+                <div class="egg-display-qrcode">
+                    <div id="shareQrcode"></div>
+                    <div class="qrcode-tip">扫码玩游戏</div>
+                </div>
             </div>
         </div>
         <!-- 成就入口 -->
@@ -257,6 +262,6 @@
     <!-- 抽卡动画遮罩 -->
     <div class="draw-overlay" id="drawOverlay"></div>
 
-    <script src="js/game.js?v=20260410t"></script>
+    <script src="js/game.js?v=20260410u"></script>
 </body>
 </html>
