@@ -812,9 +812,9 @@ const CHALLENGE_DESC = {
         hard: '50以内两数加减 · 2分钟'
     },
     chinese: {
-        easy: '基础300字拼音',
-        normal: '扩展500字拼音',
-        hard: '进阶1000字拼音'
+        easy: '基础300字拼音（1-5画）',
+        normal: '扩展300字拼音（6-10画）',
+        hard: '进阶300字拼音（10画以上）'
     },
     english: {
         easy: '一年级词汇',
