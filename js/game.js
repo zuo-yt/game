@@ -1147,16 +1147,36 @@ function loadGameData() {
     }
 }
 
-// 添加蛋币（同时累加总计）
+// 添加蛋币（同时累加总计，触发成就检查）
 function addCoins(amount) {
+    const oldTotal = gameData.totalCoins || 0;
     gameData.coins += amount;
-    gameData.totalCoins = (gameData.totalCoins || 0) + amount;
+    gameData.totalCoins = oldTotal + amount;
+
+    // 检查是否达到蛋币成就阈值（10000）
+    const thresholds = [10000];
+    for (const t of thresholds) {
+        if (oldTotal < t && gameData.totalCoins >= t) {
+            checkAchievements();
+            break;
+        }
+    }
 }
 
-// 添加魅力值（同时累加总计）
+// 添加魅力值（同时累加总计，触发成就检查）
 function addCharm(amount) {
+    const oldTotal = gameData.totalCharm || 0;
     gameData.charm += amount;
-    gameData.totalCharm = (gameData.totalCharm || 0) + amount;
+    gameData.totalCharm = oldTotal + amount;
+
+    // 检查是否达到魅力值成就阈值（1000, 10000）
+    const thresholds = [1000, 10000];
+    for (const t of thresholds) {
+        if (oldTotal < t && gameData.totalCharm >= t) {
+            checkAchievements();
+            break;
+        }
+    }
 }
 
 function saveGameData() {
