@@ -463,7 +463,7 @@ const englishWordBank = [
 ];
 
 // 游戏数据
-let gameData = { coins: 0, charm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null, achievements: {}, currentTitle: null, survivalBest: 0, adventureLevel: 0, maxCombo: 0, mathPerfect: false, chinesePerfect: false, englishPerfect: false, unlockedTitles: [] };
+let gameData = { coins: 0, charm: 0, totalCoins: 0, totalCharm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null, achievements: {}, currentTitle: null, survivalBest: 0, adventureLevel: 0, maxCombo: 0, mathPerfect: false, chinesePerfect: false, englishPerfect: false, unlockedTitles: [] };
 let mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
 let chineseIndex = 0;
 let chineseCorrect = 0;
@@ -514,11 +514,11 @@ const ACHIEVEMENTS = [
     { id: 'adventure_10', name: '闯关王者', desc: '闯关模式通关', icon: '👑', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.adventureLevel >= 10 },
     { id: 'draw_100', name: '抽卡狂魔', desc: '累计抽卡100次', icon: '🎰', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.totalDraws >= 100 },
     { id: 'draw_500', name: '赌神', desc: '累计抽卡500次', icon: '💎', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.totalDraws >= 500 },
-    { id: 'charm_1000', name: '魅力四射', desc: '魅力值达到1000', icon: '✨', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.charm >= 1000 },
-    { id: 'charm_10000', name: '魅力之王', desc: '魅力值达到10000', icon: '💫', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.charm >= 10000 },
+    { id: 'charm_1000', name: '魅力四射', desc: '累计获取1000魅力值', icon: '✨', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => (d.totalCharm || d.charm) >= 1000 },
+    { id: 'charm_10000', name: '魅力之王', desc: '累计获取10000魅力值', icon: '💫', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => (d.totalCharm || d.charm) >= 10000 },
     { id: 'combo_10', name: '连击新手', desc: '达成10连击', icon: '⚡', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.maxCombo >= 10 },
     { id: 'combo_30', name: '连击大师', desc: '达成30连击', icon: '💥', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.maxCombo >= 30 },
-    { id: 'rich', name: '富翁', desc: '蛋币达到10000', icon: '💰', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.coins >= 10000 },
+    { id: 'rich', name: '富翁', desc: '累计获取10000蛋币', icon: '💰', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => (d.totalCoins || d.coins) >= 10000 },
     { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.achievements.math_master && d.achievements.chinese_master && d.achievements.english_master },
     { id: 'ss_collector', name: 'SS收藏家', desc: '收集5种SS皮肤', icon: '🟡', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => countRarity(d.collected, 'ss') >= 5 },
     { id: 's_collector', name: 'S收藏家', desc: '收集5种S皮肤', icon: '🟣', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => countRarity(d.collected, 's') >= 5 }
@@ -736,7 +736,7 @@ function selectSurvivalAnswer(answer) {
         if (survivalData.combo >= 10) bonus = 5;
         if (survivalData.combo >= 20) bonus = 8;
         if (survivalData.combo >= 30) bonus = 12;
-        gameData.coins += bonus;
+        addCoins(bonus);
         saveGameData();
         updateDisplay();
 
@@ -844,7 +844,7 @@ function selectAdventureAnswer(answer) {
             adventureData.correct = 0;
 
             // 通关奖励10蛋币
-            gameData.coins += 10;
+            addCoins(10);
 
             if (adventureData.level > gameData.adventureLevel) {
                 gameData.adventureLevel = adventureData.level;
@@ -855,7 +855,7 @@ function selectAdventureAnswer(answer) {
                 // 全部通关，额外+100蛋币
                 setTimeout(() => {
                     closeAdventureMode();
-                    gameData.coins += 100;
+                    addCoins(100);
                     saveGameData();
                     updateDisplay();
                     checkAchievements();
@@ -972,7 +972,7 @@ function checkAchievements() {
 
             // 发放成就奖励蛋币
             if (ach.reward) {
-                gameData.coins += ach.reward;
+                addCoins(ach.reward);
             }
 
             // 检查是否解锁对应称号
@@ -987,6 +987,7 @@ function checkAchievements() {
 
     if (newAchievements.length > 0 || newTitles.length > 0) {
         saveGameData();
+        updateDisplay(); // 更新界面显示蛋币余额
     }
 
     // 先显示成就弹框，然后显示称号弹框
@@ -1154,6 +1155,19 @@ function loadGameData() {
         console.log('localStorage not available');
     }
 }
+
+// 添加蛋币（同时累加总计）
+function addCoins(amount) {
+    gameData.coins += amount;
+    gameData.totalCoins = (gameData.totalCoins || 0) + amount;
+}
+
+// 添加魅力值（同时累加总计）
+function addCharm(amount) {
+    gameData.charm += amount;
+    gameData.totalCharm = (gameData.totalCharm || 0) + amount;
+}
+
 function saveGameData() {
     // 确保数值为整数，防止浮点数精度问题
     gameData.coins = Math.floor(gameData.coins);
@@ -1299,7 +1313,7 @@ function submitMathAnswer() {
         mathData.earned += reward;
         document.getElementById('mathCorrect').textContent = mathData.correct;
         document.getElementById('mathEarned').textContent = mathData.earned;
-        gameData.coins += reward;
+        addCoins(reward);
         saveGameData();
         updateDisplay();
     } else {
@@ -1338,7 +1352,7 @@ function finishMathQuiz() {
     else if (mathData.correct >= 15) { title = '优秀！数学高手！'; icon = '👍'; }
     else if (mathData.correct >= 10) { title = '不错！继续加油！'; icon = '💪'; }
     else { title = '还需努力！'; icon = '📚'; }
-    gameData.coins += (efficiencyReward - mathData.earned) + extraBonus;
+    addCoins((efficiencyReward - mathData.earned) + extraBonus);
     saveGameData();
     updateDisplay();
     checkAchievements();
@@ -1377,7 +1391,7 @@ function selectPinyin(sel, correct, btn) {
     document.querySelectorAll('.pinyin-option').forEach(o => o.style.pointerEvents = 'none');
     if (sel === correct) {
         btn.classList.add('correct');
-        gameData.coins += reward;
+        addCoins(reward);
         chineseCorrect++;
         saveGameData();
         updateDisplay();
@@ -1397,7 +1411,7 @@ function selectPinyin(sel, correct, btn) {
             // 标记语文满分
             if (chineseCorrect === 10) {
                 gameData.chinesePerfect = true;
-                gameData.coins += Math.floor(10 * config.multiplier); // 满分额外+10蛋币
+                addCoins(Math.floor(10 * config.multiplier)); // 满分额外+10蛋币
                 bonusText = '🎉 全部答对！额外+10蛋币';
             }
 
@@ -1571,7 +1585,7 @@ function confirmEnglishCorrect() {
     res.style.color = '#155724';
     res.textContent = '✅ 太棒了！发音正确！';
     englishCorrect++;
-    gameData.coins += reward;
+    addCoins(reward);
     saveGameData();
     updateDisplay();
     setTimeout(nextEnglishQuestion, 1500);
@@ -1614,7 +1628,7 @@ function nextEnglishQuestion() {
         // 标记英语满分
         if (englishCorrect === 10) {
             gameData.englishPerfect = true;
-            gameData.coins += Math.floor(25 * config.multiplier); // 满分额外+25蛋币
+            addCoins(Math.floor(25 * config.multiplier)); // 满分额外+25蛋币
             bonusText = '🎉 全部正确！额外+25蛋币';
         }
 
@@ -1906,7 +1920,7 @@ function addSkinToCollection(skin) {
         gameData.collected[key] = { ...skin, count: 0 };
     }
     gameData.collected[key].count++;
-    gameData.charm += charmValues[skin.rarity];
+    addCharm(charmValues[skin.rarity]);
     // 更新最新获得列表（保留最近10个）
     gameData.latestSkins.unshift({ ...skin, time: Date.now() });
     if (gameData.latestSkins.length > 10) gameData.latestSkins.pop();
@@ -2593,7 +2607,7 @@ function verifyPassword() {
             return;
         }
         const bonus = BONUS_CONFIG[pendingBonusType];
-        gameData.coins += bonus.coins;
+        addCoins(bonus.coins);
         saveGameData();
         updateDisplay();
         closePasswordModal();
