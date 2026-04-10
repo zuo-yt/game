@@ -1161,6 +1161,11 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .achievement-item-status { font-size: 12px; padding: 5px 12px; border-radius: 15px; }
 .achievement-item-status.unlocked { background: #28a745; color: white; }
 .achievement-item-status.locked { background: #ddd; color: #666; }
+/* 成就进度条 */
+.achievement-progress { margin-top: 8px; display: flex; align-items: center; gap: 10px; }
+.progress-bar { flex: 1; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px; transition: width 0.3s ease; }
+.progress-text { font-size: 11px; color: #666; min-width: 50px; text-align: right; }
 .title-item { cursor: pointer; transition: all 0.3s; }
 .title-item:hover { transform: scale(1.02); }
 .title-item.equipped { background: linear-gradient(135deg, #ffd700, #ff8c00) !important; border: 2px solid #ff6b6b !important; }

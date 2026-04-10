@@ -828,26 +828,26 @@ const CHALLENGE_DESC = {
 const ACHIEVEMENT_REWARD = { easy: 50, medium: 100, hard: 200 };
 
 const ACHIEVEMENTS = [
-    { id: 'first_sss', name: '欧皇降临', desc: '首次获得SSS皮肤', icon: '🌟', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.stats.sss > 0 },
-    { id: 'collect_10', name: '收藏家', desc: '收集10种皮肤', icon: '📦', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => Object.keys(d.collected).length >= 10 },
-    { id: 'collect_all', name: '大满贯', desc: '收集全部30种皮肤', icon: '🏆', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => Object.keys(d.collected).length >= 30 },
+    { id: 'first_sss', name: '欧皇降临', desc: '首次获得SSS皮肤', icon: '🌟', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.stats.sss > 0, progress: (d) => ({ current: d.stats.sss, target: 1 }) },
+    { id: 'collect_10', name: '收藏家', desc: '收集10种皮肤', icon: '📦', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => Object.keys(d.collected).length >= 10, progress: (d) => ({ current: Object.keys(d.collected).length, target: 10 }) },
+    { id: 'collect_all', name: '大满贯', desc: '收集全部30种皮肤', icon: '🏆', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => Object.keys(d.collected).length >= 30, progress: (d) => ({ current: Object.keys(d.collected).length, target: 30 }) },
     { id: 'math_master', name: '数学小天才', desc: '数学挑战满分', icon: '🔢', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.mathPerfect },
     { id: 'chinese_master', name: '语文小博士', desc: '语文挑战连续10题全对', icon: '📖', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.chinesePerfect },
     { id: 'english_master', name: '英语达人', desc: '英语挑战满分', icon: '🔤', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.englishPerfect },
-    { id: 'survival_20', name: '生存专家', desc: '生存模式答对20题', icon: '⏱️', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.survivalBest >= 20 },
-    { id: 'survival_50', name: '生存大师', desc: '生存模式答对50题', icon: '🔥', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.survivalBest >= 50 },
-    { id: 'adventure_5', name: '闯关新手', desc: '闯关模式通过5关', icon: '🎯', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.adventureLevel >= 5 },
-    { id: 'adventure_10', name: '闯关王者', desc: '闯关模式通关', icon: '👑', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.adventureLevel >= 10 },
-    { id: 'draw_100', name: '抽卡狂魔', desc: '累计抽卡100次', icon: '🎰', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.totalDraws >= 100 },
-    { id: 'draw_500', name: '赌神', desc: '累计抽卡500次', icon: '💎', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.totalDraws >= 500 },
-    { id: 'charm_1000', name: '魅力四射', desc: '累计获取1000魅力值', icon: '✨', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => (d.totalCharm || d.charm) >= 1000 },
-    { id: 'charm_10000', name: '魅力之王', desc: '累计获取10000魅力值', icon: '💫', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => (d.totalCharm || d.charm) >= 10000 },
-    { id: 'combo_10', name: '连击新手', desc: '达成10连击', icon: '⚡', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.maxCombo >= 10 },
-    { id: 'combo_30', name: '连击大师', desc: '达成30连击', icon: '💥', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.maxCombo >= 30 },
-    { id: 'rich', name: '富翁', desc: '累计获取10000蛋币', icon: '💰', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => (d.totalCoins || d.coins) >= 10000 },
-    { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.achievements.math_master && d.achievements.chinese_master && d.achievements.english_master },
-    { id: 'ss_collector', name: 'SS收藏家', desc: '收集5种SS皮肤', icon: '🟡', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => countRarity(d.collected, 'ss') >= 5 },
-    { id: 's_collector', name: 'S收藏家', desc: '收集5种S皮肤', icon: '🟣', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => countRarity(d.collected, 's') >= 5 }
+    { id: 'survival_20', name: '生存专家', desc: '生存模式答对20题', icon: '⏱️', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.survivalBest >= 20, progress: (d) => ({ current: d.survivalBest, target: 20 }) },
+    { id: 'survival_50', name: '生存大师', desc: '生存模式答对50题', icon: '🔥', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.survivalBest >= 50, progress: (d) => ({ current: d.survivalBest, target: 50 }) },
+    { id: 'adventure_5', name: '闯关新手', desc: '闯关模式通过5关', icon: '🎯', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.adventureLevel >= 5, progress: (d) => ({ current: d.adventureLevel, target: 5 }) },
+    { id: 'adventure_10', name: '闯关王者', desc: '闯关模式通关', icon: '👑', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.adventureLevel >= 10, progress: (d) => ({ current: d.adventureLevel, target: 10 }) },
+    { id: 'draw_100', name: '抽卡狂魔', desc: '累计抽卡100次', icon: '🎰', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.totalDraws >= 100, progress: (d) => ({ current: d.totalDraws || 0, target: 100 }) },
+    { id: 'draw_500', name: '赌神', desc: '累计抽卡500次', icon: '💎', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.totalDraws >= 500, progress: (d) => ({ current: d.totalDraws || 0, target: 500 }) },
+    { id: 'charm_1000', name: '魅力四射', desc: '累计获取1000魅力值', icon: '✨', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => (d.totalCharm || d.charm) >= 1000, progress: (d) => ({ current: d.totalCharm || d.charm || 0, target: 1000 }) },
+    { id: 'charm_10000', name: '魅力之王', desc: '累计获取10000魅力值', icon: '💫', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => (d.totalCharm || d.charm) >= 10000, progress: (d) => ({ current: d.totalCharm || d.charm || 0, target: 10000 }) },
+    { id: 'combo_10', name: '连击新手', desc: '达成10连击', icon: '⚡', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => d.maxCombo >= 10, progress: (d) => ({ current: d.maxCombo || 0, target: 10 }) },
+    { id: 'combo_30', name: '连击大师', desc: '达成30连击', icon: '💥', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.maxCombo >= 30, progress: (d) => ({ current: d.maxCombo || 0, target: 30 }) },
+    { id: 'rich', name: '富翁', desc: '累计获取10000蛋币', icon: '💰', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => (d.totalCoins || d.coins) >= 10000, progress: (d) => ({ current: d.totalCoins || d.coins || 0, target: 10000 }) },
+    { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.achievements.math_master && d.achievements.chinese_master && d.achievements.english_master, progress: (d) => ({ current: (d.achievements.math_master ? 1 : 0) + (d.achievements.chinese_master ? 1 : 0) + (d.achievements.english_master ? 1 : 0), target: 3 }) },
+    { id: 'ss_collector', name: 'SS收藏家', desc: '收集5种SS皮肤', icon: '🟡', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => countRarity(d.collected, 'ss') >= 5, progress: (d) => ({ current: countRarity(d.collected, 'ss'), target: 5 }) },
+    { id: 's_collector', name: 'S收藏家', desc: '收集5种S皮肤', icon: '🟣', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => countRarity(d.collected, 's') >= 5, progress: (d) => ({ current: countRarity(d.collected, 's'), target: 5 }) }
 ];
 
 // 称号列表（从成就转化）
@@ -1290,11 +1290,22 @@ function renderAchievementList() {
         container.innerHTML = ACHIEVEMENTS.map(ach => {
             // 使用 gameData.achievements 作为唯一真相来源
             const unlocked = gameData.achievements[ach.id];
+            // 获取进度信息
+            let progressHtml = '';
+            if (!unlocked && ach.progress) {
+                const prog = ach.progress(gameData);
+                const percent = Math.min(100, Math.floor((prog.current / prog.target) * 100));
+                progressHtml = `<div class="achievement-progress">
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div>
+                    <span class="progress-text">${prog.current}/${prog.target}</span>
+                </div>`;
+            }
             return `<div class="achievement-item ${unlocked ? 'unlocked' : 'locked'}">
                 <div class="achievement-item-icon">${unlocked ? ach.icon : '🔒'}</div>
                 <div class="achievement-item-info">
                     <div class="achievement-item-name">${ach.name}</div>
                     <div class="achievement-item-desc">${ach.desc}</div>
+                    ${progressHtml}
                 </div>
                 <div class="achievement-item-status ${unlocked ? 'unlocked' : 'locked'}">${unlocked ? '已解锁' : '未解锁'}</div>
             </div>`;
