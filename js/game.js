@@ -1118,26 +1118,70 @@ function updateAdventureUI() {
 }
 function generateAdventureQuestion() {
     const level = adventureData.level;
+    // 关卡难度映射：1-3关(easy), 4-7关(normal), 8-10关(hard)
     const difficulty = level <= 3 ? 'easy' : (level <= 7 ? 'normal' : 'hard');
     const config = DIFFICULTY_CONFIG[difficulty];
 
-    // 数学题
-    const maxNum = config.mathRange;
-    const a = Math.floor(Math.random() * maxNum);
-    const b = Math.floor(Math.random() * Math.min(maxNum, 20));
-    const ops = level <= 5 ? ['+', '-'] : ['+', '-', '×', '÷'];
-    const op = ops[Math.floor(Math.random() * ops.length)];
-    let answer;
-    let displayA = a, displayB = b;
+    // 完全对齐数学挑战难度配置
+    const range = config.mathRange;
+    const operands = config.operands;
+    const ops = ['+', '-'];  // 统一使用加减运算
 
-    if (op === '+') answer = a + b;
-    else if (op === '-') { if (a < b) { displayA = b; displayB = a; } answer = displayA - displayB; }
-    else if (op === '×') { displayA = Math.floor(Math.random() * 10) + 1; displayB = Math.floor(Math.random() * 10) + 1; answer = displayA * displayB; }
-    else { displayB = Math.floor(Math.random() * 9) + 1; answer = Math.floor(Math.random() * 10) + 1; displayA = displayB * answer; }
+    let answer, questionText;
 
-    adventureData.currentQuestion = { answer, op };
-    document.getElementById('adventureQuestion').textContent = `${displayA} ${op} ${displayB} = ?`;
+    if (operands === 2) {
+        // 两数运算（easy/hard）
+        const a = Math.floor(Math.random() * range);
+        const b = Math.floor(Math.random() * range);
+        const op = ops[Math.floor(Math.random() * ops.length)];
 
+        if (op === '+') {
+            answer = a + b;
+            questionText = `${a} + ${b} = ?`;
+        } else {
+            // 减法确保结果非负
+            const displayA = Math.max(a, b);
+            const displayB = Math.min(a, b);
+            answer = displayA - displayB;
+            questionText = `${displayA} - ${displayB} = ?`;
+        }
+    } else {
+        // 三数运算（normal）
+        const a = Math.floor(Math.random() * range);
+        const b = Math.floor(Math.random() * range);
+        const c = Math.floor(Math.random() * range);
+        const op1 = ops[Math.floor(Math.random() * ops.length)];
+        const op2 = ops[Math.floor(Math.random() * ops.length)];
+
+        // 计算三数运算结果（确保中间结果非负）
+        let result1, displayA1, displayB1;
+        if (op1 === '+') {
+            result1 = a + b;
+            displayA1 = a;
+            displayB1 = b;
+        } else {
+            displayA1 = Math.max(a, b);
+            displayB1 = Math.min(a, b);
+            result1 = displayA1 - displayB1;
+        }
+
+        let finalAnswer, displayC;
+        if (op2 === '+') {
+            finalAnswer = result1 + c;
+            displayC = c;
+        } else {
+            displayC = Math.min(result1, c);
+            finalAnswer = result1 - displayC;
+        }
+
+        answer = finalAnswer;
+        questionText = `${displayA1} ${op1} ${displayB1} ${op2} ${displayC} = ?`;
+    }
+
+    adventureData.currentQuestion = { answer };
+    document.getElementById('adventureQuestion').textContent = questionText;
+
+    // 生成选项
     const options = [answer];
     while (options.length < 4) {
         const wrong = answer + Math.floor(Math.random() * 10) - 5;
