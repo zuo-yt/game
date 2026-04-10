@@ -232,14 +232,149 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .quiz-btn.english { background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)); color: white; }
 .quiz-btn .icon { font-size: 30px; display: block; margin-bottom: 8px; }
 .quiz-btn .reward { font-size: 11px; opacity: 0.9; margin-top: 5px; }
-.draw-section { text-align: center; margin-bottom: 30px; }
-.draw-buttons { display: flex; gap: 20px; justify-content: center; }
-.draw-btn { padding: 20px 40px; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.3s; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-.draw-btn:hover:not(:disabled) { transform: translateY(-3px); }
-.draw-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.draw-btn.single { background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; }
-.draw-btn.ten { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; }
-.draw-btn .price { font-size: 12px; opacity: 0.9; display: block; margin-top: 5px; }
+/* ===== 抽卡按钮 - 核心转化入口 ===== */
+.draw-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 25px 20px;
+    background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(240,147,251,0.08) 100%);
+    border-radius: 20px;
+    position: relative;
+}
+.draw-section::before {
+    content: '🎁 抽卡商城';
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+.draw-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+.draw-btn {
+    position: relative;
+    padding: 18px 35px;
+    border: 3px solid transparent;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    min-width: 140px;
+}
+/* 按钮内光晕 */
+.draw-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.draw-btn:hover:not(:disabled)::before {
+    opacity: 1;
+}
+/* 流光动画 */
+.draw-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+    animation: btnShine 3s infinite linear;
+    pointer-events: none;
+}
+@keyframes btnShine {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+.draw-btn:hover:not(:disabled) {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+}
+.draw-btn:active:not(:disabled) {
+    transform: translateY(-2px) scale(0.98);
+}
+.draw-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(30%);
+}
+/* 单抽按钮 */
+.draw-btn.single {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5a67d8 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(102,126,234,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.2);
+}
+.draw-btn.single:hover:not(:disabled) {
+    box-shadow: 0 15px 40px rgba(102,126,234,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.4);
+}
+/* 十连抽按钮 - 更显眼 */
+.draw-btn.ten {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 30%, #ff6b9d 70%, #c44569 100%);
+    color: white;
+    box-shadow: 0 8px 30px rgba(240,147,251,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+    border-color: rgba(255,215,0,0.3);
+    animation: tenBtnPulse 2s infinite ease-in-out;
+    min-width: 160px;
+}
+@keyframes tenBtnPulse {
+    0%, 100% { box-shadow: 0 8px 30px rgba(240,147,251,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
+    50% { box-shadow: 0 12px 40px rgba(240,147,251,0.6), inset 0 1px 0 rgba(255,255,255,0.3), 0 0 20px rgba(255,215,0,0.3); }
+}
+.draw-btn.ten:hover:not(:disabled) {
+    box-shadow: 0 20px 50px rgba(240,147,251,0.6), inset 0 1px 0 rgba(255,255,255,0.4), 0 0 30px rgba(255,215,0,0.4);
+    border-color: rgba(255,215,0,0.6);
+    animation: none;
+}
+/* 抽卡按钮内图标 */
+.draw-btn-icon {
+    font-size: 22px;
+    margin-right: 8px;
+    vertical-align: middle;
+    display: inline-block;
+    animation: iconBounce 1.5s infinite ease-in-out;
+}
+@keyframes iconBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+/* 抽卡按钮文字 */
+.draw-btn-text {
+    display: inline-block;
+    vertical-align: middle;
+}
+.draw-btn .price {
+    font-size: 11px;
+    opacity: 0.85;
+    display: block;
+    margin-top: 6px;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+/* 十连抽优惠标签 */
+.draw-btn.ten .price::before {
+    content: '💰 省10蛋币！';
+    display: block;
+    font-size: 10px;
+    color: #ffd700;
+    margin-bottom: 2px;
+    font-weight: bold;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
 .result-section { margin-bottom: 30px; padding: 25px; background: linear-gradient(135deg, var(--bg-light), var(--bg-gray)); border-radius: 20px; min-height: 200px; }
 .result-title { font-size: 18px; color: var(--text-dark); margin-bottom: 15px; text-align: center; }
 .result-boxes { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
@@ -858,8 +993,12 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
     /* 抽卡按钮 一行展示 */
     .draw-section { margin-bottom: 20px; }
     .draw-buttons { flex-direction: row; gap: 12px; }
-    .draw-btn { width: auto; flex: 1; padding: 12px 10px; font-size: 14px; min-height: 55px; }
+    .draw-btn { width: auto; flex: 1; padding: 14px 12px; font-size: 14px; min-height: 70px; border-radius: 15px; }
+    .draw-btn-icon { font-size: 18px; margin-right: 5px; }
     .draw-btn .price { font-size: 10px; margin-top: 3px; }
+    .draw-btn.ten .price::before { font-size: 9px; }
+    .draw-section { padding: 15px 10px; margin-bottom: 20px; }
+    .draw-buttons { gap: 10px; }
 
     /* 统计卡片 3列布局 */
     .stats-section { margin-bottom: 20px; }

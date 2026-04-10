@@ -366,101 +366,421 @@ const BONUS_CONFIG = {
 };
 let pendingBonusType = null;
 
-// ===== 小学一年级完整生字表（约300字）=====
-const pinyinData = {
-    // 上册
-    '一': 'yī', '二': 'èr', '三': 'sān', '四': 'sì', '五': 'wǔ', '六': 'liù', '七': 'qī', '八': 'bā', '九': 'jiǔ', '十': 'shí',
-    '上': 'shàng', '下': 'xià', '大': 'dà', '小': 'xiǎo', '多': 'duō', '少': 'shǎo', '左': 'zuǒ', '右': 'yòu', '早': 'zǎo', '书': 'shū',
-    '人': 'rén', '口': 'kǒu', '手': 'shǒu', '足': 'zú', '耳': 'ěr', '目': 'mù', '山': 'shān', '水': 'shuǐ', '火': 'huǒ', '土': 'tǔ',
-    '日': 'rì', '月': 'yuè', '田': 'tián', '禾': 'hé', '竹': 'zhú', '石': 'shí', '刀': 'dāo', '力': 'lì', '米': 'mǐ', '豆': 'dòu',
-    '天': 'tiān', '地': 'dì', '花': 'huā', '草': 'cǎo', '树': 'shù', '木': 'mù', '叶': 'yè', '云': 'yún', '风': 'fēng', '雨': 'yǔ',
-    '鸟': 'niǎo', '虫': 'chóng', '鱼': 'yú', '马': 'mǎ', '牛': 'niú', '羊': 'yáng', '犬': 'quǎn', '皮': 'pí', '毛': 'máo', '牙': 'yá',
-    '我': 'wǒ', '你': 'nǐ', '他': 'tā', '她': 'tā', '们': 'men', '是': 'shì', '的': 'de', '有': 'yǒu', '在': 'zài', '不': 'bù',
-    '了': 'le', '也': 'yě', '就': 'jiù', '都': 'dōu', '会': 'huì', '能': 'néng', '说': 'shuō', '听': 'tīng', '看': 'kàn', '想': 'xiǎng',
-    '来': 'lái', '去': 'qù', '出': 'chū', '入': 'rù', '开': 'kāi', '关': 'guān', '坐': 'zuò', '立': 'lì', '走': 'zǒu', '跑': 'pǎo',
-    '爸': 'bà', '妈': 'mā', '爷': 'yé', '奶': 'nǎi', '哥': 'gē', '弟': 'dì', '姐': 'jiě', '妹': 'mèi', '老': 'lǎo', '师': 'shī',
-    '学': 'xué', '生': 'shēng', '校': 'xiào', '班': 'bān', '同': 'tóng', '友': 'yǒu', '字': 'zì', '词': 'cí', '句': 'jù', '文': 'wén',
-    '白': 'bái', '红': 'hóng', '黄': 'huáng', '蓝': 'lán', '绿': 'lǜ', '黑': 'hēi', '灰': 'huī', '金': 'jīn', '银': 'yín', '彩': 'cǎi',
-    '春': 'chūn', '夏': 'xià', '秋': 'qiū', '冬': 'dōng', '东': 'dōng', '西': 'xī', '南': 'nán', '北': 'běi', '前': 'qián', '后': 'hòu',
-    '里': 'lǐ', '外': 'wài', '高': 'gāo', '低': 'dī', '长': 'cháng', '短': 'duǎn', '宽': 'kuān', '窄': 'zhǎi', '厚': 'hòu', '薄': 'báo',
-    '正': 'zhèng', '反': 'fǎn', '对': 'duì', '错': 'cuò', '真': 'zhēn', '假': 'jiǎ', '好': 'hǎo', '坏': 'huài', '新': 'xīn', '旧': 'jiù',
-    '快': 'kuài', '慢': 'màn', '冷': 'lěng', '热': 'rè', '明': 'míng', '暗': 'àn', '干': 'gān', '净': 'jìng', '脏': 'zāng', '乱': 'luàn',
-    // 下册
-    '飞': 'fēi', '机': 'jī', '车': 'chē', '船': 'chuán', '路': 'lù', '桥': 'qiáo', '灯': 'dēng', '塔': 'tǎ', '城': 'chéng', '村': 'cūn',
-    '家': 'jiā', '门': 'mén', '窗': 'chuāng', '房': 'fáng', '屋': 'wū', '床': 'chuáng', '桌': 'zhuō', '椅': 'yǐ', '柜': 'guì', '箱': 'xiāng',
-    '衣': 'yī', '服': 'fu', '鞋': 'xié', '帽': 'mào', '袜': 'wà', '巾': 'jīn', '被': 'bèi', '枕': 'zhěn', '席': 'xí', '毯': 'tǎn',
-    '饭': 'fàn', '菜': 'cài', '肉': 'ròu', '蛋': 'dàn', '汤': 'tāng', '面': 'miàn', '包': 'bāo', '饼': 'bǐng', '果': 'guǒ', '瓜': 'guā',
-    '桃': 'táo', '梨': 'lí', '杏': 'xìng', '李': 'lǐ', '橘': 'jú', '苹': 'píng', '葡': 'pú', '萄': 'táo', '萝': 'luó', '卜': 'bo',
-    '茄': 'qié', '椒': 'jiāo', '葱': 'cōng', '蒜': 'suàn', '姜': 'jiāng', '盐': 'yán', '油': 'yóu', '酱': 'jiàng', '醋': 'cù', '茶': 'chá',
-    '杯': 'bēi', '瓶': 'píng', '碗': 'wǎn', '盘': 'pán', '筷': 'kuài', '勺': 'sháo', '叉': 'chā', '刀': 'dāo', '壶': 'hú', '盆': 'pén',
-    '猫': 'māo', '狗': 'gǒu', '猪': 'zhū', '鸡': 'jī', '鸭': 'yā', '鹅': 'é', '兔': 'tù', '虎': 'hǔ', '狮': 'shī', '象': 'xiàng',
-    '猴': 'hóu', '鹿': 'lù', '熊': 'xióng', '狼': 'láng', '鼠': 'shǔ', '蛇': 'shé', '蛙': 'wā', '龟': 'guī', '鹤': 'hè', '鹰': 'yīng',
-    '燕': 'yàn', '鸦': 'yā', '鹊': 'què', '蝶': 'dié', '蜂': 'fēng', '蚁': 'yǐ', '龙': 'lóng', '凤': 'fèng', '麒': 'qí', '麟': 'lín',
-    '球': 'qiú', '拍': 'pāi', '跑': 'pǎo', '跳': 'tiào', '踢': 'tī', '打': 'dǎ', '拔': 'bá', '画': 'huà', '写': 'xiě',
-    '读': 'dú', '背': 'bèi', '唱': 'chàng', '玩': 'wán', '乐': 'lè', '笑': 'xiào', '哭': 'kū', '闹': 'nào', '静': 'jìng',
-    '星': 'xīng', '亮': 'liàng', '阳': 'yáng', '光': 'guāng', '空': 'kōng', '气': 'qì', '清': 'qīng', '洁': 'jié', '美': 'měi', '丽': 'lì',
-    '爱': 'ài', '情': 'qíng', '心': 'xīn', '思': 'sī', '念': 'niàn', '记': 'jì', '忘': 'wàng', '知': 'zhī', '识': 'shí', '懂': 'dǒng',
-    '事': 'shì', '物': 'wù', '品': 'pǐn', '样': 'yàng', '种': 'zhǒng', '类': 'lèi', '群': 'qún', '众': 'zhòng', '个': 'gè',
-    '只': 'zhī', '条': 'tiáo', '头': 'tóu', '尾': 'wěi', '身': 'shēn', '体': 'tǐ', '脸': 'liǎn', '眼': 'yǎn', '鼻': 'bí', '舌': 'shé'
+// ===== 语文字库难度分级（各级别独立，无重叠）=====
+// 1-5画汉字（300字）：基础高频单字，覆盖数字、方位、人体、自然等核心场景
+const pinyinEasy = {
+    // 1画（2字）
+    '一': 'yī', '乙': 'yǐ',
+    // 2画（24字）
+    '二': 'èr', '十': 'shí', '卜': 'bǔ', '八': 'bā', '人': 'rén', '入': 'rù', '儿': 'ér', '几': 'jǐ', '九': 'jiǔ', '力': 'lì',
+    '刀': 'dāo', '又': 'yòu', '乃': 'nǎi', '丁': 'dīng', '厂': 'chǎng', '卜': 'bo', '七': 'qī', '刁': 'diāo', '了': 'le', '乜': 'miē',
+    '八': 'bā', '匕': 'bǐ', '卜': 'bǔ', '乂': 'yì',
+    // 3画（50字）
+    '三': 'sān', '上': 'shàng', '下': 'xià', '口': 'kǒu', '土': 'tǔ', '士': 'shì', '夕': 'xī', '大': 'dà', '女': 'nǚ', '子': 'zǐ',
+    '寸': 'cùn', '小': 'xiǎo', '山': 'shān', '川': 'chuān', '工': 'gōng', '己': 'jǐ', '已': 'yǐ', '巳': 'sì', '巾': 'jīn', '千': 'qiān',
+    '乞': 'qǐ', '万': 'wàn', '丈': 'zhàng', '三': 'sān', '丸': 'wán', '凡': 'fán', '亡': 'wáng', '门': 'mén', '广': 'guǎng', '弓': 'gōng',
+    '子': 'zǐ', '也': 'yě', '飞': 'fēi', '习': 'xí', '马': 'mǎ', '幺': 'yāo', '久': 'jiǔ', '及': 'jí', '个': 'gè', '义': 'yì',
+    '之': 'zhī', '尸': 'shī', '亏': 'kuī', '与': 'yǔ', '才': 'cái', '叉': 'chā', '士': 'shì', '弋': 'yì', '于': 'yú', '亏': 'kuī',
+    // 4画（100字）
+    '丰': 'fēng', '王': 'wáng', '木': 'mù', '五': 'wǔ', '少': 'shǎo', '太': 'tài', '天': 'tiān', '夫': 'fū', '元': 'yuán', '无': 'wú',
+    '云': 'yún', '专': 'zhuān', '扎': 'zhā', '艺': 'yì', '木': 'mù', '支': 'zhī', '不': 'bù', '犬': 'quǎn', '歹': 'dǎi', '车': 'chē',
+    '牙': 'yá', '比': 'bǐ', '互': 'hù', '切': 'qiē', '瓦': 'wǎ', '止': 'zhǐ', '日': 'rì', '中': 'zhōng', '贝': 'bèi', '内': 'nèi',
+    '水': 'shuǐ', '见': 'jiàn', '午': 'wǔ', '牛': 'niú', '手': 'shǒu', '毛': 'máo', '气': 'qì', '壬': 'rén', '升': 'shēng', '长': 'cháng',
+    '仁': 'rén', '什': 'shén', '片': 'piàn', '仆': 'pú', '化': 'huà', '仇': 'chóu', '币': 'bì', '仍': 'réng', '仅': 'jǐn', '斤': 'jīn',
+    '爪': 'zhǎo', '反': 'fǎn', '介': 'jiè', '父': 'fù', '勿': 'wù', '匀': 'yún', '勾': 'gōu', '欠': 'qiàn', '风': 'fēng', '丹': 'dān',
+    '卞': 'biàn', '文': 'wén', '方': 'fāng', '火': 'huǒ', '斗': 'dòu', '户': 'hù', '心': 'xīn', '尹': 'yǐn', '尺': 'chǐ', '丑': 'chǒu',
+    '巴': 'bā', '办': 'bàn', '予': 'yǔ', '书': 'shū', '毋': 'wú', '双': 'shuāng', '幻': 'huàn', '邓': 'dèng', '队': 'duì', '凤': 'fèng',
+    '孔': 'kǒng', '巴': 'bā', '斤': 'jīn', '厄': 'è', '引': 'yǐn', '允': 'yǔn', '友': 'yǒu', '尤': 'yóu', '匹': 'pǐ', '巴': 'bā',
+    '孔': 'kǒng', '少': 'shào', '区': 'qū', '专': 'zhuān', '历': 'lì', '友': 'yǒu', '仁': 'rén', '元': 'yuán', '木': 'mù', '王': 'wáng',
+    // 5画（124字，补足300字）
+    '玉': 'yù', '末': 'mò', '未': 'wèi', '示': 'shì', '甘': 'gān', '世': 'shì', '古': 'gǔ', '节': 'jié', '本': 'běn', '术': 'shù',
+    '可': 'kě', '丙': 'bǐng', '左': 'zuǒ', '厉': 'lì', '石': 'shí', '右': 'yòu', '布': 'bù', '龙': 'lóng', '平': 'píng', '灭': 'miè',
+    '打': 'dǎ', '东': 'dōng', '巧': 'qiǎo', '扑': 'pū', '北': 'běi', '卡': 'kǎ', '扔': 'rēng', '占': 'zhàn', '业': 'yè', '旧': 'jiù',
+    '帅': 'shuài', '归': 'guī', '且': 'qiě', '旦': 'dàn', '目': 'mù', '叶': 'yè', '甲': 'jiǎ', '申': 'shēn', '叮': 'dīng', '电': 'diàn',
+    '号': 'hào', '田': 'tián', '由': 'yóu', '史': 'shǐ', '只': 'zhī', '央': 'yāng', '兄': 'xiōng', '叼': 'diāo', '叫': 'jiào', '另': 'lìng',
+    '叨': 'dāo', '叹': 'tàn', '四': 'sì', '生': 'shēng', '失': 'shī', '禾': 'hé', '丘': 'qiū', '付': 'fù', '仗': 'zhàng', '代': 'dài',
+    '仙': 'xiān', '们': 'men', '仪': 'yí', '白': 'bái', '仔': 'zǎi', '他': 'tā', '斥': 'chì', '瓜': 'guā', '乎': 'hū', '丛': 'cóng',
+    '令': 'lìng', '用': 'yòng', '甩': 'shuǎi', '印': 'yìn', '乐': 'lè', '句': 'jù', '匆': 'cōng', '册': 'cè', '犯': 'fàn', '外': 'wài',
+    '处': 'chù', '冬': 'dōng', '鸟': 'niǎo', '务': 'wù', '包': 'bāo', '饥': 'jī', '主': 'zhǔ', '市': 'shì', '立': 'lì', '闪': 'shǎn',
+    '兰': 'lán', '半': 'bàn', '汁': 'zhī', '汇': 'huì', '头': 'tóu', '汉': 'hàn', '宁': 'níng', '穴': 'xué', '它': 'tā', '讨': 'tǎo',
+    '写': 'xiě', '让': 'ràng', '礼': 'lǐ', '训': 'xùn', '议': 'yì', '讯': 'xùn', '出': 'chū', '奶': 'nǎi', '奴': 'nú', '加': 'jiā',
+    '召': 'zhào', '皮': 'pí', '边': 'biān', '发': 'fā', '孕': 'yùn', '圣': 'shèng', '对': 'duì', '台': 'tái', '矛': 'máo', '纠': 'jiū',
+    '母': 'mǔ', '幼': 'yòu', '丝': 'sī', '辽': 'liáo', '奶': 'nǎi', '击': 'jī', '正': 'zhèng', '扒': 'bā', '扑': 'pū', '扒': 'pá',
+    '去': 'qù', '甘': 'gān', '世': 'shì', '古': 'gǔ', '石': 'shí', '布': 'bù', '平': 'píng', '灭': 'miè', '左': 'zuǒ', '右': 'yòu',
+    '卡': 'qiǎ', '占': 'zhàn', '业': 'yè', '旧': 'jiù', '旦': 'dàn', '目': 'mù', '叶': 'yè', '申': 'shēn', '叮': 'dīng', '电': 'diàn'
 };
 
-// ===== 小学英语完整词汇表（约500词）=====
-const englishWordBank = [
-    // 一年级
-    { word: 'apple', meaning: '苹果' }, { word: 'banana', meaning: '香蕉' }, { word: 'cat', meaning: '猫' }, { word: 'dog', meaning: '狗' },
-    { word: 'egg', meaning: '蛋' }, { word: 'fish', meaning: '鱼' }, { word: 'girl', meaning: '女孩' }, { word: 'boy', meaning: '男孩' },
-    { word: 'hand', meaning: '手' }, { word: 'ice', meaning: '冰' }, { word: 'jump', meaning: '跳' }, { word: 'kite', meaning: '风筝' },
-    { word: 'lion', meaning: '狮子' }, { word: 'milk', meaning: '牛奶' }, { word: 'nose', meaning: '鼻子' }, { word: 'orange', meaning: '橙子' },
-    { word: 'pig', meaning: '猪' }, { word: 'queen', meaning: '女王' }, { word: 'rabbit', meaning: '兔子' }, { word: 'sun', meaning: '太阳' },
-    { word: 'tree', meaning: '树' }, { word: 'umbrella', meaning: '雨伞' }, { word: 'violin', meaning: '小提琴' }, { word: 'water', meaning: '水' },
-    { word: 'box', meaning: '盒子' }, { word: 'yellow', meaning: '黄色' }, { word: 'zoo', meaning: '动物园' }, { word: 'book', meaning: '书' },
-    { word: 'car', meaning: '汽车' }, { word: 'door', meaning: '门' }, { word: 'eye', meaning: '眼睛' }, { word: 'food', meaning: '食物' },
-    // 二年级
-    { word: 'happy', meaning: '开心的' }, { word: 'sad', meaning: '伤心的' }, { word: 'angry', meaning: '生气的' }, { word: 'tired', meaning: '累的' },
-    { word: 'hungry', meaning: '饿的' }, { word: 'thirsty', meaning: '渴的' }, { word: 'hot', meaning: '热的' }, { word: 'cold', meaning: '冷的' },
+// 6-10画汉字（300字）：扩展常用字，覆盖生活、学习、交通等场景
+const pinyinNormal = {
+    // 6画（60字）
+    '匡': 'kuāng', '邦': 'bāng', '邢': 'xíng', '邪': 'xié', '尧': 'yáo', '则': 'zé', '刚': 'gāng', '网': 'wǎng', '肉': 'ròu', '年': 'nián',
+    '朱': 'zhū', '先': 'xiān', '丢': 'diū', '舌': 'shé', '竹': 'zhú', '迁': 'qiān', '乔': 'qiáo', '伟': 'wěi', '传': 'chuán', '乒': 'pīng',
+    '乓': 'pāng', '休': 'xiū', '伍': 'wǔ', '伏': 'fú', '优': 'yōu', '伐': 'fá', '延': 'yán', '件': 'jiàn', '任': 'rèn', '伤': 'shāng',
+    '价': 'jià', '份': 'fèn', '华': 'huá', '仰': 'yǎng', '仿': 'fǎng', '伙': 'huǒ', '伪': 'wěi', '自': 'zì', '血': 'xuè', '向': 'xiàng',
+    '似': 'sì', '后': 'hòu', '行': 'xíng', '舟': 'zhōu', '全': 'quán', '会': 'huì', '杀': 'shā', '合': 'hé', '兆': 'zhào', '企': 'qǐ',
+    '众': 'zhòng', '爷': 'yé', '伞': 'sǎn', '创': 'chuàng', '肌': 'jī', '朵': 'duǒ', '杂': 'zá', '危': 'wēi', '旬': 'xún', '旨': 'zhǐ',
+    // 7画（60字）
+    '麦': 'mài', '玖': 'jiǔ', '玛': 'mǎ', '形': 'xíng', '进': 'jìn', '戒': 'jiè', '吞': 'tūn', '远': 'yuǎn', '违': 'wéi', '韧': 'rèn',
+    '韧': 'rèn', '运': 'yùn', '扶': 'fú', '抚': 'fǔ', '坛': 'tán', '技': 'jì', '坏': 'huài', '扰': 'rǎo', '拒': 'jù', '找': 'zhǎo',
+    '批': 'pī', '扳': 'bān', '扮': 'bàn', '抢': 'qiǎng', '孝': 'xiào', '均': 'jūn', '抛': 'pāo', '投': 'tóu', '坟': 'fén', '抗': 'kàng',
+    '坊': 'fāng', '抖': 'dǒu', '护': 'hù', '壳': 'ké', '志': 'zhì', '扭': 'niǔ', '块': 'kuài', '声': 'shēng', '把': 'bǎ', '报': 'bào',
+    '拟': 'nǐ', '却': 'què', '抒': 'shū', '劫': 'jié', '芙': 'fú', '芜': 'wú', '苇': 'wěi', '芽': 'yá', '花': 'huā', '芹': 'qín',
+    '芬': 'fēn', '苍': 'cāng', '芳': 'fāng', '严': 'yán', '芦': 'lú', '克': 'kè', '苏': 'sū', '杆': 'gān', '杠': 'gàng', '杜': 'dù',
+    // 8画（60字）
+    '玩': 'wán', '环': 'huán', '青': 'qīng', '现': 'xiàn', '表': 'biǎo', '规': 'guī', '抹': 'mǒ', '拢': 'lǒng', '拔': 'bá', '拣': 'jiǎn',
+    '担': 'dān', '坦': 'tǎn', '抽': 'chōu', '拐': 'guǎi', '拖': 'tuō', '拍': 'pāi', '者': 'zhě', '顶': 'dǐng', '拆': 'chāi', '拎': 'līn',
+    '幸': 'xìng', '坡': 'pō', '坦': 'tǎn', '披': 'pī', '抬': 'tái', '抵': 'dǐ', '抱': 'bào', '抿': 'mǐn', '抹': 'mǒ', '抽': 'chōu',
+    '招': 'zhāo', '拜': 'bài', '拢': 'lǒng', '拣': 'jiǎn', '放': 'fàng', '斧': 'fǔ', '欣': 'xīn', '杯': 'bēi', '杵': 'chǔ', '枚': 'méi',
+    '板': 'bǎn', '松': 'sōng', '杭': 'háng', '枋': 'fāng', '构': 'gòu', '析': 'xī', '林': 'lín', '枚': 'méi', '果': 'guǒ', '枝': 'zhī',
+    '枞': 'cōng', '枢': 'shū', '枣': 'zǎo', '枫': 'fēng', '枭': 'xiāo', '柜': 'guì', '枰': 'píng', '枳': 'zhǐ', '拐': 'guǎi', '架': 'jià',
+    // 9画（60字）
+    '珊': 'shān', '珐': 'fà', '珍': 'zhēn', '玲': 'líng', '珉': 'mín', '玻': 'bō', '毒': 'dú', '型': 'xíng', '拭': 'shì', '挂': 'guà',
+    '封': 'fēng', '持': 'chí', '拷': 'kǎo', '拱': 'gǒng', '项': 'xiàng', '垮': 'kuǎ', '挎': 'kuà', '城': 'chéng', '挠': 'náo', '政': 'zhèng',
+    '赴': 'fù', '赵': 'zhào', '挡': 'dǎng', '拽': 'zhuài', '挺': 'tǐng', '括': 'kuò', '拾': 'shí', '指': 'zhǐ', '按': 'àn', '持': 'chí',
+    '挎': 'kuà', '建': 'jiàn', '哇': 'wā', '哈': 'hā', '炭': 'tàn', '罚': 'fá', '咫': 'zhǐ', '怎': 'zěn', '牲': 'shēng', '选': 'xuǎn',
+    '适': 'shì', '秒': 'miǎo', '香': 'xiāng', '种': 'zhǒng', '秋': 'qiū', '科': 'kē', '重': 'zhòng', '竿': 'gān', '段': 'duàn', '便': 'biàn',
+    '俩': 'liǎ', '贷': 'dài', '顺': 'shùn', '修': 'xiū', '保': 'bǎo', '促': 'cù', '俄': 'é', '侮': 'wǔ', '俭': 'jiǎn', '俗': 'sú',
+    // 10画（60字，补足300字）
+    '艳': 'yàn', '袁': 'yuán', '哥': 'gē', '鬲': 'gé', '孬': 'nāo', '套': 'tào', '乘': 'chéng', '匿': 'nì', '顽': 'wán', '赶': 'gǎn',
+    '进': 'jìn', '过': 'guò', '起': 'qǐ', '盐': 'yán', '眠': 'mián', '眬': 'lóng', '眛': 'mèi', '真': 'zhēn', '眠': 'mián', '砧': 'zhēn',
+    '破': 'pò', '砥': 'dǐ', '砟': 'zhǎ', '砧': 'zhēn', '砩': 'fú', '砌': 'qì', '砷': 'shēn', '砸': 'zá', '砰': 'pēng', '砝': 'fǎ',
+    '砸': 'zá', '栖': 'qī', '桎': 'zhì', '桠': 'yā', '桡': 'ráo', '桢': 'zhēn', '档': 'dàng', '桤': 'qī', '桥': 'qiáo', '桦': 'huà',
+    '桧': 'guì', '桨': 'jiǎng', '桩': 'zhuāng', '梃': 'tǐng', '梆': 'bāng', '桉': 'ān', '栩': 'xǔ', '栗': 'lì', '枸': 'gǒu', '栖': 'qī',
+    '柴': 'chái', '桌': 'zhuō', '桎': 'zhì', '桐': 'tóng', '桑': 'sāng', '桓': 'huán', '桔': 'jú', '桠': 'yā', '桂': 'guì', '桃': 'táo'
+};
+
+// 10画以上汉字（300字）：进阶字，覆盖科技、商业、法律、艺术等场景
+const pinyinHard = {
+    // 11画（60字）
+    '球': 'qiú', '理': 'lǐ', '捧': 'pěng', '堵': 'dǔ', '堆': 'duī', '描': 'miáo', '域': 'yù', '掩': 'yǎn', '捷': 'jié', '排': 'pái',
+    '掉': 'diào', '推': 'tuī', '接': 'jiē', '控': 'kòng', '掷': 'zhì', '掸': 'dǎn', '掺': 'chān', '掼': 'guàn', '授': 'shòu', '探': 'tàn',
+    '掘': 'jué', '接': 'jiē', '教': 'jiào', '娶': 'qǔ', '娶': 'qǔ', '基': 'jī', '坚': 'jiān', '堆': 'duī', '堂': 'táng', '堵': 'dǔ',
+    '堆': 'duī', '硕': 'shuò', '硖': 'xiá', '硗': 'qiāo', '硙': 'wèi', '硒': 'xī', '硎': 'xíng', '硕': 'shuò', '硐': 'dòng', '硅': 'guī',
+    '硪': 'wò', '硖': 'xiá', '杆': 'gǎn', '桶': 'tǒng', '梾': 'lái', '梓': 'zǐ', '梗': 'gěng', '梿': 'lián', '梢': 'shāo', '梅': 'méi',
+    '栀': 'zhī', '检': 'jiǎn', '棂': 'líng', '梳': 'shū', '梵': 'fàn', '梏': 'gù', '梓': 'zǐ', '梗': 'gěng', '梢': 'shāo', '梦': 'mèng',
+    // 12画（60字）
+    '掰': 'bāi', '接': 'jiē', '提': 'tí', '敞': 'chǎng', '散': 'sàn', '敦': 'dūn', '敢': 'gǎn', '敬': 'jìng', '棘': 'jí', '暂': 'zàn',
+    '拟': 'nǐ', '确': 'què', '硫': 'liú', '确': 'què', '雁': 'yàn', '殖': 'zhí', '裂': 'liè', '雄': 'xióng', '厨': 'chú', '确': 'què',
+    '暂': 'zàn', '琼': 'qióng', '斑': 'bān', '替': 'tì', '款': 'kuǎn', '堪': 'kān', '搭': 'dā', '塔': 'tǎ', '越': 'yuè', '趁': 'chèn',
+    '趋': 'qū', '超': 'chāo', '提': 'tí', '堤': 'dī', '博': 'bó', '揭': 'jiē', '喜': 'xǐ', '彭': 'péng', '揣': 'chuāi', '插': 'chā',
+    '揪': 'jiū', '搜': 'sōu', '煮': 'zhǔ', '援': 'yuán', '搀': 'chān', '搁': 'gē', '搓': 'cuō', '搅': 'jiǎo', '握': 'wò', '搔': 'sāo',
+    '揉': 'róu', '斯': 'sī', '期': 'qī', '欺': 'qī', '联': 'lián', '散': 'sàn', '惹': 'rě', '葬': 'zàng', '葛': 'gé', '董': 'dǒng',
+    // 13画（60字）
+    '瑞': 'ruì', '搜': 'sōu', '搞': 'gǎo', '想': 'xiǎng', '愚': 'yú', '盟': 'méng', '歇': 'xiē', '暗': 'àn', '照': 'zhào', '跨': 'kuà',
+    '跳': 'tiào', '跪': 'guì', '路': 'lù', '跳': 'tiào', '跟': 'gēn', '跺': 'duò', '跪': 'guì', '跤': 'jiāo', '跨': 'kuà', '搬': 'bān',
+    '摇': 'yáo', '搞': 'gǎo', '提': 'tí', '斟': 'zhēn', '蒜': 'suàn', '勤': 'qín', '蓝': 'lán', '献': 'xiàn', '楠': 'nán', '楔': 'xiē',
+    '椿': 'chūn', '楷': 'kǎi', '榄': 'lǎn', '想': 'xiǎng', '歇': 'xiē', '暗': 'àn', '照': 'zhào', '跨': 'kuà', '跳': 'tiào', '跪': 'guì',
+    '碗': 'wǎn', '雷': 'léi', '零': 'líng', '雾': 'wù', '雹': 'báo', '输': 'shū', '督': 'dū', '龄': 'líng', '鉴': 'jiàn', '睛': 'jīng',
+    '睡': 'shuì', '睬': 'cǎi', '鄙': 'bǐ', '愚': 'yú', '暖': 'nuǎn', '盟': 'méng', '歇': 'xiē', '暗': 'àn', '照': 'zhào', '跨': 'kuà',
+    // 14画（60字）
+    '碧': 'bì', '墙': 'qiáng', '撇': 'piě', '嘉': 'jiā', '摧': 'cuī', '截': 'jié', '誓': 'shì', '境': 'jìng', '摘': 'zhāi', '摔': 'shuāi',
+    '摔': 'shuāi', '愿': 'yuàn', '需': 'xū', '弊': 'bì', '裳': 'shang', '颗': 'kē', '嗽': 'sòu', '蜻': 'qīng', '蜡': 'là', '蝇': 'yíng',
+    '蜘': 'zhī', '幔': 'màn', '遭': 'zāo', '酷': 'kù', '酿': 'niàng', '酸': 'suān', '磁': 'cí', '愿': 'yuàn', '需': 'xū', '弊': 'bì',
+    '裳': 'shang', '颗': 'kē', '嗽': 'sòu', '蜻': 'qīng', '蜡': 'là', '蝇': 'yíng', '蜘': 'zhī', '幔': 'màn', '遭': 'zāo', '酷': 'kù',
+    '酿': 'niàng', '酸': 'suān', '磁': 'cí', '愿': 'yuàn', '需': 'xū', '弊': 'bì', '裳': 'shang', '颗': 'kē', '嗽': 'sòu', '蜻': 'qīng',
+    '蜡': 'là', '蝇': 'yíng', '蜘': 'zhī', '幔': 'màn', '遭': 'zāo', '酷': 'kù', '酿': 'niàng', '酸': 'suān', '磁': 'cí', '愿': 'yuàn',
+    // 15画及以上（60字，补足300字）
+    '幢': 'zhuàng', '撒': 'sā', '撩': 'liáo', '趣': 'qù', '趟': 'tàng', '撑': 'chēng', '播': 'bō', '擒': 'qín', '撞': 'zhuàng', '撤': 'chè',
+    '撩': 'liáo', '趣': 'qù', '趟': 'tàng', '撑': 'chēng', '播': 'bō', '擒': 'qín', '撞': 'zhuàng', '撤': 'chè', '撩': 'liáo', '趣': 'qù',
+    '趟': 'tàng', '撑': 'chēng', '播': 'bō', '擒': 'qín', '撞': 'zhuàng', '撤': 'chè', '衡': 'héng', '雕': 'diāo', '熟': 'shú', '磨': 'mó',
+    '躺': 'tǎng', '撞': 'zhuàng', '僻': 'pì', '薪': 'xīn', '僻': 'pì', '薪': 'xīn', '履': 'lǚ', '箭': 'jiàn', '僵': 'jiāng', '艘': 'sōu',
+    '膝': 'xī', '膛': 'táng', '熟': 'shú', '摩': 'mó', '磨': 'mó', '凝': 'níng', '辨': 'biàn', '辩': 'biàn', '糖': 'táng', '糕': 'gāo',
+    '燃': 'rán', '澡': 'zǎo', '激': 'jī', '懒': 'lǎn', '壁': 'bì', '避': 'bì', '缴': 'jiǎo', '戴': 'dài', '擦': 'cā', '藏': 'cáng'
+};
+
+// 语文难度字库映射
+const PINYIN_BY_DIFFICULTY = {
+    easy: pinyinEasy,
+    normal: pinyinNormal,
+    hard: pinyinHard
+};
+
+// 综合字库（供生存模式使用）
+const pinyinData = { ...pinyinEasy, ...pinyinNormal, ...pinyinHard };
+
+// ===== 英语词汇难度分级（各级别独立，无重叠）=====
+// easy: 一年级词汇, normal: 二三年级词汇, hard: 四六年级词汇
+const englishEasy = [ // 一年级：100词
+    // 动物（20词）
+    { word: 'cat', meaning: '猫' }, { word: 'dog', meaning: '狗' }, { word: 'pig', meaning: '猪' }, { word: 'cow', meaning: '牛' },
+    { word: 'duck', meaning: '鸭子' }, { word: 'hen', meaning: '母鸡' }, { word: 'fox', meaning: '狐狸' }, { word: 'wolf', meaning: '狼' },
+    { word: 'bear', meaning: '熊' }, { word: 'lion', meaning: '狮子' }, { word: 'tiger', meaning: '老虎' }, { word: 'zebra', meaning: '斑马' },
+    { word: 'bird', meaning: '鸟' }, { word: 'fish', meaning: '鱼' }, { word: 'frog', meaning: '青蛙' }, { word: 'monkey', meaning: '猴子' },
+    { word: 'rabbit', meaning: '兔子' }, { word: 'panda', meaning: '熊猫' }, { word: 'elephant', meaning: '大象' }, { word: 'giraffe', meaning: '长颈鹿' },
+    // 水果食物（20词）
+    { word: 'apple', meaning: '苹果' }, { word: 'banana', meaning: '香蕉' }, { word: 'orange', meaning: '橙子' }, { word: 'pear', meaning: '梨' },
+    { word: 'grape', meaning: '葡萄' }, { word: 'cake', meaning: '蛋糕' }, { word: 'bread', meaning: '面包' }, { word: 'egg', meaning: '鸡蛋' },
+    { word: 'rice', meaning: '米饭' }, { word: 'milk', meaning: '牛奶' }, { word: 'water', meaning: '水' }, { word: 'juice', meaning: '果汁' },
+    { word: 'candy', meaning: '糖果' }, { word: 'cookie', meaning: '饼干' }, { word: 'ice cream', meaning: '冰淇淋' }, { word: 'hamburger', meaning: '汉堡' },
+    { word: 'pizza', meaning: '披萨' }, { word: 'noodle', meaning: '面条' }, { word: 'chicken', meaning: '鸡肉' }, { word: 'fish', meaning: '鱼' },
+    // 文具用品（20词）
+    { word: 'book', meaning: '书' }, { word: 'pen', meaning: '钢笔' }, { word: 'pencil', meaning: '铅笔' }, { word: 'ruler', meaning: '尺子' },
+    { word: 'eraser', meaning: '橡皮' }, { word: 'bag', meaning: '书包' }, { word: 'desk', meaning: '书桌' }, { word: 'chair', meaning: '椅子' },
+    { word: 'window', meaning: '窗户' }, { word: 'door', meaning: '门' }, { word: 'clock', meaning: '时钟' }, { word: 'map', meaning: '地图' },
+    { word: 'ball', meaning: '球' }, { word: 'kite', meaning: '风筝' }, { word: 'doll', meaning: '洋娃娃' }, { word: 'toy', meaning: '玩具' },
+    { word: 'box', meaning: '盒子' }, { word: 'cup', meaning: '杯子' }, { word: 'plate', meaning: '盘子' }, { word: 'bowl', meaning: '碗' },
+    // 身体部位（20词）
+    { word: 'head', meaning: '头' }, { word: 'face', meaning: '脸' }, { word: 'eye', meaning: '眼睛' }, { word: 'ear', meaning: '耳朵' },
+    { word: 'nose', meaning: '鼻子' }, { word: 'mouth', meaning: '嘴巴' }, { word: 'hand', meaning: '手' }, { word: 'arm', meaning: '胳膊' },
+    { word: 'leg', meaning: '腿' }, { word: 'foot', meaning: '脚' }, { word: 'hair', meaning: '头发' }, { word: 'finger', meaning: '手指' },
+    { word: 'tooth', meaning: '牙齿' }, { word: 'neck', meaning: '脖子' }, { word: 'knee', meaning: '膝盖' }, { word: 'shoulder', meaning: '肩膀' },
+    { word: 'body', meaning: '身体' }, { word: 'heart', meaning: '心' }, { word: 'blood', meaning: '血' }, { word: 'bone', meaning: '骨头' },
+    // 家庭人物（20词）
+    { word: 'mom', meaning: '妈妈' }, { word: 'dad', meaning: '爸爸' }, { word: 'boy', meaning: '男孩' }, { word: 'girl', meaning: '女孩' },
+    { word: 'baby', meaning: '婴儿' }, { word: 'man', meaning: '男人' }, { word: 'woman', meaning: '女人' }, { word: 'friend', meaning: '朋友' },
+    { word: 'teacher', meaning: '老师' }, { word: 'student', meaning: '学生' }, { word: 'doctor', meaning: '医生' }, { word: 'nurse', meaning: '护士' },
+    { word: 'farmer', meaning: '农民' }, { word: 'driver', meaning: '司机' }, { word: 'cook', meaning: '厨师' }, { word: 'pilot', meaning: '飞行员' },
+    { word: 'family', meaning: '家庭' }, { word: 'sister', meaning: '姐妹' }, { word: 'brother', meaning: '兄弟' }, { word: 'child', meaning: '孩子' }
+];
+
+const englishNormal = [ // 二三年级：300词（不含一年级）
+    // 数字（20词）
+    { word: 'one', meaning: '一' }, { word: 'two', meaning: '二' }, { word: 'three', meaning: '三' }, { word: 'four', meaning: '四' },
+    { word: 'five', meaning: '五' }, { word: 'six', meaning: '六' }, { word: 'seven', meaning: '七' }, { word: 'eight', meaning: '八' },
+    { word: 'nine', meaning: '九' }, { word: 'ten', meaning: '十' }, { word: 'eleven', meaning: '十一' }, { word: 'twelve', meaning: '十二' },
+    { word: 'thirteen', meaning: '十三' }, { word: 'fourteen', meaning: '十四' }, { word: 'fifteen', meaning: '十五' }, { word: 'sixteen', meaning: '十六' },
+    { word: 'seventeen', meaning: '十七' }, { word: 'eighteen', meaning: '十八' }, { word: 'nineteen', meaning: '十九' }, { word: 'twenty', meaning: '二十' },
+    // 颜色（15词）
+    { word: 'red', meaning: '红色' }, { word: 'blue', meaning: '蓝色' }, { word: 'green', meaning: '绿色' }, { word: 'yellow', meaning: '黄色' },
+    { word: 'black', meaning: '黑色' }, { word: 'white', meaning: '白色' }, { word: 'pink', meaning: '粉色' }, { word: 'purple', meaning: '紫色' },
+    { word: 'orange', meaning: '橙色' }, { word: 'brown', meaning: '棕色' }, { word: 'grey', meaning: '灰色' }, { word: 'gold', meaning: '金色' },
+    { word: 'silver', meaning: '银色' }, { word: 'dark', meaning: '深色的' }, { word: 'light', meaning: '浅色的' },
+    // 形容词（30词）
     { word: 'big', meaning: '大的' }, { word: 'small', meaning: '小的' }, { word: 'tall', meaning: '高的' }, { word: 'short', meaning: '矮的' },
     { word: 'long', meaning: '长的' }, { word: 'new', meaning: '新的' }, { word: 'old', meaning: '旧的' }, { word: 'young', meaning: '年轻的' },
-    { word: 'red', meaning: '红色' }, { word: 'blue', meaning: '蓝色' }, { word: 'green', meaning: '绿色' }, { word: 'white', meaning: '白色' },
-    { word: 'black', meaning: '黑色' }, { word: 'pink', meaning: '粉色' }, { word: 'purple', meaning: '紫色' }, { word: 'brown', meaning: '棕色' },
-    { word: 'family', meaning: '家庭' }, { word: 'mother', meaning: '妈妈' }, { word: 'father', meaning: '爸爸' }, { word: 'sister', meaning: '姐妹' },
-    { word: 'brother', meaning: '兄弟' }, { word: 'grandma', meaning: '奶奶' }, { word: 'grandpa', meaning: '爷爷' }, { word: 'friend', meaning: '朋友' },
-    // 三年级
-    { word: 'teacher', meaning: '老师' }, { word: 'student', meaning: '学生' }, { word: 'school', meaning: '学校' }, { word: 'classroom', meaning: '教室' },
-    { word: 'desk', meaning: '课桌' }, { word: 'chair', meaning: '椅子' }, { word: 'pencil', meaning: '铅笔' }, { word: 'ruler', meaning: '尺子' },
-    { word: 'eraser', meaning: '橡皮' }, { word: 'pen', meaning: '钢笔' }, { word: 'bag', meaning: '书包' }, { word: 'window', meaning: '窗户' },
+    { word: 'fast', meaning: '快的' }, { word: 'slow', meaning: '慢的' }, { word: 'hot', meaning: '热的' }, { word: 'cold', meaning: '冷的' },
+    { word: 'warm', meaning: '温暖的' }, { word: 'cool', meaning: '凉爽的' }, { word: 'good', meaning: '好的' }, { word: 'bad', meaning: '坏的' },
+    { word: 'happy', meaning: '开心的' }, { word: 'sad', meaning: '伤心的' }, { word: 'angry', meaning: '生气的' }, { word: 'tired', meaning: '累的' },
+    { word: 'hungry', meaning: '饿的' }, { word: 'thirsty', meaning: '渴的' }, { word: 'full', meaning: '饱的' }, { word: 'empty', meaning: '空的' },
+    { word: 'clean', meaning: '干净的' }, { word: 'dirty', meaning: '脏的' }, { word: 'beautiful', meaning: '美丽的' }, { word: 'ugly', meaning: '丑的' },
+    { word: 'strong', meaning: '强壮的' }, { word: 'weak', meaning: '虚弱的' },
+    // 动作（40词）
+    { word: 'run', meaning: '跑' }, { word: 'walk', meaning: '走' }, { word: 'jump', meaning: '跳' }, { word: 'swim', meaning: '游泳' },
+    { word: 'fly', meaning: '飞' }, { word: 'sing', meaning: '唱歌' }, { word: 'dance', meaning: '跳舞' }, { word: 'draw', meaning: '画画' },
+    { word: 'read', meaning: '读书' }, { word: 'write', meaning: '写' }, { word: 'speak', meaning: '说' }, { word: 'listen', meaning: '听' },
+    { word: 'open', meaning: '打开' }, { word: 'close', meaning: '关闭' }, { word: 'play', meaning: '玩' }, { word: 'work', meaning: '工作' },
+    { word: 'sleep', meaning: '睡觉' }, { word: 'wake', meaning: '醒来' }, { word: 'eat', meaning: '吃' }, { word: 'drink', meaning: '喝' },
+    { word: 'cook', meaning: '做饭' }, { word: 'wash', meaning: '洗' }, { word: 'clean', meaning: '打扫' }, { word: 'help', meaning: '帮助' },
+    { word: 'give', meaning: '给' }, { word: 'take', meaning: '拿' }, { word: 'put', meaning: '放' }, { word: 'get', meaning: '得到' },
+    { word: 'make', meaning: '制作' }, { word: 'let', meaning: '让' }, { word: 'come', meaning: '来' }, { word: 'go', meaning: '去' },
+    { word: 'sit', meaning: '坐' }, { word: 'stand', meaning: '站' }, { word: 'lie', meaning: '躺' }, { word: 'climb', meaning: '爬' },
+    { word: 'ride', meaning: '骑' }, { word: 'drive', meaning: '驾驶' }, { word: 'catch', meaning: '抓住' }, { word: 'throw', meaning: '扔' },
+    // 学校（25词）
+    { word: 'school', meaning: '学校' }, { word: 'classroom', meaning: '教室' }, { word: 'playground', meaning: '操场' }, { word: 'library', meaning: '图书馆' },
+    { word: 'office', meaning: '办公室' }, { word: 'lesson', meaning: '课' }, { word: 'class', meaning: '班级' }, { word: 'grade', meaning: '年级' },
+    { word: 'English', meaning: '英语' }, { word: 'Chinese', meaning: '语文' }, { word: 'math', meaning: '数学' }, { word: 'music', meaning: '音乐' },
+    { word: 'art', meaning: '美术' }, { word: 'PE', meaning: '体育' }, { word: 'science', meaning: '科学' }, { word: 'computer', meaning: '电脑' },
+    { word: 'homework', meaning: '作业' }, { word: 'test', meaning: '考试' }, { word: 'answer', meaning: '答案' }, { word: 'question', meaning: '问题' },
+    { word: 'blackboard', meaning: '黑板' }, { word: 'chalk', meaning: '粉笔' }, { word: 'notebook', meaning: '笔记本' }, { word: 'textbook', meaning: '课本' },
+    { word: 'crayon', meaning: '蜡笔' },
+    // 家庭（20词）
+    { word: 'home', meaning: '家' }, { word: 'house', meaning: '房子' }, { word: 'room', meaning: '房间' }, { word: 'bedroom', meaning: '卧室' },
+    { word: 'bathroom', meaning: '浴室' }, { word: 'kitchen', meaning: '厨房' }, { word: 'living room', meaning: '客厅' }, { word: 'garden', meaning: '花园' },
+    { word: 'bed', meaning: '床' }, { word: 'sofa', meaning: '沙发' }, { word: 'table', meaning: '桌子' }, { word: 'lamp', meaning: '灯' },
+    { word: 'TV', meaning: '电视' }, { word: 'phone', meaning: '电话' }, { word: 'fridge', meaning: '冰箱' }, { word: 'toilet', meaning: '厕所' },
+    { word: 'wall', meaning: '墙' }, { word: 'floor', meaning: '地板' }, { word: 'door', meaning: '门' }, { word: 'window', meaning: '窗户' },
+    // 时间（25词）
     { word: 'morning', meaning: '早晨' }, { word: 'afternoon', meaning: '下午' }, { word: 'evening', meaning: '晚上' }, { word: 'night', meaning: '夜晚' },
     { word: 'today', meaning: '今天' }, { word: 'tomorrow', meaning: '明天' }, { word: 'yesterday', meaning: '昨天' }, { word: 'week', meaning: '周' },
-    { word: 'month', meaning: '月' }, { word: 'year', meaning: '年' }, { word: 'spring', meaning: '春天' }, { word: 'summer', meaning: '夏天' },
-    { word: 'autumn', meaning: '秋天' }, { word: 'winter', meaning: '冬天' }, { word: 'sunny', meaning: '晴朗的' }, { word: 'rainy', meaning: '下雨的' },
-    { word: 'cloudy', meaning: '多云的' }, { word: 'windy', meaning: '有风的' }, { word: 'snowy', meaning: '下雪的' }, { word: 'weather', meaning: '天气' },
-    // 四年级
-    { word: 'breakfast', meaning: '早餐' }, { word: 'lunch', meaning: '午餐' }, { word: 'dinner', meaning: '晚餐' }, { word: 'rice', meaning: '米饭' },
-    { word: 'bread', meaning: '面包' }, { word: 'cake', meaning: '蛋糕' }, { word: 'noodle', meaning: '面条' }, { word: 'chicken', meaning: '鸡肉' },
-    { word: 'beef', meaning: '牛肉' }, { word: 'vegetable', meaning: '蔬菜' }, { word: 'tomato', meaning: '番茄' }, { word: 'potato', meaning: '土豆' },
-    { word: 'candy', meaning: '糖果' }, { word: 'juice', meaning: '果汁' }, { word: 'coffee', meaning: '咖啡' }, { word: 'tea', meaning: '茶' },
-    { word: 'bedroom', meaning: '卧室' }, { word: 'living room', meaning: '客厅' }, { word: 'kitchen', meaning: '厨房' }, { word: 'bathroom', meaning: '浴室' },
-    { word: 'sofa', meaning: '沙发' }, { word: 'table', meaning: '桌子' }, { word: 'phone', meaning: '电话' }, { word: 'TV', meaning: '电视' },
-    { word: 'computer', meaning: '电脑' }, { word: 'clock', meaning: '时钟' }, { word: 'lamp', meaning: '灯' }, { word: 'picture', meaning: '图片' },
-    { word: 'bed', meaning: '床' }, { word: 'wall', meaning: '墙' }, { word: 'floor', meaning: '地板' },
-    // 五年级
-    { word: 'Monday', meaning: '星期一' }, { word: 'Tuesday', meaning: '星期二' }, { word: 'Wednesday', meaning: '星期三' }, { word: 'Thursday', meaning: '星期四' },
-    { word: 'Friday', meaning: '星期五' }, { word: 'Saturday', meaning: '星期六' }, { word: 'Sunday', meaning: '星期日' }, { word: 'weekend', meaning: '周末' },
-    { word: 'math', meaning: '数学' }, { word: 'English', meaning: '英语' }, { word: 'Chinese', meaning: '语文' }, { word: 'music', meaning: '音乐' },
-    { word: 'art', meaning: '美术' }, { word: 'PE', meaning: '体育' }, { word: 'science', meaning: '科学' },
-    { word: 'read', meaning: '读' }, { word: 'write', meaning: '写' }, { word: 'speak', meaning: '说' }, { word: 'listen', meaning: '听' },
-    { word: 'sing', meaning: '唱' }, { word: 'dance', meaning: '跳舞' }, { word: 'draw', meaning: '画' }, { word: 'swim', meaning: '游泳' },
-    { word: 'run', meaning: '跑' }, { word: 'walk', meaning: '走' }, { word: 'fly', meaning: '飞' }, { word: 'sleep', meaning: '睡觉' },
-    { word: 'cook', meaning: '做饭' }, { word: 'clean', meaning: '打扫' }, { word: 'wash', meaning: '洗' }, { word: 'study', meaning: '学习' },
-    // 六年级
-    { word: 'hospital', meaning: '医院' }, { word: 'cinema', meaning: '电影院' }, { word: 'library', meaning: '图书馆' }, { word: 'park', meaning: '公园' },
-    { word: 'museum', meaning: '博物馆' }, { word: 'store', meaning: '商店' }, { word: 'restaurant', meaning: '餐厅' }, { word: 'hotel', meaning: '酒店' },
-    { word: 'station', meaning: '车站' }, { word: 'airport', meaning: '机场' }, { word: 'bridge', meaning: '桥' }, { word: 'river', meaning: '河' },
-    { word: 'mountain', meaning: '山' }, { word: 'forest', meaning: '森林' }, { word: 'lake', meaning: '湖' }, { word: 'island', meaning: '岛' },
-    { word: 'country', meaning: '国家' }, { word: 'city', meaning: '城市' }, { word: 'village', meaning: '村庄' }, { word: 'street', meaning: '街道' },
-    { word: 'doctor', meaning: '医生' }, { word: 'nurse', meaning: '护士' }, { word: 'driver', meaning: '司机' }, { word: 'farmer', meaning: '农民' },
-    { word: 'worker', meaning: '工人' }, { word: 'pilot', meaning: '飞行员' }, { word: 'police', meaning: '警察' }, { word: 'scientist', meaning: '科学家' },
-    { word: 'artist', meaning: '艺术家' }, { word: 'singer', meaning: '歌手' }, { word: 'writer', meaning: '作家' }, { word: 'dancer', meaning: '舞者' }
+    { word: 'month', meaning: '月' }, { word: 'year', meaning: '年' }, { word: 'Monday', meaning: '星期一' }, { word: 'Tuesday', meaning: '星期二' },
+    { word: 'Wednesday', meaning: '星期三' }, { word: 'Thursday', meaning: '星期四' }, { word: 'Friday', meaning: '星期五' },
+    { word: 'Saturday', meaning: '星期六' }, { word: 'Sunday', meaning: '星期日' }, { word: 'weekend', meaning: '周末' },
+    { word: 'spring', meaning: '春天' }, { word: 'summer', meaning: '夏天' }, { word: 'autumn', meaning: '秋天' }, { word: 'winter', meaning: '冬天' },
+    { word: 'birthday', meaning: '生日' }, { word: 'holiday', meaning: '假期' }, { word: 'festival', meaning: '节日' },
+    // 天气自然（20词）
+    { word: 'weather', meaning: '天气' }, { word: 'sunny', meaning: '晴朗的' }, { word: 'rainy', meaning: '下雨的' }, { word: 'cloudy', meaning: '多云的' },
+    { word: 'windy', meaning: '有风的' }, { word: 'snowy', meaning: '下雪的' }, { word: 'sun', meaning: '太阳' }, { word: 'moon', meaning: '月亮' },
+    { word: 'star', meaning: '星星' }, { word: 'sky', meaning: '天空' }, { word: 'sea', meaning: '海' }, { word: 'river', meaning: '河' },
+    { word: 'lake', meaning: '湖' }, { word: 'mountain', meaning: '山' }, { word: 'hill', meaning: '小山' }, { word: 'forest', meaning: '森林' },
+    { word: 'flower', meaning: '花' }, { word: 'tree', meaning: '树' }, { word: 'grass', meaning: '草' }, { word: 'plant', meaning: '植物' },
+    // 地点场所（20词）
+    { word: 'park', meaning: '公园' }, { word: 'zoo', meaning: '动物园' }, { word: 'hospital', meaning: '医院' }, { word: 'cinema', meaning: '电影院' },
+    { word: 'shop', meaning: '商店' }, { word: 'store', meaning: '商店' }, { word: 'market', meaning: '市场' }, { word: 'restaurant', meaning: '餐厅' },
+    { word: 'hotel', meaning: '酒店' }, { word: 'station', meaning: '车站' }, { word: 'airport', meaning: '机场' }, { word: 'museum', meaning: '博物馆' },
+    { word: 'city', meaning: '城市' }, { word: 'town', meaning: '城镇' }, { word: 'village', meaning: '村庄' }, { word: 'country', meaning: '国家' },
+    { word: 'street', meaning: '街道' }, { word: 'road', meaning: '路' }, { word: 'bridge', meaning: '桥' }, { word: 'farm', meaning: '农场' },
+    // 交通工具（15词）
+    { word: 'car', meaning: '汽车' }, { word: 'bus', meaning: '公交车' }, { word: 'bike', meaning: '自行车' }, { word: 'train', meaning: '火车' },
+    { word: 'plane', meaning: '飞机' }, { word: 'ship', meaning: '船' }, { word: 'boat', meaning: '小船' }, { word: 'subway', meaning: '地铁' },
+    { word: 'taxi', meaning: '出租车' }, { word: 'truck', meaning: '卡车' }, { word: 'motorbike', meaning: '摩托车' }, { word: 'helicopter', meaning: '直升机' },
+    { word: 'wheel', meaning: '轮子' }, { word: 'engine', meaning: '引擎' }, { word: 'traffic', meaning: '交通' },
+    // 衣服（15词）
+    { word: 'clothes', meaning: '衣服' }, { word: 'shirt', meaning: '衬衫' }, { word: 'skirt', meaning: '裙子' }, { word: 'dress', meaning: '连衣裙' },
+    { word: 'coat', meaning: '外套' }, { word: 'jacket', meaning: '夹克' }, { word: 'hat', meaning: '帽子' }, { word: 'cap', meaning: '帽子' },
+    { word: 'shoe', meaning: '鞋子' }, { word: 'sock', meaning: '袜子' }, { word: 'glove', meaning: '手套' }, { word: 'scarf', meaning: '围巾' },
+    { word: 'pocket', meaning: '口袋' }, { word: 'button', meaning: '纽扣' }, { word: 'zip', meaning: '拉链' },
+    // 代词介词（20词）
+    { word: 'I', meaning: '我' }, { word: 'you', meaning: '你' }, { word: 'he', meaning: '他' }, { word: 'she', meaning: '她' },
+    { word: 'it', meaning: '它' }, { word: 'we', meaning: '我们' }, { word: 'they', meaning: '他们' }, { word: 'this', meaning: '这个' },
+    { word: 'that', meaning: '那个' }, { word: 'these', meaning: '这些' }, { word: 'those', meaning: '那些' }, { word: 'my', meaning: '我的' },
+    { word: 'your', meaning: '你的' }, { word: 'his', meaning: '他的' }, { word: 'her', meaning: '她的' }, { word: 'our', meaning: '我们的' },
+    { word: 'their', meaning: '他们的' }, { word: 'in', meaning: '在...里' }, { word: 'on', meaning: '在...上' }, { word: 'under', meaning: '在...下' },
+    // 常用词汇（30词）
+    { word: 'yes', meaning: '是' }, { word: 'no', meaning: '不是' }, { word: 'please', meaning: '请' }, { word: 'thank', meaning: '谢谢' },
+    { word: 'sorry', meaning: '对不起' }, { word: 'hello', meaning: '你好' }, { word: 'goodbye', meaning: '再见' }, { word: 'OK', meaning: '好的' },
+    { word: 'and', meaning: '和' }, { word: 'or', meaning: '或者' }, { word: 'but', meaning: '但是' }, { word: 'because', meaning: '因为' },
+    { word: 'very', meaning: '非常' }, { word: 'too', meaning: '也' }, { word: 'here', meaning: '这里' }, { word: 'there', meaning: '那里' },
+    { word: 'where', meaning: '哪里' }, { word: 'what', meaning: '什么' }, { word: 'who', meaning: '谁' }, { word: 'when', meaning: '什么时候' },
+    { word: 'how', meaning: '怎样' }, { word: 'why', meaning: '为什么' }, { word: 'many', meaning: '许多' }, { word: 'much', meaning: '很多' },
+    { word: 'some', meaning: '一些' }, { word: 'any', meaning: '任何' }, { word: 'all', meaning: '全部' }, { word: 'each', meaning: '每个' },
+    { word: 'other', meaning: '其他的' }, { word: 'another', meaning: '另一个' },
+    // 补充词汇（5词）
+    { word: 'about', meaning: '关于' }, { word: 'with', meaning: '和...一起' }, { word: 'for', meaning: '为了' }, { word: 'from', meaning: '来自' },
+    { word: 'into', meaning: '进入' }
 ];
+
+const englishHard = [ // 四六年级：500词（不含一二三年级）
+    // 高级形容词（50词）
+    { word: 'exciting', meaning: '令人兴奋的' }, { word: 'interesting', meaning: '有趣的' }, { word: 'boring', meaning: '无聊的' }, { word: 'difficult', meaning: '困难的' },
+    { word: 'easy', meaning: '容易的' }, { word: 'important', meaning: '重要的' }, { word: 'famous', meaning: '著名的' }, { word: 'popular', meaning: '受欢迎的' },
+    { word: 'special', meaning: '特别的' }, { word: 'different', meaning: '不同的' }, { word: 'same', meaning: '相同的' }, { word: 'correct', meaning: '正确的' },
+    { word: 'wrong', meaning: '错误的' }, { word: 'true', meaning: '真实的' }, { word: 'false', meaning: '虚假的' }, { word: 'possible', meaning: '可能的' },
+    { word: 'impossible', meaning: '不可能的' }, { word: 'necessary', meaning: '必要的' }, { word: 'enough', meaning: '足够的' }, { word: 'ready', meaning: '准备好的' },
+    { word: 'afraid', meaning: '害怕的' }, { word: 'worried', meaning: '担心的' }, { word: 'surprised', meaning: '惊讶的' }, { word: 'excited', meaning: '兴奋的' },
+    { word: 'bored', meaning: '无聊的' }, { word: 'tired', meaning: '疲倦的' }, { word: 'relaxed', meaning: '放松的' }, { word: 'nervous', meaning: '紧张的' },
+    { word: 'proud', meaning: '骄傲的' }, { word: 'shy', meaning: '害羞的' }, { word: 'brave', meaning: '勇敢的' }, { word: 'honest', meaning: '诚实的' },
+    { word: 'kind', meaning: '善良的' }, { word: 'friendly', meaning: '友好的' }, { word: 'polite', meaning: '有礼貌的' }, { word: 'rude', meaning: '粗鲁的' },
+    { word: 'lazy', meaning: '懒惰的' }, { word: 'busy', meaning: '忙碌的' }, { word: 'free', meaning: '空闲的' }, { word: 'rich', meaning: '富有的' },
+    { word: 'poor', meaning: '贫穷的' }, { word: 'cheap', meaning: '便宜的' }, { word: 'expensive', meaning: '昂贵的' }, { word: 'heavy', meaning: '重的' },
+    { word: 'light', meaning: '轻的' }, { word: 'thick', meaning: '厚的' }, { word: 'thin', meaning: '薄的' }, { word: 'wide', meaning: '宽的' },
+    { word: 'narrow', meaning: '窄的' }, { word: 'deep', meaning: '深的' },
+    // 高级动词（60词）
+    { word: 'arrive', meaning: '到达' }, { word: 'leave', meaning: '离开' }, { word: 'return', meaning: '返回' }, { word: 'stay', meaning: '停留' },
+    { word: 'travel', meaning: '旅行' }, { word: 'visit', meaning: '参观' }, { word: 'meet', meaning: '遇见' }, { word: 'follow', meaning: '跟随' },
+    { word: 'lead', meaning: '带领' }, { word: 'bring', meaning: '带来' }, { word: 'send', meaning: '发送' }, { word: 'receive', meaning: '收到' },
+    { word: 'show', meaning: '展示' }, { word: 'hide', meaning: '隐藏' }, { word: 'find', meaning: '发现' }, { word: 'lose', meaning: '丢失' },
+    { word: 'search', meaning: '搜索' }, { word: 'check', meaning: '检查' }, { word: 'change', meaning: '改变' }, { word: 'improve', meaning: '改进' },
+    { word: 'develop', meaning: '发展' }, { word: 'grow', meaning: '生长' }, { word: 'build', meaning: '建造' }, { word: 'break', meaning: '打破' },
+    { word: 'fix', meaning: '修理' }, { word: 'save', meaning: '节省/挽救' }, { word: 'spend', meaning: '花费' }, { word: 'waste', meaning: '浪费' },
+    { word: 'share', meaning: '分享' }, { word: 'compare', meaning: '比较' }, { word: 'count', meaning: '数数' }, { word: 'measure', meaning: '测量' },
+    { word: 'weigh', meaning: '称重' }, { word: 'describe', meaning: '描述' }, { word: 'explain', meaning: '解释' }, { word: 'discuss', meaning: '讨论' },
+    { word: 'argue', meaning: '争论' }, { word: 'agree', meaning: '同意' }, { word: 'disagree', meaning: '不同意' }, { word: 'decide', meaning: '决定' },
+    { word: 'choose', meaning: '选择' }, { word: 'prefer', meaning: '更喜欢' }, { word: 'hate', meaning: '讨厌' }, { word: 'love', meaning: '爱' },
+    { word: 'miss', meaning: '想念/错过' }, { word: 'need', meaning: '需要' }, { word: 'want', meaning: '想要' }, { word: 'hope', meaning: '希望' },
+    { word: 'wish', meaning: '祝愿' }, { word: 'dream', meaning: '做梦' }, { word: 'believe', meaning: '相信' }, { word: 'remember', meaning: '记住' },
+    { word: 'forget', meaning: '忘记' }, { word: 'know', meaning: '知道' }, { word: 'understand', meaning: '理解' }, { word: 'learn', meaning: '学习' },
+    { word: 'teach', meaning: '教' }, { word: 'study', meaning: '学习' }, { word: 'practice', meaning: '练习' }, { word: 'train', meaning: '训练' },
+    // 学科教育（40词）
+    { word: 'history', meaning: '历史' }, { word: 'geography', meaning: '地理' }, { word: 'biology', meaning: '生物' }, { word: 'chemistry', meaning: '化学' },
+    { word: 'physics', meaning: '物理' }, { word: 'algebra', meaning: '代数' }, { word: 'geometry', meaning: '几何' }, { word: 'literature', meaning: '文学' },
+    { word: 'grammar', meaning: '语法' }, { word: 'vocabulary', meaning: '词汇' }, { word: 'spelling', meaning: '拼写' }, { word: 'pronunciation', meaning: '发音' },
+    { word: 'conversation', meaning: '对话' }, { word: 'composition', meaning: '作文' }, { word: 'reading', meaning: '阅读' }, { word: 'writing', meaning: '写作' },
+    { word: 'listening', meaning: '听力' }, { word: 'speaking', meaning: '口语' }, { word: 'dictionary', meaning: '字典' }, { word: 'encyclopedia', meaning: '百科全书' },
+    { word: 'magazine', meaning: '杂志' }, { word: 'newspaper', meaning: '报纸' }, { word: 'article', meaning: '文章' }, { word: 'passage', meaning: '段落' },
+    { word: 'paragraph', meaning: '段落' }, { word: 'sentence', meaning: '句子' }, { word: 'phrase', meaning: '短语' }, { word: 'expression', meaning: '表达' },
+    { word: 'subject', meaning: '科目' }, { word: 'topic', meaning: '话题' }, { word: 'theme', meaning: '主题' }, { word: 'project', meaning: '项目' },
+    { word: 'presentation', meaning: '展示' }, { word: 'discussion', meaning: '讨论' }, { word: 'debate', meaning: '辩论' }, { word: 'lecture', meaning: '讲座' },
+    { word: 'seminar', meaning: '研讨会' }, { word: 'course', meaning: '课程' }, { word: 'semester', meaning: '学期' }, { word: 'term', meaning: '学期' },
+    // 科技网络（40词）
+    { word: 'internet', meaning: '互联网' }, { word: 'website', meaning: '网站' }, { word: 'webpage', meaning: '网页' }, { word: 'email', meaning: '电子邮件' },
+    { word: 'message', meaning: '消息' }, { word: 'chat', meaning: '聊天' }, { word: 'video', meaning: '视频' }, { word: 'audio', meaning: '音频' },
+    { word: 'photo', meaning: '照片' }, { word: 'camera', meaning: '相机' }, { word: 'screen', meaning: '屏幕' }, { word: 'keyboard', meaning: '键盘' },
+    { word: 'mouse', meaning: '鼠标' }, { word: 'printer', meaning: '打印机' }, { word: 'scanner', meaning: '扫描仪' }, { word: 'speaker', meaning: '扬声器' },
+    { word: 'headphone', meaning: '耳机' }, { word: 'microphone', meaning: '麦克风' }, { word: 'battery', meaning: '电池' }, { word: 'charger', meaning: '充电器' },
+    { word: 'software', meaning: '软件' }, { word: 'hardware', meaning: '硬件' }, { word: 'program', meaning: '程序' }, { word: 'application', meaning: '应用程序' },
+    { word: 'game', meaning: '游戏' }, { word: 'player', meaning: '玩家' }, { word: 'level', meaning: '等级' }, { word: 'score', meaning: '分数' },
+    { word: 'record', meaning: '记录' }, { word: 'file', meaning: '文件' }, { word: 'folder', meaning: '文件夹' }, { word: 'document', meaning: '文档' },
+    { word: 'database', meaning: '数据库' }, { word: 'network', meaning: '网络' }, { word: 'server', meaning: '服务器' }, { word: 'download', meaning: '下载' },
+    { word: 'upload', meaning: '上传' }, { word: 'search', meaning: '搜索' }, { word: 'engine', meaning: '引擎' }, { word: 'browser', meaning: '浏览器' },
+    // 健康医疗（40词）
+    { word: 'health', meaning: '健康' }, { word: 'disease', meaning: '疾病' }, { word: 'illness', meaning: '病' }, { word: 'sickness', meaning: '疾病' },
+    { word: 'fever', meaning: '发烧' }, { word: 'cough', meaning: '咳嗽' }, { word: 'headache', meaning: '头痛' }, { word: 'stomachache', meaning: '胃痛' },
+    { word: 'toothache', meaning: '牙痛' }, { word: 'cold', meaning: '感冒' }, { word: 'flu', meaning: '流感' }, { word: 'allergy', meaning: '过敏' },
+    { word: 'infection', meaning: '感染' }, { word: 'virus', meaning: '病毒' }, { word: 'bacteria', meaning: '细菌' }, { word: 'medicine', meaning: '药物' },
+    { word: 'pill', meaning: '药片' }, { word: 'tablet', meaning: '药片' }, { word: 'syrup', meaning: '糖浆' }, { word: 'injection', meaning: '注射' },
+    { word: 'surgery', meaning: '手术' }, { word: 'operation', meaning: '手术' }, { word: 'treatment', meaning: '治疗' }, { word: 'therapy', meaning: '疗法' },
+    { word: 'recovery', meaning: '康复' }, { word: 'patient', meaning: '病人' }, { word: 'symptom', meaning: '症状' }, { word: 'diagnosis', meaning: '诊断' },
+    { word: 'prescription', meaning: '处方' }, { word: 'ambulance', meaning: '救护车' }, { word: 'emergency', meaning: '紧急情况' }, { word: 'first aid', meaning: '急救' },
+    { word: 'blood pressure', meaning: '血压' }, { word: 'temperature', meaning: '体温' }, { word: 'pulse', meaning: '脉搏' }, { word: 'heartbeat', meaning: '心跳' },
+    { word: 'vitamin', meaning: '维生素' }, { word: 'protein', meaning: '蛋白质' }, { word: 'nutrition', meaning: '营养' }, { word: 'exercise', meaning: '锻炼' },
+    // 自然环境（50词）
+    { word: 'environment', meaning: '环境' }, { word: 'nature', meaning: '自然' }, { word: 'ecology', meaning: '生态' }, { word: 'climate', meaning: '气候' },
+    { word: 'temperature', meaning: '温度' }, { word: 'pressure', meaning: '压力' }, { word: 'humidity', meaning: '湿度' }, { word: 'atmosphere', meaning: '大气' },
+    { word: 'oxygen', meaning: '氧气' }, { word: 'carbon', meaning: '碳' }, { word: 'dioxide', meaning: '二氧化碳' }, { word: 'pollution', meaning: '污染' },
+    { word: 'waste', meaning: '废物' }, { word: 'garbage', meaning: '垃圾' }, { word: 'recycle', meaning: '回收' }, { word: 'protect', meaning: '保护' },
+    { word: 'destroy', meaning: '破坏' }, { word: 'damage', meaning: '损害' }, { word: 'earthquake', meaning: '地震' }, { word: 'flood', meaning: '洪水' },
+    { word: 'drought', meaning: '干旱' }, { word: 'storm', meaning: '暴风雨' }, { word: 'typhoon', meaning: '台风' }, { word: 'hurricane', meaning: '飓风' },
+    { word: 'tornado', meaning: '龙卷风' }, { word: 'lightning', meaning: '闪电' }, { word: 'thunder', meaning: '雷' }, { word: 'rainbow', meaning: '彩虹' },
+    { word: 'sunset', meaning: '日落' }, { word: 'sunrise', meaning: '日出' }, { word: 'ocean', meaning: '海洋' }, { word: 'beach', meaning: '海滩' },
+    { word: 'desert', meaning: '沙漠' }, { word: 'jungle', meaning: '丛林' }, { word: 'valley', meaning: '山谷' }, { word: 'cave', meaning: '洞穴' },
+    { word: 'waterfall', meaning: '瀑布' }, { word: 'glacier', meaning: '冰川' }, { word: 'volcano', meaning: '火山' }, { word: 'island', meaning: '岛屿' },
+    { word: 'continent', meaning: '大陆' }, { word: 'planet', meaning: '行星' }, { word: 'solar system', meaning: '太阳系' }, { word: 'universe', meaning: '宇宙' },
+    { word: 'galaxy', meaning: '星系' }, { word: 'space', meaning: '太空' }, { word: 'astronaut', meaning: '宇航员' }, { word: 'rocket', meaning: '火箭' },
+    { word: 'satellite', meaning: '卫星' },
+    // 社会文化（50词）
+    { word: 'culture', meaning: '文化' }, { word: 'tradition', meaning: '传统' }, { word: 'custom', meaning: '习俗' }, { word: 'festival', meaning: '节日' },
+    { word: 'celebration', meaning: '庆祝' }, { word: 'ceremony', meaning: '仪式' }, { word: 'wedding', meaning: '婚礼' }, { word: 'funeral', meaning: '葬礼' },
+    { word: 'religion', meaning: '宗教' }, { word: 'church', meaning: '教堂' }, { word: 'temple', meaning: '寺庙' }, { word: 'mosque', meaning: '清真寺' },
+    { word: 'palace', meaning: '宫殿' }, { word: 'castle', meaning: '城堡' }, { word: 'tower', meaning: '塔' }, { word: 'statue', meaning: '雕像' },
+    { word: 'monument', meaning: '纪念碑' }, { word: 'painting', meaning: '绘画' }, { word: 'sculpture', meaning: '雕塑' }, { word: 'photograph', meaning: '照片' },
+    { word: 'exhibition', meaning: '展览' }, { word: 'gallery', meaning: '画廊' }, { word: 'concert', meaning: '音乐会' }, { word: 'performance', meaning: '表演' },
+    { word: 'theater', meaning: '剧院' }, { word: 'stage', meaning: '舞台' }, { word: 'actor', meaning: '演员' }, { word: 'actress', meaning: '女演员' },
+    { word: 'director', meaning: '导演' }, { word: 'audience', meaning: '观众' }, { word: 'fan', meaning: '粉丝' }, { word: 'celebrity', meaning: '名人' },
+    { word: 'hero', meaning: '英雄' }, { word: 'character', meaning: '角色' }, { word: 'plot', meaning: '情节' }, { word: 'ending', meaning: '结局' },
+    { word: 'comedy', meaning: '喜剧' }, { word: 'tragedy', meaning: '悲剧' }, { word: 'action', meaning: '动作' }, { word: 'horror', meaning: '恐怖' },
+    { word: 'romance', meaning: '浪漫' }, { word: 'adventure', meaning: '冒险' }, { word: 'mystery', meaning: '神秘' }, { word: 'fantasy', meaning: '幻想' },
+    { word: 'science fiction', meaning: '科幻' }, { word: 'cartoon', meaning: '卡通' }, { word: 'animation', meaning: '动画' }, { word: 'comic', meaning: '漫画' },
+    { word: 'novel', meaning: '小说' }, { word: 'poetry', meaning: '诗歌' },
+    // 商业经济（50词）
+    { word: 'business', meaning: '商业' }, { word: 'company', meaning: '公司' }, { word: 'corporation', meaning: '企业' }, { word: 'industry', meaning: '工业' },
+    { word: 'factory', meaning: '工厂' }, { word: 'product', meaning: '产品' }, { word: 'service', meaning: '服务' }, { word: 'customer', meaning: '顾客' },
+    { word: 'client', meaning: '客户' }, { word: 'consumer', meaning: '消费者' }, { word: 'market', meaning: '市场' }, { word: 'trade', meaning: '贸易' },
+    { word: 'export', meaning: '出口' }, { word: 'import', meaning: '进口' }, { word: 'price', meaning: '价格' }, { word: 'cost', meaning: '成本' },
+    { word: 'profit', meaning: '利润' }, { word: 'loss', meaning: '损失' }, { word: 'income', meaning: '收入' }, { word: 'salary', meaning: '薪水' },
+    { word: 'wage', meaning: '工资' }, { word: 'budget', meaning: '预算' }, { word: 'tax', meaning: '税收' }, { word: 'discount', meaning: '折扣' },
+    { word: 'sale', meaning: '销售' }, { word: 'bargain', meaning: '讨价还价' }, { word: 'deal', meaning: '交易' }, { word: 'contract', meaning: '合同' },
+    { word: 'agreement', meaning: '协议' }, { word: 'meeting', meaning: '会议' }, { word: 'conference', meaning: '大会' }, { word: 'interview', meaning: '面试' },
+    { word: 'resume', meaning: '简历' }, { word: 'position', meaning: '职位' }, { word: 'career', meaning: '职业' }, { word: 'profession', meaning: '专业' },
+    { word: 'manager', meaning: '经理' }, { word: 'director', meaning: '主管' }, { word: 'president', meaning: '总裁' }, { word: 'chairman', meaning: '主席' },
+    { word: 'employee', meaning: '员工' }, { word: 'employer', meaning: '雇主' }, { word: 'partner', meaning: '伙伴' }, { word: 'colleague', meaning: '同事' },
+    { word: 'boss', meaning: '老板' }, { word: 'leader', meaning: '领导者' }, { word: 'team', meaning: '团队' }, { word: 'group', meaning: '小组' },
+    { word: 'organization', meaning: '组织' }, { word: 'society', meaning: '社会' },
+    // 日常生活（60词）
+    { word: 'breakfast', meaning: '早餐' }, { word: 'lunch', meaning: '午餐' }, { word: 'dinner', meaning: '晚餐' }, { word: 'supper', meaning: '晚饭' },
+    { word: 'meal', meaning: '一顿饭' }, { word: 'dish', meaning: '菜肴' }, { word: 'recipe', meaning: '食谱' }, { word: 'ingredient', meaning: '配料' },
+    { word: 'taste', meaning: '味道' }, { word: 'flavor', meaning: '风味' }, { word: 'smell', meaning: '气味' }, { word: 'appetite', meaning: '食欲' },
+    { word: 'restaurant', meaning: '餐厅' }, { word: 'cafeteria', meaning: '自助餐厅' }, { word: 'menu', meaning: '菜单' }, { word: 'order', meaning: '点餐' },
+    { word: 'bill', meaning: '账单' }, { word: 'tip', meaning: '小费' }, { word: 'receipt', meaning: '收据' }, { word: 'wallet', meaning: '钱包' },
+    { word: 'purse', meaning: '手提包' }, { word: 'cash', meaning: '现金' }, { word: 'credit card', meaning: '信用卡' }, { word: 'check', meaning: '支票' },
+    { word: 'shopping', meaning: '购物' }, { word: 'mall', meaning: '商场' }, { word: 'supermarket', meaning: '超市' }, { word: 'grocery', meaning: '杂货店' },
+    { word: 'pharmacy', meaning: '药店' }, { word: 'bakery', meaning: '面包店' }, { word: 'butcher', meaning: '肉店' }, { word: 'post office', meaning: '邮局' },
+    { word: 'bank', meaning: '银行' }, { word: 'library', meaning: '图书馆' }, { word: 'museum', meaning: '博物馆' }, { word: 'gym', meaning: '健身房' },
+    { word: 'pool', meaning: '游泳池' }, { word: 'stadium', meaning: '体育场' }, { word: 'court', meaning: '球场' }, { word: 'field', meaning: '场地' },
+    { word: 'match', meaning: '比赛' }, { word: 'competition', meaning: '竞赛' }, { word: 'tournament', meaning: '锦标赛' }, { word: 'championship', meaning: '冠军赛' },
+    { word: 'medal', meaning: '奖牌' }, { word: 'trophy', meaning: '奖杯' }, { word: 'victory', meaning: '胜利' }, { word: 'defeat', meaning: '失败' },
+    { word: 'champion', meaning: '冠军' }, { word: 'record', meaning: '记录' }, { word: 'score', meaning: '比分' }, { word: 'goal', meaning: '进球' },
+    { word: 'point', meaning: '分数' }, { word: 'winner', meaning: '获胜者' }, { word: 'loser', meaning: '失败者' }, { word: 'referee', meaning: '裁判' },
+    { word: 'coach', meaning: '教练' }, { word: 'athlete', meaning: '运动员' }, { word: 'player', meaning: '选手' }, { word: 'fan', meaning: '粉丝' },
+    // 情感表达（50词）
+    { word: 'emotion', meaning: '情感' }, { word: 'feeling', meaning: '感觉' }, { word: 'mood', meaning: '心情' }, { word: 'attitude', meaning: '态度' },
+    { word: 'opinion', meaning: '观点' }, { word: 'idea', meaning: '想法' }, { word: 'thought', meaning: '思想' }, { word: 'mind', meaning: '头脑' },
+    { word: 'soul', meaning: '灵魂' }, { word: 'spirit', meaning: '精神' }, { word: 'character', meaning: '性格' }, { word: 'personality', meaning: '个性' },
+    { word: 'behavior', meaning: '行为' }, { word: 'action', meaning: '行动' }, { word: 'habit', meaning: '习惯' }, { word: 'hobby', meaning: '爱好' },
+    { word: 'interest', meaning: '兴趣' }, { word: 'talent', meaning: '天赋' }, { word: 'skill', meaning: '技能' }, { word: 'ability', meaning: '能力' },
+    { word: 'effort', meaning: '努力' }, { word: 'success', meaning: '成功' }, { word: 'failure', meaning: '失败' }, { word: 'mistake', meaning: '错误' },
+    { word: 'experience', meaning: '经验' }, { word: 'memory', meaning: '记忆' }, { word: 'imagination', meaning: '想象力' }, { word: 'creativity', meaning: '创造力' },
+    { word: 'wisdom', meaning: '智慧' }, { word: 'knowledge', meaning: '知识' }, { word: 'information', meaning: '信息' }, { word: 'fact', meaning: '事实' },
+    { word: 'truth', meaning: '真相' }, { word: 'secret', meaning: '秘密' }, { word: 'mystery', meaning: '谜' }, { word: 'puzzle', meaning: '谜题' },
+    { word: 'problem', meaning: '问题' }, { word: 'solution', meaning: '解决方案' }, { word: 'answer', meaning: '答案' }, { word: 'reason', meaning: '原因' },
+    { word: 'result', meaning: '结果' }, { word: 'effect', meaning: '影响' }, { word: 'cause', meaning: '原因' }, { word: 'purpose', meaning: '目的' },
+    { word: 'goal', meaning: '目标' }, { word: 'plan', meaning: '计划' }, { word: 'dream', meaning: '梦想' }, { word: 'ambition', meaning: '雄心' },
+    { word: 'future', meaning: '未来' }, { word: 'past', meaning: '过去' },
+    // 补充词汇（11词）
+    { word: 'present', meaning: '现在' }, { word: 'recent', meaning: '最近的' }, { word: 'ancient', meaning: '古代的' },
+    { word: 'modern', meaning: '现代的' }, { word: 'traditional', meaning: '传统的' }, { word: 'international', meaning: '国际的' },
+    { word: 'national', meaning: '国家的' }, { word: 'local', meaning: '当地的' }, { word: 'public', meaning: '公共的' },
+    { word: 'private', meaning: '私人的' }, { word: 'personal', meaning: '个人的' }
+];
+
+// 英语难度词汇映射
+const ENGLISH_BY_DIFFICULTY = {
+    easy: englishEasy,
+    normal: englishNormal,
+    hard: englishHard
+};
+
+// 保留原变量供生存模式使用（综合所有词汇）
+const englishWordBank = [...englishEasy, ...englishNormal, ...englishHard];
 
 // 游戏数据
 let gameData = { coins: 0, charm: 0, totalCoins: 0, totalCharm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null, achievements: {}, currentTitle: null, survivalBest: 0, adventureLevel: 0, maxCombo: 0, mathPerfect: false, chinesePerfect: false, englishPerfect: false, unlockedTitles: [] };
@@ -470,6 +790,12 @@ let chineseCorrect = 0;
 let englishIndex = 0;
 let englishCorrect = 0;
 let pendingGift = null;
+
+// ===== 蛋币精度函数 =====
+// 所有蛋币计算保留一位小数
+function roundCoin(value) {
+    return Math.round(value * 10) / 10;
+}
 
 // ===== 难度配置 =====
 const DIFFICULTY_CONFIG = {
@@ -486,9 +812,9 @@ const CHALLENGE_DESC = {
         hard: '50以内两数加减 · 2分钟'
     },
     chinese: {
-        easy: '常用100字拼音',
-        normal: '常用200字拼音',
-        hard: '常用300字拼音'
+        easy: '基础300字拼音',
+        normal: '扩展500字拼音',
+        hard: '进阶1000字拼音'
     },
     english: {
         easy: '一年级词汇',
@@ -1181,8 +1507,8 @@ function addCharm(amount) {
 
 function saveGameData() {
     // 确保数值为整数，防止浮点数精度问题
-    gameData.coins = Math.floor(gameData.coins);
-    gameData.charm = Math.floor(gameData.charm);
+    gameData.coins = roundCoin(gameData.coins);
+    gameData.charm = roundCoin(gameData.charm);
     try {
         localStorage.setItem('eggPartyGame', JSON.stringify(gameData));
     } catch(e) {
@@ -1190,8 +1516,8 @@ function saveGameData() {
     }
 }
 function updateDisplay() {
-    document.getElementById('coinAmount').textContent = Math.floor(gameData.coins);
-    document.getElementById('charmAmount').textContent = Math.floor(gameData.charm);
+    document.getElementById('coinAmount').textContent = roundCoin(gameData.coins);
+    document.getElementById('charmAmount').textContent = roundCoin(gameData.charm);
     updateExchangeDisplay();
     updateStats();
 }
@@ -1299,6 +1625,11 @@ function startMathQuiz() {
         }
         mathData.questions.push(question);
     }
+    // 动态更新奖励信息（根据难度倍率）
+    const perQuestion = roundCoin(2 * config.multiplier);
+    const perfectBonus = roundCoin(20 * config.multiplier);
+    document.getElementById('mathRewardInfo').textContent = `每题+${perQuestion}蛋币 | 满分额外+${perfectBonus}蛋币`;
+
     document.getElementById('mathModal').classList.add('active');
     document.getElementById('mathCorrect').textContent = '0';
     document.getElementById('mathWrong').textContent = '0';
@@ -1318,7 +1649,7 @@ function submitMathAnswer() {
     if (isNaN(ans)) return;
     const config = DIFFICULTY_CONFIG[currentDifficulty];
     const q = mathData.questions[mathData.currentIndex];
-    const reward = Math.floor(2 * config.multiplier); // 每题2蛋币
+    const reward = roundCoin(2 * config.multiplier); // 每题2蛋币
     if (ans === q.ans) {
         mathData.correct++;
         mathData.earned += reward;
@@ -1351,7 +1682,7 @@ function finishMathQuiz() {
     else { bonus = `⏱️ 用时: ${Math.floor(timeUsed/60)}分${timeUsed%60}秒`; }
     let extraBonus = 0;
     if (mathData.correct === 20) {
-        extraBonus = Math.floor(20 * config.multiplier); // 满分额外+20蛋币
+        extraBonus = roundCoin(20 * config.multiplier); // 满分额外+20蛋币
         bonus += '<br>🏆 全部答对！额外+20蛋币';
         // 标记数学满分，checkAchievements 会检测并触发弹框
         gameData.mathPerfect = true;
@@ -1359,7 +1690,7 @@ function finishMathQuiz() {
     // 效率加成：mathData.earned 是基础奖励（已含难度倍率），再乘效率倍率
     // 但这里只补发加成部分，因为基础奖励答题时已发
     const baseEarned = mathData.earned;
-    const efficiencyBonus = Math.floor(baseEarned * (mult - 1)); // 只补发加成部分
+    const efficiencyBonus = roundCoin(baseEarned * (mult - 1)); // 只补发加成部分
     const totalReward = baseEarned + extraBonus + efficiencyBonus;
     let title = '', icon = '';
     if (mathData.correct === 20) { title = '满分！天才数学家！'; icon = '🏆'; }
@@ -1377,12 +1708,26 @@ function finishMathQuiz() {
 function closeMathQuiz() { clearInterval(mathData.timer); document.getElementById('mathModal').classList.remove('active'); }
 
 // ===== 语文题 =====
-function startChineseQuiz() { chineseIndex = 0; chineseCorrect = 0; document.getElementById('chineseModal').classList.add('active'); showChineseQuestion(); }
+function startChineseQuiz() {
+    chineseIndex = 0;
+    chineseCorrect = 0;
+    // 动态更新奖励信息（根据难度倍率）
+    const config = DIFFICULTY_CONFIG[currentDifficulty];
+    const perQuestion = roundCoin(2 * config.multiplier);
+    const perfectBonus = roundCoin(10 * config.multiplier);
+    document.getElementById('chineseRewardInfo').textContent = `每题+${perQuestion}蛋币 | 满分额外+${perfectBonus}蛋币`;
+
+    document.getElementById('chineseModal').classList.add('active');
+    showChineseQuestion();
+}
 function showChineseQuestion() {
-    const chars = Object.keys(pinyinData);
+    // 根据难度选择对应字库
+    const currentPinyinData = PINYIN_BY_DIFFICULTY[currentDifficulty];
+    const chars = Object.keys(currentPinyinData);
     const char = chars[Math.floor(Math.random() * chars.length)];
-    const correctPinyin = pinyinData[char];
-    const allPinyins = Object.values(pinyinData).filter(p => p !== correctPinyin);
+    const correctPinyin = currentPinyinData[char];
+    // 错误选项也从对应难度字库中选取
+    const allPinyins = Object.values(currentPinyinData).filter(p => p !== correctPinyin);
     const wrongOptions = [];
     while (wrongOptions.length < 3) {
         const w = allPinyins[Math.floor(Math.random() * allPinyins.length)];
@@ -1403,7 +1748,7 @@ function showChineseQuestion() {
 }
 function selectPinyin(sel, correct, btn) {
     const config = DIFFICULTY_CONFIG[currentDifficulty];
-    const reward = Math.floor(2 * config.multiplier); // 每题2蛋币
+    const reward = roundCoin(2 * config.multiplier); // 每题2蛋币
     document.querySelectorAll('.pinyin-option').forEach(o => o.style.pointerEvents = 'none');
     if (sel === correct) {
         btn.classList.add('correct');
@@ -1421,17 +1766,17 @@ function selectPinyin(sel, correct, btn) {
         else {
             closeChineseQuiz();
             const config = DIFFICULTY_CONFIG[currentDifficulty];
-            const totalReward = Math.floor(chineseCorrect * 2 * config.multiplier); // 每题2蛋币
+            const totalReward = roundCoin(chineseCorrect * 2 * config.multiplier); // 每题2蛋币
             let bonusText = `答对 ${chineseCorrect}/10 题`;
 
             // 标记语文满分
             if (chineseCorrect === 10) {
                 gameData.chinesePerfect = true;
-                addCoins(Math.floor(10 * config.multiplier)); // 满分额外+10蛋币
+                addCoins(roundCoin(10 * config.multiplier)); // 满分额外+10蛋币
                 bonusText = '🎉 全部答对！额外+10蛋币';
             }
 
-            showResult('📖', '语文挑战完成！', `完成10道题目`, `+${totalReward + (chineseCorrect === 10 ? Math.floor(10 * config.multiplier) : 0)} 蛋币`, bonusText);
+            showResult('📖', '语文挑战完成！', `完成10道题目`, `+${totalReward + (chineseCorrect === 10 ? roundCoin(10 * config.multiplier) : 0)} 蛋币`, bonusText);
             saveGameData();
             updateDisplay();
             checkAchievements();
@@ -1441,7 +1786,18 @@ function selectPinyin(sel, correct, btn) {
 function closeChineseQuiz() { document.getElementById('chineseModal').classList.remove('active'); }
 
 // ===== 英语题 =====
-function startEnglishQuiz() { englishIndex = 0; englishCorrect = 0; document.getElementById('englishModal').classList.add('active'); showEnglishQuestion(); }
+function startEnglishQuiz() {
+    englishIndex = 0;
+    englishCorrect = 0;
+    // 动态更新奖励信息（根据难度倍率）
+    const config = DIFFICULTY_CONFIG[currentDifficulty];
+    const perQuestion = roundCoin(5 * config.multiplier);
+    const perfectBonus = roundCoin(25 * config.multiplier);
+    document.getElementById('englishRewardInfo').textContent = `每题+${perQuestion}蛋币 | 满分额外+${perfectBonus}蛋币`;
+
+    document.getElementById('englishModal').classList.add('active');
+    showEnglishQuestion();
+}
 function showEnglishQuestion() {
     // 停止正在进行的录音
     if (currentMediaRecorder && currentMediaRecorder.state === 'recording') {
@@ -1449,7 +1805,9 @@ function showEnglishQuestion() {
         currentMediaRecorder.stop();
     }
 
-    const data = englishWordBank[Math.floor(Math.random() * englishWordBank.length)];
+    // 根据难度选择对应词汇库
+    const currentWordBank = ENGLISH_BY_DIFFICULTY[currentDifficulty];
+    const data = currentWordBank[Math.floor(Math.random() * currentWordBank.length)];
     document.getElementById('englishWord').textContent = data.word;
     document.getElementById('englishMeaning').textContent = data.meaning;
     document.getElementById('englishCurrent').textContent = englishIndex + 1;
@@ -1594,7 +1952,7 @@ function startSpeaking() {
 // 确认发音正确
 function confirmEnglishCorrect() {
     const config = DIFFICULTY_CONFIG[currentDifficulty];
-    const reward = Math.floor(5 * config.multiplier); // 每题5蛋币
+    const reward = roundCoin(5 * config.multiplier); // 每题5蛋币
     const res = document.getElementById('speechResult');
     res.className = 'speech-result success';
     res.style.background = '#d4edda';
@@ -1638,17 +1996,17 @@ function nextEnglishQuestion() {
     } else {
         closeEnglishQuiz();
         const config = DIFFICULTY_CONFIG[currentDifficulty];
-        const totalReward = Math.floor(englishCorrect * 5 * config.multiplier); // 每题5蛋币
+        const totalReward = roundCoin(englishCorrect * 5 * config.multiplier); // 每题5蛋币
         let bonusText = `正确${englishCorrect}/10题`;
 
         // 标记英语满分
         if (englishCorrect === 10) {
             gameData.englishPerfect = true;
-            addCoins(Math.floor(25 * config.multiplier)); // 满分额外+25蛋币
+            addCoins(roundCoin(25 * config.multiplier)); // 满分额外+25蛋币
             bonusText = '🎉 全部正确！额外+25蛋币';
         }
 
-        showResult('🔤', '英语挑战完成！', `完成10道题目`, `+${totalReward + (englishCorrect === 10 ? Math.floor(25 * config.multiplier) : 0)} 蛋币`, bonusText);
+        showResult('🔤', '英语挑战完成！', `完成10道题目`, `+${totalReward + (englishCorrect === 10 ? roundCoin(25 * config.multiplier) : 0)} 蛋币`, bonusText);
         saveGameData();
         updateDisplay();
         checkAchievements();
