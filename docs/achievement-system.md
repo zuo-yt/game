@@ -26,11 +26,11 @@
 | adventure_10 | 闯关王者 | 闯关模式通关 | 👑 | +200 | adventureLevel ≥ 10 |
 | draw_100 | 抽卡狂魔 | 累计抽卡100次 | 🎰 | +50 | totalDraws ≥ 100 |
 | draw_500 | 赌神 | 累计抽卡500次 | 💎 | +200 | totalDraws ≥ 500 |
-| charm_1000 | 魅力四射 | 魅力值达到1000 | ✨ | +100 | charm ≥ 1000 |
-| charm_10000 | 魅力之王 | 魅力值达到10000 | 💫 | +200 | charm ≥ 10000 |
+| charm_1000 | 魅力四射 | 累计获取1000魅力值 | ✨ | +100 | (totalCharm或charm) ≥ 1000 |
+| charm_10000 | 魅力之王 | 累计获取10000魅力值 | 💫 | +200 | (totalCharm或charm) ≥ 10000 |
 | combo_10 | 连击新手 | 达成10连击 | ⚡ | +50 | maxCombo ≥ 10 |
 | combo_30 | 连击大师 | 达成30连击 | 💥 | +200 | maxCombo ≥ 30 |
-| rich | 富翁 | 蛋币达到10000 | 💰 | +100 | coins ≥ 10000 |
+| rich | 富翁 | 累计获取10000蛋币 | 💰 | +100 | (totalCoins或coins) ≥ 10000 |
 | study_star | 学习之星 | 三种挑战各满分1次 | ⭐ | +200 | math+chinese+english全满分 |
 | ss_collector | SS收藏家 | 收集5种SS皮肤 | 🟡 | +200 | SS级收集 ≥ 5 |
 | s_collector | S收藏家 | 收集5种S皮肤 | 🟣 | +100 | S级收集 ≥ 5 |
@@ -113,6 +113,10 @@
 
 ```javascript
 gameData = {
+    coins: 0,              // 当前蛋币余额
+    charm: 0,              // 当前魅力值
+    totalCoins: 0,         // 累计获取蛋币
+    totalCharm: 0,         // 累计获取魅力值
     achievements: {},      // 已解锁成就 { id: true }
     currentTitle: null,    // 当前装备的称号ID
     unlockedTitles: [],    // 已解锁的称号列表
@@ -123,8 +127,6 @@ gameData = {
     adventureLevel: 0,     // 闯关模式最高关卡
     maxCombo: 0,           // 最高连击数
     totalDraws: 0,         // 累计抽卡次数
-    charm: 0,              // 魅力值
-    coins: 0,              // 蛋币
     collected: {},         // 收集的皮肤
     stats: { c:0, b:0, a:0, s:0, ss:0, sss:0 }  // 各等级皮肤数量
 }
