@@ -547,7 +547,7 @@ let currentDifficulty = 'normal';
 let currentChallengeType = null;
 
 // 生存模式数据
-let survivalData = { timer: null, timeLeft: 60, correct: 0, combo: 0, maxCombo: 0, currentQuestion: null };
+let survivalData = { timer: null, timeLeft: 60, correct: 0, combo: 0, maxCombo: 0, currentQuestion: null, earned: 0 };
 
 // 闯关模式数据
 let adventureData = { level: 1, hearts: 3, correct: 0, currentQuestion: null };
@@ -644,7 +644,7 @@ function startChallengeWithDifficulty(difficulty) {
 
 // ===== 生存模式 =====
 function startSurvivalMode() {
-    survivalData = { timer: null, timeLeft: 60, correct: 0, combo: 0, maxCombo: 0, currentQuestion: null };
+    survivalData = { timer: null, timeLeft: 60, correct: 0, combo: 0, maxCombo: 0, currentQuestion: null, earned: 0 };
     document.getElementById('survivalModal').classList.add('active');
     document.getElementById('survivalCorrect').textContent = '0';
     document.getElementById('survivalCombo').textContent = '0';
@@ -736,6 +736,7 @@ function selectSurvivalAnswer(answer) {
         if (survivalData.combo >= 10) bonus = 5;
         if (survivalData.combo >= 20) bonus = 8;
         if (survivalData.combo >= 30) bonus = 12;
+        survivalData.earned += bonus; // 记录实际获得的蛋币
         addCoins(bonus);
         saveGameData();
         updateDisplay();
@@ -770,8 +771,8 @@ function endSurvivalMode() {
 
     checkAchievements();
 
-    const bonus = survivalData.correct * 2 + survivalData.maxCombo * 2; // 基础奖励 + 连击奖励
-    showResult('⏱️', '生存结束！', `答对 ${survivalData.correct} 题 | 最高连击 ${survivalData.maxCombo}`, `+${bonus} 蛋币`, survivalData.maxCombo >= 20 ? '🔥 连击大师！' : '');
+    // 显示实际获得的蛋币（已在答题过程中累加）
+    showResult('⏱️', '生存结束！', `答对 ${survivalData.correct} 题 | 最高连击 ${survivalData.maxCombo}`, `+${survivalData.earned} 蛋币`, survivalData.maxCombo >= 20 ? '🔥 连击大师！' : '');
 }
 function closeSurvivalMode() {
     clearInterval(survivalData.timer);
@@ -1129,18 +1130,8 @@ function playUnlockSound() {
     } catch(e) {}
 }
 function updateAchievementCount() {
-    // 先同步检测所有成就，确保 gameData.achievements 与 condition 一致
-    let needSave = false;
-    ACHIEVEMENTS.forEach(ach => {
-        if (!gameData.achievements[ach.id] && ach.condition(gameData)) {
-            gameData.achievements[ach.id] = true;
-            needSave = true;
-        }
-    });
-    if (needSave) {
-        saveGameData();
-    }
     // 使用 gameData.achievements 计算数量
+    // 注意：不要在这里解锁成就，否则会绕过 checkAchievements 的奖励发放
     const unlocked = ACHIEVEMENTS.filter(a => gameData.achievements[a.id]).length;
     document.getElementById('achievementCount').textContent = `${unlocked}/${ACHIEVEMENTS.length}`;
 }
@@ -1332,6 +1323,7 @@ function updateMathTimerDisplay() { const m = Math.floor(mathData.timeLeft / 60)
 function finishMathQuiz() {
     clearInterval(mathData.timer);
     document.getElementById('mathModal').classList.remove('active');
+    const config = DIFFICULTY_CONFIG[currentDifficulty]; // 修复：定义 config 变量
     const timeUsed = 120 - mathData.timeLeft;
     let mult = 1, bonus = '';
     if (timeUsed <= 60) { mult = 2; bonus = '⚡ 极速完成！×2倍奖励'; }
@@ -1344,15 +1336,19 @@ function finishMathQuiz() {
         // 标记数学满分，checkAchievements 会检测并触发弹框
         gameData.mathPerfect = true;
     }
-    const efficiencyReward = Math.floor(mathData.earned * mult);
-    const totalReward = efficiencyReward + extraBonus;
+    // 效率加成：mathData.earned 是基础奖励（已含难度倍率），再乘效率倍率
+    // 但这里只补发加成部分，因为基础奖励答题时已发
+    const baseEarned = mathData.earned;
+    const efficiencyBonus = Math.floor(baseEarned * (mult - 1)); // 只补发加成部分
+    const totalReward = baseEarned + extraBonus + efficiencyBonus;
     let title = '', icon = '';
     if (mathData.correct === 20) { title = '满分！天才数学家！'; icon = '🏆'; }
     else if (mathData.correct >= 18) { title = '太棒了！接近满分！'; icon = '🎉'; }
     else if (mathData.correct >= 15) { title = '优秀！数学高手！'; icon = '👍'; }
     else if (mathData.correct >= 10) { title = '不错！继续加油！'; icon = '💪'; }
     else { title = '还需努力！'; icon = '📚'; }
-    addCoins((efficiencyReward - mathData.earned) + extraBonus);
+    // 只补发效率加成和满分额外奖励（基础奖励答题时已发）
+    addCoins(efficiencyBonus + extraBonus);
     saveGameData();
     updateDisplay();
     checkAchievements();
