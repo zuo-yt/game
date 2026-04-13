@@ -650,27 +650,11 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
     66% { filter: drop-shadow(0 0 30px rgba(255,215,0,0.9)) drop-shadow(0 0 20px rgba(255,105,180,0.6)) drop-shadow(0 0 12px rgba(255,255,255,0.4)); opacity: 1; }
     100% { filter: drop-shadow(0 0 40px rgba(255,215,0,1)) drop-shadow(0 0 30px rgba(255,105,180,0.9)) drop-shadow(0 0 20px rgba(255,255,255,0.7)); opacity: 0.96; }
 }
-/* 最新获得SSS级icon动态 */
-.latest-item.sss {
-    animation: sssLatestPulse 1s ease-in-out infinite;
-}
-.latest-item.sss::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 10px;
-    background: linear-gradient(45deg, #ff5252, #ffd700, #ff5252);
-    z-index: -1;
-    animation: sssRingGlow 2s linear infinite;
-}
-@keyframes sssLatestPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255,215,0,0.5); }
-    50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(255,215,0,0.8); }
-}
-@keyframes sssRingGlow {
-    0% { opacity: 0.6; transform: rotate(0deg); }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; transform: rotate(360deg); }
+/* 最新获得SSS级icon动态 - 纯发光高亮 */
+.latest-item.sss { animation: sssLatestGlow 1.5s ease-in-out infinite; }
+@keyframes sssLatestGlow {
+    0%, 100% { box-shadow: 0 0 12px rgba(255,215,0,0.6), 0 0 25px rgba(255,82,82,0.4); }
+    50% { box-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,82,82,0.8), 0 0 50px rgba(255,215,0,0.5); }
 }
 .rarity-badge { position: absolute; top: 8px; left: 8px; padding: 3px 10px; font-size: 11px; font-weight: bold; border-radius: 6px; z-index: 10; }
 .rarity-badge.c { background: rgba(255,255,255,0.9); color: #616161; }
@@ -946,7 +930,7 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .latest-item.a { background: linear-gradient(180deg, var(--rarity-a-start), var(--rarity-a-end)); }
 .latest-item.s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); }
 .latest-item.ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); }
-.latest-item.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); }
+.latest-item.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); animation: sssLatestGlow 1.5s ease-in-out infinite; }
 .latest-item.sssplus { background: linear-gradient(180deg, #1a0a2e 0%, #ff69b4 40%, #ffd700 100%); animation: sssplusLatestGlow 1.5s ease-in-out infinite; }
 @keyframes sssplusLatestGlow {
     0%, 100% { box-shadow: 0 0 10px rgba(255,215,0,0.6), 0 0 20px rgba(255,105,180,0.4); }
