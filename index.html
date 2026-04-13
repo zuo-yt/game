@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>蛋仔派对皮肤盲盒</title>
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=20260411e">
+    <link rel="stylesheet" href="css/style.css?v=20260413j">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
@@ -24,6 +24,7 @@
                 <div class="egg-display-rarity" id="eggDisplayRarity"></div>
                 <div class="egg-display-title" id="eggDisplayTitle"></div>
                 <div class="egg-visual">
+                    <div class="egg-crown" id="eggCrown"></div>
                     <div class="egg-base">🥚</div>
                     <div class="egg-skin-overlay" id="eggSkinOverlay"></div>
                 </div>
@@ -97,8 +98,9 @@
             <div class="stat-card s"><div class="stat-label">S (100魅力)</div><div class="stat-count" id="sCount">0</div><div class="stat-percent" id="sPercent">0%</div></div>
             <div class="stat-card ss"><div class="stat-label">SS (250魅力)</div><div class="stat-count" id="ssCount">0</div><div class="stat-percent" id="ssPercent">0%</div></div>
             <div class="stat-card sss"><div class="stat-label">SSS (1000魅力)</div><div class="stat-count" id="sssCount">0</div><div class="stat-percent" id="sssPercent">0%</div></div>
+            <div class="stat-card sssplus"><div class="stat-label">SSS+ (2000魅力)</div><div class="stat-count" id="sss+Count">0</div><div class="stat-percent" id="sss+Percent">0%</div></div>
         </div></div>
-        <div class="section-header" onclick="toggleSection('collectionContent')"><span>🎨 皮肤收集 (<span id="collectedCount">0</span>/30) | 魅力: <span id="charmDisplay">0</span></span><span>▼</span></div>
+        <div class="section-header" onclick="toggleSection('collectionContent')"><span>🎨 皮肤收集 (<span id="collectedCount">0</span>/62) | 魅力: <span id="charmDisplay">0</span></span><span>▼</span></div>
         <div class="collection-grid" id="collectionContent"></div>
     </div>
 
@@ -266,6 +268,6 @@
     <!-- 抽卡动画遮罩 -->
     <div class="draw-overlay" id="drawOverlay"></div>
 
-    <script src="js/game.js?v=20260411e"></script>
+    <script src="js/game.js?v=20260413j"></script>
 </body>
 </html>

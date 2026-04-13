@@ -323,20 +323,54 @@ const skins = {
         { name: '龙蛋仔', icon: '🐉' },
         { name: '独角兽', icon: '🦄' },
         { name: '冰雪女王', icon: '❄️' },
-        { name: '雷霆蛋仔', icon: '⚡' }
+        { name: '雷霆蛋仔', icon: '⚡' },
+        { name: '炫彩蛋仔', icon: '🎨' },
+        { name: '美人鱼', icon: '🧜' },
+        { name: '天鹰蛋', icon: '🦅' },
+        { name: '花仙子', icon: '🌺' },
+        { name: '戏剧蛋', icon: '🎭' }
     ],
     sss: [
-        { name: '银河王者', icon: '🌌' },
-        { name: '彩虹传说', icon: '🌈' },
+        { name: '银河王者', icon: '👑' },
+        { name: '彩虹传说', icon: '🦋' },
         { name: '钻石皇冠', icon: '💎' },
         { name: '天使蛋仔', icon: '👼' },
-        { name: '恶魔蛋仔', icon: '😈' }
+        { name: '恶魔蛋仔', icon: '😈' },
+        { name: '星辰霸主', icon: '🌟' },
+        { name: '虹彩女神', icon: '🌸' },
+        { name: '时光守护', icon: '🔮' },
+        { name: '梦幻精灵', icon: '🧚' },
+        { name: '月亮女神', icon: '🌙' },
+        { name: '海神蛋仔', icon: '🦈' },
+        { name: '熔岩霸主', icon: '🪷' },
+        { name: '冰霜王者', icon: '🧊' },
+        { name: '雷电至尊', icon: '💡' },
+        { name: '太阳神', icon: '🌻' }
+    ],
+    'sss+': [
+        { name: '金鼠生肖', icon: '🐭' },
+        { name: '金牛生肖', icon: '🐂' },
+        { name: '金虎生肖', icon: '🐯' },
+        { name: '金兔生肖', icon: '🐰' },
+        { name: '金龙生肖', icon: '🐲' },
+        { name: '金蛇生肖', icon: '🐍' },
+        { name: '金马生肖', icon: '🐴' },
+        { name: '金羊生肖', icon: '🐑' },
+        { name: '金猴生肖', icon: '🐵' },
+        { name: '金鸡生肖', icon: '🐓' },
+        { name: '金狗生肖', icon: '🐕' },
+        { name: '金猪生肖', icon: '🐷' }
     ]
 };
-const rarityOrder = ['c', 'b', 'a', 's', 'ss', 'sss'];
+const rarityOrder = ['c', 'b', 'a', 's', 'ss', 'sss', 'sss+'];
 
 // ===== 魅力值定义 =====
-const charmValues = { c: 1, b: 5, a: 20, s: 100, ss: 250, sss: 1000 };
+const charmValues = { c: 1, b: 5, a: 20, s: 100, ss: 250, sss: 1000, 'sss+': 2000 };
+
+// ===== 稀有度CSS类名转换 =====
+function getRarityClass(rarity) {
+    return rarity === 'sss+' ? 'sssplus' : rarity;
+}
 
 // ===== 礼品列表 =====
 const giftList = [
@@ -783,7 +817,7 @@ const ENGLISH_BY_DIFFICULTY = {
 const englishWordBank = [...englishEasy, ...englishNormal, ...englishHard];
 
 // 游戏数据
-let gameData = { coins: 0, charm: 0, totalCoins: 0, totalCharm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null, achievements: {}, currentTitle: null, survivalBest: 0, adventureLevel: 0, maxCombo: 0, mathPerfect: false, chinesePerfect: false, englishPerfect: false, unlockedTitles: [] };
+let gameData = { coins: 0, charm: 0, totalCoins: 0, totalCharm: 0, collected: {}, history: [], stats: { c: 0, b: 0, a: 0, s: 0, ss: 0, sss: 0, 'sss+': 0 }, totalDraws: 0, latestSkins: [], exchangeHistory: [], currentSkin: null, achievements: {}, currentTitle: null, survivalBest: 0, adventureLevel: 0, maxCombo: 0, mathPerfect: false, chinesePerfect: false, englishPerfect: false, unlockedTitles: [], pityCounter: { sss: 0, sssplus: 0 } };
 let mathData = { questions: [], currentIndex: 0, correct: 0, wrong: 0, earned: 0, timer: null, timeLeft: 120 };
 let chineseIndex = 0;
 let chineseCorrect = 0;
@@ -825,12 +859,14 @@ const CHALLENGE_DESC = {
 
 // ===== 成就配置 =====
 // 成就奖励等级：简单50，中等100，困难200
-const ACHIEVEMENT_REWARD = { easy: 50, medium: 100, hard: 200 };
+const ACHIEVEMENT_REWARD = { easy: 50, medium: 100, hard: 200, legendary: 500, super_legendary: 1000, ultimate: 2000 };
 
 const ACHIEVEMENTS = [
     { id: 'first_sss', name: '欧皇降临', desc: '首次获得SSS皮肤', icon: '🌟', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.stats.sss > 0, progress: (d) => ({ current: d.stats.sss, target: 1 }) },
+    { id: 'first_sssplus', name: '生肖降临', desc: '首次获得SSS+生肖皮肤', icon: '🐲', reward: ACHIEVEMENT_REWARD.legendary, condition: (d) => d.stats['sss+'] > 0, progress: (d) => ({ current: d.stats['sss+'], target: 1 }) },
     { id: 'collect_10', name: '收藏家', desc: '收集10种皮肤', icon: '📦', reward: ACHIEVEMENT_REWARD.easy, condition: (d) => Object.keys(d.collected).length >= 10, progress: (d) => ({ current: Object.keys(d.collected).length, target: 10 }) },
-    { id: 'collect_all', name: '大满贯', desc: '收集全部30种皮肤', icon: '🏆', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => Object.keys(d.collected).length >= 30, progress: (d) => ({ current: Object.keys(d.collected).length, target: 30 }) },
+    { id: 'collect_30', name: '收藏达人', desc: '收集30种皮肤', icon: '🎯', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => Object.keys(d.collected).length >= 30, progress: (d) => ({ current: Object.keys(d.collected).length, target: 30 }) },
+    { id: 'collect_all', name: '大满贯', desc: '收集全部62种皮肤', icon: '🏆', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => Object.keys(d.collected).length >= 62, progress: (d) => ({ current: Object.keys(d.collected).length, target: 62 }) },
     { id: 'math_master', name: '数学小天才', desc: '数学挑战满分', icon: '🔢', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.mathPerfect },
     { id: 'chinese_master', name: '语文小博士', desc: '语文挑战连续10题全对', icon: '📖', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.chinesePerfect },
     { id: 'english_master', name: '英语达人', desc: '英语挑战满分', icon: '🔤', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => d.englishPerfect },
@@ -847,12 +883,21 @@ const ACHIEVEMENTS = [
     { id: 'rich', name: '富翁', desc: '累计获取10000蛋币', icon: '💰', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => (d.totalCoins || d.coins) >= 10000, progress: (d) => ({ current: d.totalCoins || d.coins || 0, target: 10000 }) },
     { id: 'study_star', name: '学习之星', desc: '三种挑战各满分1次', icon: '⭐', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => d.achievements.math_master && d.achievements.chinese_master && d.achievements.english_master, progress: (d) => ({ current: (d.achievements.math_master ? 1 : 0) + (d.achievements.chinese_master ? 1 : 0) + (d.achievements.english_master ? 1 : 0), target: 3 }) },
     { id: 'ss_collector', name: 'SS收藏家', desc: '收集5种SS皮肤', icon: '🟡', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => countRarity(d.collected, 'ss') >= 5, progress: (d) => ({ current: countRarity(d.collected, 'ss'), target: 5 }) },
+    { id: 'sss_collector', name: 'SSS收藏家', desc: '收集5种SSS皮肤', icon: '🔴', reward: ACHIEVEMENT_REWARD.hard, condition: (d) => countRarity(d.collected, 'sss') >= 5, progress: (d) => ({ current: countRarity(d.collected, 'sss'), target: 5 }) },
+    { id: 'sss_all', name: 'SSS全收集', desc: '收集全部15种SSS皮肤', icon: '👑', reward: ACHIEVEMENT_REWARD.super_legendary, condition: (d) => countRarity(d.collected, 'sss') >= 15, progress: (d) => ({ current: countRarity(d.collected, 'sss'), target: 15 }) },
+    { id: 'sssplus_collector', name: '生肖大师', desc: '收集5种SSS+生肖皮肤', icon: '🐲', reward: ACHIEVEMENT_REWARD.legendary, condition: (d) => countRarity(d.collected, 'sss+') >= 5, progress: (d) => ({ current: countRarity(d.collected, 'sss+'), target: 5 }) },
+    { id: 'sssplus_all', name: '生肖全收集', desc: '收集全部12种SSS+生肖皮肤', icon: '🧧', reward: ACHIEVEMENT_REWARD.ultimate, condition: (d) => countRarity(d.collected, 'sss+') >= 12, progress: (d) => ({ current: countRarity(d.collected, 'sss+'), target: 12 }) },
     { id: 's_collector', name: 'S收藏家', desc: '收集5种S皮肤', icon: '🟣', reward: ACHIEVEMENT_REWARD.medium, condition: (d) => countRarity(d.collected, 's') >= 5, progress: (d) => ({ current: countRarity(d.collected, 's'), target: 5 }) }
 ];
 
 // 称号列表（从成就转化）
 const TITLES = [
     { id: 'first_sss', name: '欧皇', icon: '🌟' },
+    { id: 'first_sssplus', name: '生肖使者', icon: '🐲' },
+    { id: 'sss_collector', name: 'SSS收藏家', icon: '🔴' },
+    { id: 'sss_all', name: 'SSS王者', icon: '👑' },
+    { id: 'sssplus_collector', name: '生肖大师', icon: '🐉' },
+    { id: 'sssplus_all', name: '生肖之神', icon: '🧧' },
     { id: 'collect_all', name: '大满贯', icon: '🏆' },
     { id: 'math_master', name: '数学天才', icon: '🔢' },
     { id: 'chinese_master', name: '语文博士', icon: '📖' },
@@ -1303,7 +1348,7 @@ function renderAchievementList() {
             return `<div class="achievement-item ${unlocked ? 'unlocked' : 'locked'}">
                 <div class="achievement-item-icon">${unlocked ? ach.icon : '🔒'}</div>
                 <div class="achievement-item-info">
-                    <div class="achievement-item-name">${ach.name}</div>
+                    <div class="achievement-item-name-row"><span class="achievement-item-name">${ach.name}</span><span class="achievement-item-reward-small">+${ach.reward}</span></div>
                     <div class="achievement-item-desc">${ach.desc}</div>
                     ${progressHtml}
                 </div>
@@ -1315,10 +1360,11 @@ function renderAchievementList() {
         container.innerHTML = TITLES.map(title => {
             const unlocked = gameData.achievements[title.id];
             const equipped = gameData.currentTitle === title.id;
+            const reward = ACHIEVEMENTS.find(a => a.id === title.id)?.reward || 0;
             return `<div class="achievement-item title-item ${unlocked ? 'unlocked' : 'locked'} ${equipped ? 'equipped' : ''}" onclick="equipTitle('${title.id}')">
                 <div class="achievement-item-icon">${unlocked ? title.icon : '🔒'}</div>
                 <div class="achievement-item-info">
-                    <div class="achievement-item-name">${title.name}</div>
+                    <div class="achievement-item-name-row"><span class="achievement-item-name">${title.name}</span><span class="achievement-item-reward-small">+${reward}</span></div>
                     <div class="achievement-item-desc">${ACHIEVEMENTS.find(a => a.id === title.id)?.desc || ''}</div>
                 </div>
                 ${unlocked ? `<button class="equip-btn ${equipped ? 'equipped' : ''}">${equipped ? '已装备' : '装备'}</button>` : '<div class="achievement-item-status locked">未解锁</div>'}
@@ -1344,6 +1390,9 @@ function equipTitle(titleId) {
 }
 
 function checkAchievements() {
+    // 确保 stats 中有 sss+ 字段（兼容旧数据）
+    if (!gameData.stats['sss+']) gameData.stats['sss+'] = 0;
+
     let newAchievements = [];
     let newTitles = [];
 
@@ -1370,6 +1419,9 @@ function checkAchievements() {
     if (newAchievements.length > 0 || newTitles.length > 0) {
         saveGameData();
         updateDisplay(); // 更新界面显示蛋币余额
+        // 更新抽卡界面余额显示
+        const drawCoinsEl = document.getElementById('drawCoinsDisplay');
+        if (drawCoinsEl) drawCoinsEl.textContent = gameData.coins;
     }
 
     // 先显示成就弹框，然后显示称号弹框
@@ -1522,6 +1574,11 @@ function loadGameData() {
         if (s) {
             const saved = JSON.parse(s);
             gameData = { ...gameData, ...saved };
+            // 兼容性：确保 stats 中有 sss+ 字段
+            if (!gameData.stats['sss+']) gameData.stats['sss+'] = 0;
+            // 兼容性：确保 pityCounter 中有 sssplus 字段
+            if (!gameData.pityCounter) gameData.pityCounter = { sss: 0, sssplus: 0 };
+            if (!gameData.pityCounter.sssplus) gameData.pityCounter.sssplus = 0;
         }
     } catch(e) {
         console.log('localStorage not available');
@@ -1580,10 +1637,28 @@ function updateDisplay() {
 // ===== 蛋仔展示 =====
 function updateEggDisplay() {
     const overlay = document.getElementById('eggSkinOverlay');
+    const crownEl = document.getElementById('eggCrown');
     const nameEl = document.getElementById('eggDisplayName');
     const rarityEl = document.getElementById('eggDisplayRarity');
     const cardEl = document.getElementById('eggDisplayCard');
     const titleEl = document.getElementById('eggDisplayTitle');
+    const sectionEl = document.querySelector('.egg-display-section');
+    const visual = cardEl.querySelector('.egg-visual');
+    const eggBase = visual.querySelector('.egg-base');
+
+    // 清除所有SSS+相关的类和粒子
+    sectionEl.classList.remove('sssplus-display');
+    cardEl.classList.remove('sssplus-card');
+    visual.classList.remove('sssplus-visual');
+    overlay.classList.remove('sssplus-overlay');
+    nameEl.classList.remove('sssplus-name');
+    eggBase.classList.remove('sssplus-base');
+    titleEl.classList.remove('sssplus-title');
+    crownEl.classList.remove('active');
+    crownEl.textContent = '';
+    // 清除旧的粒子
+    const oldParticles = sectionEl.querySelectorAll('.sssplus-float-particle');
+    oldParticles.forEach(p => p.remove());
 
     // 显示称号
     if (gameData.currentTitle) {
@@ -1611,8 +1686,41 @@ function updateEggDisplay() {
         overlay.textContent = skin.icon;
         nameEl.textContent = skin.name;
         rarityEl.textContent = skin.rarity.toUpperCase();
-        rarityEl.className = `egg-display-rarity ${skin.rarity}`;
-        cardEl.className = `egg-display-card rarity-${skin.rarity}`;
+        rarityEl.className = `egg-display-rarity ${getRarityClass(skin.rarity)}`;
+        cardEl.className = `egg-display-card rarity-${getRarityClass(skin.rarity)}`;
+
+        // SSS+级特殊华丽效果
+        if (skin.rarity === 'sss+') {
+            sectionEl.classList.add('sssplus-display');
+            cardEl.classList.add('sssplus-card');
+            visual.classList.add('sssplus-visual');
+            overlay.classList.add('sssplus-overlay');
+            nameEl.classList.add('sssplus-name');
+            eggBase.classList.add('sssplus-base');
+            titleEl.classList.add('sssplus-title');
+            // 显示皇冠
+            crownEl.classList.add('active');
+            crownEl.textContent = '👑';
+            // 创建动态粒子
+            createSSSPlusDisplayParticles(sectionEl);
+        }
+    }
+}
+// 创建SSS+级展示区域的动态粒子
+function createSSSPlusDisplayParticles(sectionEl) {
+    const particles = ['✨', '💎', '👑', '🌟', '🏆', '💫', '⭐', '✦'];
+    const count = 8;
+    for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'sssplus-float-particle';
+        particle.textContent = particles[i % particles.length];
+        particle.style.cssText = `
+            top: ${20 + Math.random() * 60}%;
+            left: ${10 + Math.random() * 80}%;
+            animation-delay: ${i * 0.5}s;
+            animation-duration: ${4 + Math.random() * 4}s;
+        `;
+        sectionEl.appendChild(particle);
     }
 }
 function changeSkin(rarity, index) {
@@ -2299,16 +2407,47 @@ function saveImageForShare(dataUrl) {
 }
 
 // ===== 抽奖系统 =====
+// ===== 保底配置 =====
+const PITY_CONFIG = { sss: 200, sssplus: 400 }; // SSS保底200抽，SSS+保底400抽
+
 function getRandomSkin() {
+    // 保底计数器增加
+    gameData.pityCounter.sss++;
+    gameData.pityCounter.sssplus++;
+
+    // SSS+保底检查（400抽必出SSS+）
+    if (gameData.pityCounter.sssplus >= PITY_CONFIG.sssplus) {
+        gameData.pityCounter.sssplus = 0;
+        gameData.pityCounter.sss = 0; // SSS+出时SSS计数器也归零
+        const list = skins['sss+'];
+        const idx = Math.floor(Math.random() * list.length);
+        return { rarity: 'sss+', name: list[idx].name, icon: list[idx].icon, index: idx };
+    }
+
+    // SSS保底检查（200抽必出SSS）
+    if (gameData.pityCounter.sss >= PITY_CONFIG.sss) {
+        gameData.pityCounter.sss = 0;
+        const list = skins['sss'];
+        const idx = Math.floor(Math.random() * list.length);
+        return { rarity: 'sss', name: list[idx].name, icon: list[idx].icon, index: idx };
+    }
+
     const rand = Math.random() * 100;
     let rarity;
-    // 概率：SSS 0.5%, SS 4.5%, S 8%, A 15%, B 30%, C 42%
-    if (rand < 0.5) rarity = 'sss';
-    else if (rand < 5) rarity = 'ss';
+    // 概率：SSS+ 0.25%, SSS 0.5%, SS 4.25%, S 8%, A 15%, B 30%, C 42%
+    if (rand < 0.25) {
+        rarity = 'sss+';
+        gameData.pityCounter.sssplus = 0;
+        gameData.pityCounter.sss = 0;
+    } else if (rand < 0.75) {
+        rarity = 'sss';
+        gameData.pityCounter.sss = 0;
+    } else if (rand < 5) rarity = 'ss';
     else if (rand < 13) rarity = 's';
     else if (rand < 28) rarity = 'a';
     else if (rand < 58) rarity = 'b';
     else rarity = 'c';
+
     const list = skins[rarity];
     const idx = Math.floor(Math.random() * list.length);
     return { rarity, name: list[idx].name, icon: list[idx].icon, index: idx };
@@ -2364,7 +2503,7 @@ function updateLatestItems() {
         return;
     }
     container.innerHTML = gameData.latestSkins.slice(0, 10).map(skin =>
-        `<div class="latest-item ${skin.rarity}" title="${skin.name}">${skin.icon}</div>`
+        `<div class="latest-item ${getRarityClass(skin.rarity)}" title="${skin.name}">${skin.icon}</div>`
     ).join('');
 }
 
@@ -2373,9 +2512,30 @@ function showDrawAnimation(skinList, drawType, checkAchievementAfter = false) {
     const overlay = document.getElementById('drawOverlay');
     overlay.innerHTML = '';
     overlay.classList.add('active');
+
+    // 蛋币余额显示
+    const coinsDisplay = document.createElement('div');
+    coinsDisplay.className = 'draw-coins-display';
+    coinsDisplay.id = 'drawCoinsDisplay';
+    coinsDisplay.textContent = gameData.coins;
+    overlay.appendChild(coinsDisplay);
+
+    // 特效层 - 独立层，不参与flexbox布局
+    const effectLayer = document.createElement('div');
+    effectLayer.className = 'draw-effect-layer';
+    effectLayer.id = 'drawEffectLayer';
+    overlay.appendChild(effectLayer);
+
     const container = document.createElement('div');
     container.className = 'draw-card-container';
     overlay.appendChild(container);
+
+    // 余额更新函数
+    function updateDrawCoins() {
+        const display = document.getElementById('drawCoinsDisplay');
+        if (display) display.textContent = gameData.coins;
+    }
+
     const btnContainer = document.createElement('div');
     btnContainer.className = 'draw-btn-container';
     overlay.appendChild(btnContainer);
@@ -2406,12 +2566,13 @@ function showDrawAnimation(skinList, drawType, checkAchievementAfter = false) {
             const card = document.createElement('div');
             card.className = 'draw-card';
             const rarityUpper = skin.rarity.toUpperCase();
+            const rarityClass = getRarityClass(skin.rarity);
             card.innerHTML = `
                 <div class="draw-card-inner">
                     <div class="draw-card-front"></div>
-                    <div class="draw-card-back rarity-${skin.rarity}">
-                        <div class="rarity-badge ${skin.rarity}">${rarityUpper}</div>
-                        <div class="skin-fallback rarity-${skin.rarity}">${skin.icon}</div>
+                    <div class="draw-card-back rarity-${rarityClass}">
+                        <div class="rarity-badge ${rarityClass}">${rarityUpper}</div>
+                        <div class="skin-fallback rarity-${rarityClass}">${skin.icon}</div>
                         <div class="skin-name-bottom">${skin.name}</div>
                     </div>
                 </div>
@@ -2420,7 +2581,8 @@ function showDrawAnimation(skinList, drawType, checkAchievementAfter = false) {
             setTimeout(() => {
                 card.classList.add('opened');
                 playFlipSound();  // 播放翻卡音效
-                if (skin.rarity === 'sss') { createParticles(card, skin.rarity); createSSSFlash(); createConfetti(); createFireworks(); playRareSound('sss'); playCheerSound(); }
+                if (skin.rarity === 'sss+') { createParticles(card, 'sss+'); createSSSPlusGrandFlash(); createRotatingHalo(); createCrownParticles(); createDiamondSparkles(); createGoldRibbons(); createRoyalAura(); createConfettiSSSPlus(); createFireworksSSSPlus(); playRareSound('sss'); playCheerSound(); }
+                else if (skin.rarity === 'sss') { createParticles(card, skin.rarity); createSSSFlash(); createConfetti(); createFireworks(); playRareSound('sss'); playCheerSound(); }
                 else if (skin.rarity === 'ss') { createParticles(card, skin.rarity); createSSLightBeams(); createConfettiSS(); playRareSound('ss'); }
                 else if (skin.rarity === 's') { playRareSound('s'); }
                 if (i === lastIndex) {
@@ -2435,8 +2597,14 @@ function showDrawAnimation(skinList, drawType, checkAchievementAfter = false) {
     });
 }
 function createParticles(card, rarity) {
-    const colors = rarity === 'sss' ? ['#ff5252', '#ffd700', '#ff6b6b'] : ['#ffd700', '#ff8f00'];
-    const count = rarity === 'sss' ? 30 : 15;
+    const effectLayer = document.getElementById('drawEffectLayer');
+    // 获取卡牌在屏幕上的中心位置
+    const cardRect = card.getBoundingClientRect();
+    const centerX = cardRect.left + cardRect.width / 2;
+    const centerY = cardRect.top + cardRect.height / 2;
+
+    const colors = rarity === 'sss+' ? ['#9c27b0', '#e91e63', '#ffd700', '#ff5252'] : rarity === 'sss' ? ['#ff5252', '#ffd700', '#ff6b6b'] : ['#ffd700', '#ff8f00'];
+    const count = rarity === 'sss+' ? 50 : rarity === 'sss' ? 30 : 15;
     for (let i = 0; i < count; i++) {
         setTimeout(() => {
             const particle = document.createElement('div');
@@ -2444,21 +2612,22 @@ function createParticles(card, rarity) {
             const size = 4 + Math.random() * 6;
             const angle = (360 / count) * i;
             const distance = 80 + Math.random() * 60;
-            particle.style.cssText = `width: ${size}px; height: ${size}px; background: ${colors[Math.floor(Math.random() * colors.length)]}; left: 50%; top: 50%; --tx: ${Math.cos(angle * Math.PI / 180) * distance}px; --ty: ${Math.sin(angle * Math.PI / 180) * distance}px;`;
-            card.appendChild(particle);
+            // 使用屏幕绝对位置，避免卡牌transform影响
+            particle.style.cssText = `width: ${size}px; height: ${size}px; background: ${colors[Math.floor(Math.random() * colors.length)]}; left: ${centerX}px; top: ${centerY}px; --tx: ${Math.cos(angle * Math.PI / 180) * distance}px; --ty: ${Math.sin(angle * Math.PI / 180) * distance}px;`;
+            effectLayer.appendChild(particle);
             setTimeout(() => particle.remove(), 1000);
         }, i * 20);
     }
 }
 function createSSLightBeams() {
-    const overlay = document.getElementById('drawOverlay');
+    const effectLayer = document.getElementById('drawEffectLayer');
     for (let i = 0; i < 12; i++) {
         setTimeout(() => {
             const beam = document.createElement('div');
             beam.className = 'ss-light-beam';
             beam.style.left = (Math.random() * 100) + '%';
             beam.style.animationDelay = (Math.random() * 0.3) + 's';
-            overlay.appendChild(beam);
+            effectLayer.appendChild(beam);
             setTimeout(() => beam.remove(), 2000);
         }, i * 100);
     }
@@ -2469,28 +2638,179 @@ function createSSLightBeams() {
             star.style.left = (Math.random() * 100) + '%';
             star.style.top = (Math.random() * 100) + '%';
             star.style.animationDelay = (Math.random() * 0.5) + 's';
-            overlay.appendChild(star);
+            effectLayer.appendChild(star);
             setTimeout(() => star.remove(), 2500);
         }, i * 80);
     }
 }
 function createSSSFlash() {
-    const overlay = document.getElementById('drawOverlay');
+    const effectLayer = document.getElementById('drawEffectLayer');
     const flash = document.createElement('div');
     flash.className = 'sss-flash';
-    overlay.appendChild(flash);
+    effectLayer.appendChild(flash);
     setTimeout(() => flash.remove(), 800);
     setTimeout(() => {
         const flash2 = document.createElement('div');
         flash2.className = 'sss-flash';
         flash2.style.background = 'radial-gradient(circle at center, rgba(255,215,0,0.5) 0%, rgba(255,82,82,0.3) 40%, transparent 80%)';
-        overlay.appendChild(flash2);
+        effectLayer.appendChild(flash2);
         setTimeout(() => flash2.remove(), 800);
     }, 300);
 }
+// SSS+级全屏彩虹闪光特效
+function createSSSPlusFlash() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+    const colors = ['#9c27b0', '#e91e63', '#ffd700', '#ff5252', '#00bcd4'];
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            const flash = document.createElement('div');
+            flash.className = 'sss-flash';
+            flash.style.background = `radial-gradient(circle at center, ${colors[i % colors.length]} 0%, ${colors[(i + 1) % colors.length]} 0.3 30%, transparent 70%)`;
+            flash.style.opacity = '0.8';
+            effectLayer.appendChild(flash);
+            setTimeout(() => flash.remove(), 1000);
+        }, i * 200);
+    }
+}
+// SSS+级华丽全屏闪光特效 - 更尊贵
+function createSSSPlusGrandFlash() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+    // 第一波华丽闪光
+    const flash1 = document.createElement('div');
+    flash1.className = 'sssplus-grand-flash';
+    effectLayer.appendChild(flash1);
+    setTimeout(() => flash1.remove(), 1500);
+    // 第二波闪光
+    setTimeout(() => {
+        const flash2 = document.createElement('div');
+        flash2.className = 'sssplus-grand-flash';
+        flash2.style.animationDelay = '0.3s';
+        effectLayer.appendChild(flash2);
+        setTimeout(() => flash2.remove(), 1500);
+    }, 500);
+    // 第三波闪光
+    setTimeout(() => {
+        const flash3 = document.createElement('div');
+        flash3.className = 'sssplus-grand-flash';
+        flash3.style.animationDelay = '0.6s';
+        effectLayer.appendChild(flash3);
+        setTimeout(() => flash3.remove(), 1500);
+    }, 800);
+}
+// 旋转光环特效 - 多层光环围绕中心旋转
+function createRotatingHalo() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+    const haloColors = [
+        { color: '#ffd700', size: 150, duration: 4 },
+        { color: '#ff69b4', size: 200, duration: 3 },
+        { color: '#ffffff', size: 250, duration: 2.5 },
+        { color: '#9c27b0', size: 300, duration: 3.5 }
+    ];
+    // 创建多层光环
+    for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
+            const halo = document.createElement('div');
+            halo.className = 'sssplus-halo-ring';
+            halo.style.cssText = `
+                left: 50%;
+                top: 50%;
+                width: ${haloColors[i].size}px;
+                height: ${haloColors[i].size}px;
+                border: ${3 + i}px solid ${haloColors[i].color};
+                box-shadow: 0 0 20px ${haloColors[i].color}, inset 0 0 15px ${haloColors[i].color};
+                animation: haloRingRotate ${haloColors[i].duration}s linear infinite, haloRingPulse 1.5s ease-in-out infinite alternate;
+            `;
+            effectLayer.appendChild(halo);
+            setTimeout(() => {
+                halo.style.opacity = '0';
+                setTimeout(() => halo.remove(), 500);
+            }, 3000 + i * 500);
+        }, i * 300);
+    }
+}
+// 皇冠粒子飘落 - 尊贵的皇冠符号
+function createCrownParticles() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+    const crowns = ['👑', '💎', '🏆', '✨', '🌟'];
+    // 三波皇冠飘落（共30个）
+    for (let wave = 0; wave < 3; wave++) {
+        for (let i = 0; i < 10; i++) {
+            setTimeout(() => {
+                const crown = document.createElement('div');
+                crown.className = 'crown-particle';
+                crown.textContent = crowns[Math.floor(Math.random() * crowns.length)];
+                crown.style.left = (10 + Math.random() * 80) + '%';
+                crown.style.animationDuration = (3 + Math.random() * 2) + 's';
+                crown.style.animationDelay = Math.random() * 0.3 + 's';
+                effectLayer.appendChild(crown);
+                setTimeout(() => crown.remove(), 5000);
+            }, wave * 600 + i * 50);
+        }
+    }
+}
+// 钻石光芒闪烁 - 多点钻石闪耀
+function createDiamondSparkles() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+    // 创建多点钻石闪耀（40个）
+    for (let i = 0; i < 40; i++) {
+        setTimeout(() => {
+            const diamond = document.createElement('div');
+            diamond.className = 'diamond-sparkle';
+            diamond.style.left = (5 + Math.random() * 90) + '%';
+            diamond.style.top = (10 + Math.random() * 80) + '%';
+            diamond.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+            diamond.style.animationDelay = Math.random() * 0.5 + 's';
+            diamond.style.width = (15 + Math.random() * 10) + 'px';
+            diamond.style.height = diamond.style.width;
+            effectLayer.appendChild(diamond);
+            setTimeout(() => diamond.remove(), 3000);
+        }, i * 80);
+    }
+}
+// 金色丝带飘舞 - 华丽的丝带效果
+function createGoldRibbons() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+    const ribbonColors = ['#ffd700', '#ff69b4', '#9c27b0', '#e91e63', '#ffffff'];
+    // 创建金色丝带（25条）
+    for (let i = 0; i < 25; i++) {
+        setTimeout(() => {
+            const ribbon = document.createElement('div');
+            ribbon.className = 'gold-ribbon';
+            ribbon.style.left = (5 + Math.random() * 90) + '%';
+            ribbon.style.width = (30 + Math.random() * 50) + 'px';
+            ribbon.style.background = `linear-gradient(90deg, ${ribbonColors[Math.floor(Math.random() * ribbonColors.length)]}, transparent)`;
+            ribbon.style.animationDuration = (2 + Math.random() * 2) + 's';
+            ribbon.style.animationDelay = Math.random() * 0.5 + 's';
+            effectLayer.appendChild(ribbon);
+            setTimeout(() => ribbon.remove(), 4000);
+        }, i * 100);
+    }
+}
+// 贵族光晕脉冲 - 多层旋转光晕
+function createRoyalAura() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+    const auraColors = ['#ffd700', '#ff69b4', '#9c27b0', '#ffffff'];
+    // 创建多层光晕（8个）
+    for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+            const aura = document.createElement('div');
+            aura.className = 'royal-aura';
+            aura.style.cssText = `
+                left: 50%;
+                top: 50%;
+                width: ${100 + i * 30}px;
+                height: ${100 + i * 30}px;
+                background: radial-gradient(circle, ${auraColors[i % auraColors.length]} 0%, transparent 70%);
+                animation-delay: ${i * 0.2}s;
+            `;
+            effectLayer.appendChild(aura);
+            setTimeout(() => aura.remove(), 2500);
+        }, i * 150);
+    }
+}
 function createConfetti() {
     // SSS级撒花特效 - 多种形状彩色纸屑
-    const overlay = document.getElementById('drawOverlay');
+    const effectLayer = document.getElementById('drawEffectLayer');
     const shapes = ['heart', 'star', 'circle', 'ribbon', 'sparkle'];
     const colors = ['#ff5252', '#ffd700', '#ff69b4', '#ff8f00', '#e91e63', '#00bcd4', '#9c27b0', '#4caf50', '#ffeb3b', '#ff6b6b'];
 
@@ -2509,7 +2829,7 @@ function createConfetti() {
             confetti.style.setProperty('--rotate', (Math.random() * 720 + 360) + 'deg');
             confetti.style.animationDuration = (2 + Math.random() * 1.5) + 's';
             confetti.style.animationDelay = Math.random() * 0.3 + 's';
-            overlay.appendChild(confetti);
+            effectLayer.appendChild(confetti);
             setTimeout(() => confetti.remove(), 3500);
         }, i * 40);
     }
@@ -2528,7 +2848,7 @@ function createConfetti() {
             confetti.style.top = '-5%';
             confetti.style.setProperty('--rotate', (Math.random() * 720 - 360) + 'deg');
             confetti.style.animationDuration = (2.5 + Math.random() * 1) + 's';
-            overlay.appendChild(confetti);
+            effectLayer.appendChild(confetti);
             setTimeout(() => confetti.remove(), 4000);
         }, 500 + i * 50);
     }
@@ -2546,7 +2866,7 @@ function createConfetti() {
             confetti.style.marginLeft = '-6px';
             confetti.style.marginTop = '-6px';
             confetti.style.transition = 'all 1s ease-out';
-            overlay.appendChild(confetti);
+            effectLayer.appendChild(confetti);
 
             // 动画：从中心向四周扩散
             const angle = (360 / 20) * i;
@@ -2565,7 +2885,7 @@ function createConfetti() {
 }
 function createConfettiSS() {
     // SS级撒花特效 - 持续5秒的彩色纸屑
-    const overlay = document.getElementById('drawOverlay');
+    const effectLayer = document.getElementById('drawEffectLayer');
     const shapes = ['heart', 'star', 'circle', 'ribbon'];
     const colors = ['#ffd700', '#ff8f00', '#e91e63', '#9c27b0', '#ffeb3b', '#ff6b6b'];
 
@@ -2586,14 +2906,14 @@ function createConfettiSS() {
             confetti.style.setProperty('--rotate', (Math.random() * 720) + 'deg');
             confetti.style.animationDuration = '5s'; // 固定5秒
             confetti.style.animationDelay = '0s';
-            overlay.appendChild(confetti);
+            effectLayer.appendChild(confetti);
             setTimeout(() => confetti.remove(), 5500);
         }, i * 100); // 每0.1秒一个，总时长5秒
     }
 }
 function createFireworks() {
     // SSS级烟花礼炮特效 - 10个烟花，间隔1秒，总计10秒
-    const overlay = document.getElementById('drawOverlay');
+    const effectLayer = document.getElementById('drawEffectLayer');
 
     // 鲜艳烟花颜色组（主色、亮色、深色）
     const fireworkColors = [
@@ -2635,7 +2955,7 @@ function createFireworks() {
             rocket.style.width = '8px';
             rocket.style.height = '25px';
             rocket.style.borderRadius = '4px';
-            overlay.appendChild(rocket);
+            effectLayer.appendChild(rocket);
 
             // 升空动画
             requestAnimationFrame(() => {
@@ -2675,7 +2995,7 @@ function createFireworks() {
                     const tx = Math.cos(angle * Math.PI / 180) * distance;
                     const ty = Math.sin(angle * Math.PI / 180) * distance - 20; // 稍微向上偏移
 
-                    overlay.appendChild(particle);
+                    effectLayer.appendChild(particle);
                     requestAnimationFrame(() => {
                         particle.style.transition = 'all 1.2s ease-out';
                         particle.style.transform = `translate(${tx}px, ${ty}px)`;
@@ -2692,7 +3012,7 @@ function createFireworks() {
                 ring.style.borderColor = colors[0];
                 ring.style.width = '15px';
                 ring.style.height = '15px';
-                overlay.appendChild(ring);
+                effectLayer.appendChild(ring);
                 setTimeout(() => ring.remove(), 1000);
 
                 // 爆炸闪光中心
@@ -2703,7 +3023,7 @@ function createFireworks() {
                 flash.style.background = `radial-gradient(circle, ${colors[1]} 0%, transparent 70%)`;
                 flash.style.width = '30px';
                 flash.style.height = '30px';
-                overlay.appendChild(flash);
+                effectLayer.appendChild(flash);
                 setTimeout(() => flash.remove(), 400);
 
                 // 垂落粒子（模拟烟花落下的尾焰）
@@ -2721,7 +3041,7 @@ function createFireworks() {
                         const tx = (Math.random() - 0.5) * 60;
                         const ty = 50 + Math.random() * 100;
 
-                        overlay.appendChild(trail);
+                        effectLayer.appendChild(trail);
                         requestAnimationFrame(() => {
                             trail.style.transition = 'all 1.5s ease-in';
                             trail.style.transform = `translate(${tx}px, ${ty}px)`;
@@ -2732,6 +3052,97 @@ function createFireworks() {
                 }
             }, 800);
         }, idx * 1000); // 间隔1秒
+    }
+}
+// SSS+级撒花特效 - 彩虹纸屑 + 金色生肖特效
+function createConfettiSSSPlus() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+    const shapes = ['heart', 'star', 'circle', 'ribbon', 'sparkle'];
+    const colors = ['#9c27b0', '#e91e63', '#ffd700', '#ff5252', '#00bcd4', '#ff69b4', '#7cfc00', '#ff4500', '#ffffff', '#ff1493'];
+
+    // 三波撒花，更密集（共120个）
+    for (let wave = 0; wave < 3; wave++) {
+        for (let i = 0; i < 40; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                confetti.className = `confetti confetti-${shape}`;
+                if (shape === 'circle' || shape === 'ribbon') {
+                    confetti.style.background = color;
+                }
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-5%';
+                confetti.style.setProperty('--rotate', (Math.random() * 1080 + 720) + 'deg');
+                confetti.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+                confetti.style.animationDelay = Math.random() * 0.2 + 's';
+                effectLayer.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4500);
+            }, wave * 500 + i * 25);
+        }
+    }
+
+    // 金色生肖符号闪烁
+    const zodiacIcons = ['🐭', '🐂', '🐯', '🐰', '🐲', '🐍', '🐴', '🐑', '🐵', '🐓', '🐕', '🐷'];
+    for (let i = 0; i < 12; i++) {
+        setTimeout(() => {
+            const icon = document.createElement('div');
+            icon.textContent = zodiacIcons[i];
+            icon.style.cssText = `position: fixed; font-size: 40px; left: ${8 + i * 7.5}%; top: 20%; animation: sssplusIconFloat 2s ease-out forwards; z-index: 10002;`;
+            effectLayer.appendChild(icon);
+            setTimeout(() => icon.remove(), 2000);
+        }, i * 100);
+    }
+}
+// SSS+级烟花礼炮特效 - 15个烟花，彩虹色
+function createFireworksSSSPlus() {
+    const effectLayer = document.getElementById('drawEffectLayer');
+
+    const fireworkColors = [
+        ['#9c27b0', '#e91e63', '#ffd700'],  // 紫粉金
+        ['#ff5252', '#ffd700', '#ff69b4'],  // 红金粉
+        ['#00bcd4', '#7cfc00', '#ffd700'],  // 青绿金
+        ['#e91e63', '#ff1493', '#ffffff'],  // 粉红白
+        ['#ffd700', '#ff8f00', '#ff4500'],  // 金橙红
+        ['#9c27b0', '#00bcd4', '#ff69b4'],  // 紫青粉
+    ];
+
+    // 15个烟花，间隔0.8秒
+    for (let idx = 0; idx < 15; idx++) {
+        setTimeout(() => {
+            const pos = {
+                x: (10 + Math.random() * 80) + '%',
+                y: (15 + Math.random() * 40) + '%'
+            };
+            const colors = fireworkColors[idx % fireworkColors.length];
+
+            playRocketSound();
+            setTimeout(() => playFireworkExplosionSound(), 600);
+
+            // 烟花粒子（100个）
+            const particleCount = 100;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework-particle';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = pos.x;
+                particle.style.top = pos.y;
+                const size = 4 + Math.random() * 8;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                const angle = (360 / particleCount) * i + (Math.random() - 0.5) * 20;
+                const distance = 80 + Math.random() * 120;
+                const tx = Math.cos(angle * Math.PI / 180) * distance;
+                const ty = Math.sin(angle * Math.PI / 180) * distance;
+                particle.style.transition = 'all 1.2s ease-out';
+                effectLayer.appendChild(particle);
+                requestAnimationFrame(() => {
+                    particle.style.transform = `translate(${tx}px, ${ty}px) scale(0.3)`;
+                    particle.style.opacity = '0';
+                });
+                setTimeout(() => particle.remove(), 1500);
+            }
+        }, idx * 800);
     }
 }
 function playRocketSound() {
@@ -2969,37 +3380,94 @@ function playCheerSound() {
         wowSource.stop(wowStartTime + 0.8);
     }
 }
+// 稀有度显示名称和图标配置
+const RARITY_DISPLAY = {
+    'sss+': { name: 'SSS+ 十二生肖', icon: '👑', color: 'linear-gradient(90deg, #ffd700, #ff69b4)', charm: 2000 },
+    'sss': { name: 'SSS 传说', icon: '🌟', color: 'linear-gradient(90deg, #ff5252, #d50000)', charm: 1000 },
+    'ss': { name: 'SS 史诗', icon: '🔥', color: 'linear-gradient(90deg, #ffd54f, #ff8f00)', charm: 250 },
+    's': { name: 'S 稀有', icon: '💜', color: 'linear-gradient(90deg, #ba68c8, #8e24aa)', charm: 100 },
+    'a': { name: 'A 优秀', icon: '💙', color: 'linear-gradient(90deg, #64b5f6, #1e88e5)', charm: 20 },
+    'b': { name: 'B 精良', icon: '💚', color: 'linear-gradient(90deg, #81c784, #43a047)', charm: 5 },
+    'c': { name: 'C 普通', icon: '⚪', color: 'linear-gradient(90deg, #e0e0e0, #9e9e9e)', charm: 1 }
+};
+
 function updateCollection() {
     const container = document.getElementById('collectionContent');
     container.innerHTML = '';
-    let count = 0;
-    rarityOrder.forEach(rarity => {
+    let totalCollected = 0;
+
+    // 倒序显示（从最高等级开始）
+    const reversedOrder = [...rarityOrder].reverse();
+
+    reversedOrder.forEach(rarity => {
+        const displayInfo = RARITY_DISPLAY[rarity];
+        const total = skins[rarity].length;
+        const collectedCount = countRarity(gameData.collected, rarity);
+
+        // 添加等级标题分隔栏
+        const header = document.createElement('div');
+        header.className = `collection-rarity-header ${getRarityClass(rarity)}`;
+        header.innerHTML = `
+            <div class="rarity-header-icon">${displayInfo.icon}</div>
+            <div class="rarity-header-info">
+                <span class="rarity-header-name">${displayInfo.name}</span>
+                <span class="rarity-header-charm">(${displayInfo.charm}魅力)</span>
+            </div>
+            <div class="rarity-header-progress">
+                <span class="rarity-header-count">${collectedCount}/${total}</span>
+                <div class="rarity-progress-bar">
+                    <div class="rarity-progress-fill" style="width: ${(collectedCount/total)*100}%"></div>
+                </div>
+            </div>
+        `;
+        container.appendChild(header);
+
+        // 添加该等级的皮肤网格
+        const grid = document.createElement('div');
+        grid.className = 'collection-rarity-grid';
+
         skins[rarity].forEach((skin, index) => {
             const key = `${rarity}_${index}`;
             const item = document.createElement('div');
             item.className = 'collection-item';
             if (gameData.collected[key]) {
-                item.classList.add('collected', rarity);
-                item.innerHTML = `<div class="item-icon">${skin.icon}</div><div class="item-name">${skin.name}</div>`;
+                item.classList.add('collected', getRarityClass(rarity));
+                let iconHtml = `<div class="item-icon">${skin.icon}</div>`;
+                item.innerHTML = iconHtml + `<div class="item-name">${skin.name}</div>`;
                 // 点击换装
                 item.style.cursor = 'pointer';
                 item.onclick = () => changeSkin(rarity, index);
                 // 高亮当前装备的皮肤
                 if (gameData.currentSkin && gameData.currentSkin.rarity === rarity && gameData.currentSkin.index === index) {
-                    item.style.boxShadow = '0 0 10px 3px #ffd700';
-                    item.style.transform = 'scale(1.1)';
+                    item.classList.add('selected-skin');
+                    // SSS+级选中特效（添加皇冠）
+                    if (rarity === 'sss+') {
+                        item.classList.add('sssplus-selected');
+                        // 选中时添加皇冠装饰
+                        const crown = document.createElement('div');
+                        crown.className = 'crown-badge';
+                        crown.textContent = '👑';
+                        item.insertBefore(crown, item.firstChild);
+                    } else {
+                        item.style.boxShadow = '0 0 15px rgba(255,215,0,0.8)';
+                    }
                 }
-                count++;
+                totalCollected++;
             } else {
                 item.innerHTML = `<div class="item-icon">❓</div><div class="item-name">未获得</div>`;
             }
-            container.appendChild(item);
+            grid.appendChild(item);
         });
+        container.appendChild(grid);
     });
-    document.getElementById('collectedCount').textContent = count;
+
+    document.getElementById('collectedCount').textContent = totalCollected;
     document.getElementById('charmDisplay').textContent = gameData.charm;
 }
 function updateStats() {
+    // 确保 stats 中有 sss+ 字段
+    if (!gameData.stats['sss+']) gameData.stats['sss+'] = 0;
+
     rarityOrder.forEach(rarity => {
         const c = gameData.stats[rarity];
         const p = gameData.totalDraws > 0 ? ((c / gameData.totalDraws) * 100).toFixed(1) : 0;

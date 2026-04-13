@@ -7,6 +7,44 @@
     position: relative;
     overflow: hidden;
 }
+/* SSS+级展示区域 - 华丽尊贵背景 */
+.egg-display-section.sssplus-display {
+    background: linear-gradient(135deg, #1a0a2e 0%, #3d1a5e 20%, #ff69b4 50%, #ffd700 80%, #fff8dc 100%);
+    animation: sssplusSectionGlow 2s ease-in-out infinite;
+}
+@keyframes sssplusSectionGlow {
+    0%, 100% { box-shadow: 0 0 30px rgba(255,215,0,0.3), 0 0 60px rgba(255,105,180,0.2); }
+    50% { box-shadow: 0 0 50px rgba(255,215,0,0.5), 0 0 100px rgba(255,105,180,0.4), 0 0 150px rgba(255,215,0,0.3); }
+}
+/* SSS+级展示区域装饰粒子 */
+.egg-display-section.sssplus-display::before {
+    content: '👑💎✨🌟🏆💫';
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-size: 20px;
+    letter-spacing: 5px;
+    opacity: 0.9;
+    animation: sssplusDecorFloat 3s ease-in-out infinite;
+}
+@keyframes sssplusDecorFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+    50% { transform: translateY(-5px) rotate(3deg); opacity: 1; }
+}
+.egg-display-section.sssplus-display::after {
+    content: '🎊🎉👑💎🌟✨';
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 20px;
+    letter-spacing: 5px;
+    opacity: 0.9;
+    animation: sssplusDecorFloat2 3s ease-in-out infinite;
+}
+@keyframes sssplusDecorFloat2 {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+    50% { transform: translateY(-5px) rotate(-3deg); opacity: 1; }
+}
 .egg-display-section::before {
     content: '✨';
     position: absolute;
@@ -60,6 +98,60 @@
     min-height: 220px;
     position: relative;
 }
+/* SSS+级展示卡片 - 华丽尊贵 */
+.egg-display-card.sssplus-card {
+    background: linear-gradient(135deg, rgba(26,10,46,0.98) 0%, rgba(255,105,180,0.15) 30%, rgba(255,215,0,0.15) 70%, rgba(255,255,255,0.98) 100%);
+    animation: sssplusCardShine 3s ease-in-out infinite;
+    position: relative;
+}
+.egg-display-card.sssplus-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 25px;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,215,0,0.2) 50%, transparent 60%);
+    animation: sssplusCardShineMove 4s linear infinite;
+    pointer-events: none;
+}
+@keyframes sssplusCardShineMove {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(200%) rotate(45deg); }
+}
+@keyframes sssplusCardShine {
+    0%, 100% { box-shadow: 0 10px 40px rgba(0,0,0,0.25), 0 0 60px rgba(255,215,0,0.3), 0 0 100px rgba(255,105,180,0.2); }
+    50% { box-shadow: 0 15px 50px rgba(0,0,0,0.3), 0 0 80px rgba(255,215,0,0.5), 0 0 150px rgba(255,105,180,0.4), 0 0 200px rgba(255,215,0,0.3); }
+}
+/* SSS+级展示卡片粒子装饰 */
+.egg-display-card.sssplus-card::after {
+    content: '✨ 💎 ✨';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    letter-spacing: 10px;
+    opacity: 0.7;
+    animation: sssplusParticleFloat 2s ease-in-out infinite;
+}
+@keyframes sssplusParticleFloat {
+    0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.7; }
+    50% { transform: translateX(-50%) translateY(-5px); opacity: 1; }
+}
+/* SSS+级展示区域动态粒子 */
+.egg-display-section.sssplus-display .sssplus-float-particle {
+    position: absolute;
+    font-size: 24px;
+    pointer-events: none;
+    animation: sssplusParticleAround 6s linear infinite;
+    opacity: 0.6;
+}
+@keyframes sssplusParticleAround {
+    0% { transform: rotate(0deg) translateX(50px) rotate(0deg); opacity: 0.6; }
+    25% { transform: rotate(90deg) translateX(50px) rotate(-90deg); opacity: 0.8; }
+    50% { transform: rotate(180deg) translateX(50px) rotate(-180deg); opacity: 0.6; }
+    75% { transform: rotate(270deg) translateX(50px) rotate(-270deg); opacity: 0.8; }
+    100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); opacity: 0.6; }
+}
 .egg-display-rarity {
     position: absolute;
     top: 15px;
@@ -79,6 +171,70 @@
     background: radial-gradient(circle at 50% 50%, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.1) 40%, transparent 70%);
     border-radius: 50%;
 }
+/* 皇冠图标 - SSS+级专属 */
+.egg-crown {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    opacity: 0;
+    z-index: 5;
+    transition: all 0.3s;
+}
+.egg-crown.active {
+    opacity: 1;
+    animation: crownFloatAnim 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)) drop-shadow(0 0 5px rgba(255,105,180,0.5));
+}
+@keyframes crownFloatAnim {
+    0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg) scale(1); }
+    25% { transform: translateX(-50%) translateY(-5px) rotate(3deg) scale(1.1); }
+    50% { transform: translateX(-50%) translateY(-8px) rotate(-2deg) scale(1.15); }
+    75% { transform: translateX(-50%) translateY(-3px) rotate(2deg) scale(1.05); }
+}
+/* SSS+级蛋仔视觉区域 - 华丽光环 */
+.egg-visual.sssplus-visual {
+    background: radial-gradient(circle at 50% 50%, rgba(255,215,0,0.4) 0%, rgba(255,105,180,0.3) 30%, rgba(26,10,46,0.2) 60%, transparent 80%);
+    animation: sssplusVisualGlow 1s ease-in-out infinite alternate;
+    box-shadow: 0 0 40px rgba(255,215,0,0.5), 0 0 80px rgba(255,105,180,0.3);
+}
+@keyframes sssplusVisualGlow {
+    0% { transform: scale(1); box-shadow: 0 0 40px rgba(255,215,0,0.5), 0 0 80px rgba(255,105,180,0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(255,215,0,0.7), 0 0 100px rgba(255,105,180,0.5), 0 0 120px rgba(255,215,0,0.4); }
+    100% { transform: scale(1); box-shadow: 0 0 50px rgba(255,215,0,0.6), 0 0 90px rgba(255,105,180,0.4); }
+}
+/* SSS+级旋转光环装饰 */
+.egg-visual.sssplus-visual::before {
+    content: '';
+    position: absolute;
+    inset: -15px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: #ffd700;
+    border-right-color: #ff69b4;
+    animation: sssplusHaloRotate 3s linear infinite;
+    box-shadow: 0 0 20px rgba(255,215,0,0.3);
+}
+@keyframes sssplusHaloRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.egg-visual.sssplus-visual::after {
+    content: '';
+    position: absolute;
+    inset: -25px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-bottom-color: #ff69b4;
+    border-left-color: #ffd700;
+    animation: sssplusHaloRotate2 2s linear infinite reverse;
+    box-shadow: 0 0 15px rgba(255,105,180,0.3);
+}
+@keyframes sssplusHaloRotate2 {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 .egg-base {
     font-size: 110px;
     position: absolute;
@@ -87,6 +243,22 @@
     transform: translate(-50%, -50%);
     animation: eggBounce 2s infinite;
     filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2));
+}
+/* SSS+级蛋仔基础 - 华丽光效 */
+.egg-base.sssplus-base {
+    animation: sssplusEggBounce 2s infinite, sssplusEggGlow 1.5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 20px rgba(255,215,0,0.6)) drop-shadow(0 8px 15px rgba(0,0,0,0.2));
+}
+@keyframes sssplusEggBounce {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    25% { transform: translate(-50%, calc(-50% - 15px)) scale(1.1); }
+    50% { transform: translate(-50%, calc(-50% - 20px)) scale(1.15); }
+    75% { transform: translate(-50%, calc(-50% - 10px)) scale(1.08); }
+}
+@keyframes sssplusEggGlow {
+    0% { filter: drop-shadow(0 0 20px rgba(255,215,0,0.6)) drop-shadow(0 8px 15px rgba(0,0,0,0.2)); }
+    50% { filter: drop-shadow(0 0 40px rgba(255,215,0,1)) drop-shadow(0 0 20px rgba(255,105,180,0.5)) drop-shadow(0 8px 15px rgba(0,0,0,0.2)); }
+    100% { filter: drop-shadow(0 0 30px rgba(255,215,0,0.8)) drop-shadow(0 0 15px rgba(255,105,180,0.4)) drop-shadow(0 8px 15px rgba(0,0,0,0.2)); }
 }
 .egg-skin-overlay {
     position: absolute;
@@ -102,6 +274,23 @@
     opacity: 1;
     animation: skinFloat 2s infinite;
 }
+/* SSS+级皮肤叠加 - 华丽动态 */
+.egg-skin-overlay.active.sssplus-overlay {
+    animation: sssplusSkinFloat 2s infinite, sssplusSkinGlow 1s ease-in-out infinite alternate;
+    font-size: 55px;
+    filter: drop-shadow(0 0 30px rgba(255,215,0,0.8)) drop-shadow(0 0 15px rgba(255,105,180,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+}
+@keyframes sssplusSkinFloat {
+    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    25% { transform: translate(-50%, calc(-50% - 6px)) scale(1.05) rotate(3deg); }
+    50% { transform: translate(-50%, calc(-50% - 10px)) scale(1.08) rotate(-2deg); }
+    75% { transform: translate(-50%, calc(-50% - 5px)) scale(1.03) rotate(1deg); }
+}
+@keyframes sssplusSkinGlow {
+    0% { filter: drop-shadow(0 0 25px rgba(255,215,0,0.7)) drop-shadow(0 0 12px rgba(255,105,180,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.15)); opacity: 1; }
+    50% { filter: drop-shadow(0 0 35px rgba(255,215,0,0.9)) drop-shadow(0 0 20px rgba(255,105,180,0.6)) drop-shadow(0 4px 10px rgba(0,0,0,0.15)); opacity: 0.95; }
+    100% { filter: drop-shadow(0 0 30px rgba(255,215,0,0.8)) drop-shadow(0 0 15px rgba(255,105,180,0.55)) drop-shadow(0 4px 10px rgba(0,0,0,0.15)); opacity: 1; }
+}
 @keyframes eggBounce {
     0%, 100% { transform: translate(-50%, -50%) scale(1); }
     50% { transform: translate(-50%, calc(-50% - 12px)) scale(1.05); }
@@ -116,12 +305,25 @@
     color: var(--text-dark);
     margin-bottom: 8px;
 }
+/* SSS+级展示名称 - 华丽尊贵 */
+.egg-display-name.sssplus-name {
+    font-size: 26px;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255,215,0,0.5), 0 0 20px rgba(255,105,180,0.3), 2px 2px 4px rgba(0,0,0,0.3);
+    animation: sssplusNameGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes sssplusNameGlow {
+    0% { text-shadow: 0 0 10px rgba(255,215,0,0.5), 0 0 20px rgba(255,105,180,0.3), 2px 2px 4px rgba(0,0,0,0.3); }
+    100% { text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,105,180,0.6), 0 0 60px rgba(255,215,0,0.4), 2px 2px 4px rgba(0,0,0,0.3); }
+}
 .egg-display-rarity.c { background: linear-gradient(180deg, var(--rarity-c-start), var(--rarity-c-end)); color: var(--text-dark); }
 .egg-display-rarity.b { background: linear-gradient(180deg, var(--rarity-b-start), var(--rarity-b-end)); color: white; }
 .egg-display-rarity.a { background: linear-gradient(180deg, var(--rarity-a-start), var(--rarity-a-end)); color: white; }
 .egg-display-rarity.s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); color: white; }
 .egg-display-rarity.ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); color: var(--text-dark); animation: goldGlow 1s infinite alternate; }
 .egg-display-rarity.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); color: white; animation: sssGlow 0.5s infinite alternate; }
+.egg-display-rarity.sssplus { background: linear-gradient(180deg, #1a0a2e 0%, #ff69b4 40%, #ffd700 100%); color: white; animation: sssplusRarityGlow 0.6s infinite alternate; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+@keyframes sssplusRarityGlow { from { box-shadow: 0 0 15px rgba(255,215,0,0.5), 0 0 30px rgba(255,105,180,0.3); } to { box-shadow: 0 0 25px rgba(255,215,0,0.8), 0 0 50px rgba(255,105,180,0.5); } }
 .egg-display-hint {
     font-size: 12px;
     color: #999;
@@ -155,6 +357,11 @@
 .egg-display-card.rarity-s { border: 3px solid #8e24aa; }
 .egg-display-card.rarity-ss { border: 3px solid #ff8f00; animation: goldGlow 1s infinite alternate; }
 .egg-display-card.rarity-sss { border: 3px solid #ff5252; animation: sssGlow 0.5s infinite alternate; }
+.egg-display-card.rarity-sssplus { border: 4px solid #ffd700; animation: sssplusCardGlow 1s infinite alternate; background: linear-gradient(135deg, rgba(26,10,46,0.95) 0%, rgba(255,105,180,0.1) 50%, rgba(255,215,0,0.1) 100%); }
+@keyframes sssplusCardGlow {
+    0% { box-shadow: 0 0 30px rgba(255,215,0,0.5), 0 0 60px rgba(255,105,180,0.3), inset 0 0 20px rgba(255,215,0,0.1); }
+    100% { box-shadow: 0 0 50px rgba(255,215,0,0.8), 0 0 100px rgba(255,105,180,0.5), inset 0 0 30px rgba(255,215,0,0.2); }
+}
 
 /* 基础样式 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -190,6 +397,9 @@ input, textarea {
     --rarity-sss-start: #ff5252;
     --rarity-sss-mid: #d50000;
     --rarity-sss-end: #ffd700;
+    --rarity-sssplus-start: #1a0a2e;
+    --rarity-sssplus-mid: #ff69b4;
+    --rarity-sssplus-end: #ffd700;
     --primary-purple: #667eea;
     --primary-purple-dark: #764ba2;
     --primary-pink: #f093fb;
@@ -396,9 +606,72 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .rarity-s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); }
 .rarity-ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); animation: goldGlow 1s infinite alternate; }
 .rarity-sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid) 50%, var(--rarity-sss-end)); animation: sssGlow 0.5s infinite alternate; }
+.rarity-sssplus { background: linear-gradient(180deg, #1a0a2e 0%, #ff69b4 40%, #ffd700 100%); animation: sssplusRoyalGlow 0.8s infinite alternate; }
 @keyframes goldGlow { from { box-shadow: 0 0 15px rgba(255,215,0,0.5); } to { box-shadow: 0 0 30px rgba(255,215,0,1); } }
 @keyframes sssGlow { from { box-shadow: 0 0 20px rgba(255,82,82,0.5); } to { box-shadow: 0 0 40px rgba(255,215,0,1); } }
-.skin-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+@keyframes sssplusRoyalGlow { from { box-shadow: 0 0 25px rgba(255,215,0,0.6), 0 0 50px rgba(255,105,180,0.4), 0 0 75px rgba(26,10,46,0.3); } to { box-shadow: 0 0 40px rgba(255,215,0,1), 0 0 80px rgba(255,105,180,0.6), 0 0 100px rgba(255,215,0,0.8); } }
+.skin-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 60px; position: relative; z-index: 2; }
+/* SSS级icon动态效果 */
+.rarity-sss .skin-fallback {
+    animation: sssIconPulse 1.2s ease-in-out infinite, sssIconGlow 1.5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 20px rgba(255,215,0,0.9)) drop-shadow(0 0 10px rgba(255,82,82,0.6));
+}
+@keyframes sssIconPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.1) rotate(3deg); }
+    50% { transform: scale(1.15) rotate(-2deg); }
+    75% { transform: scale(1.08) rotate(2deg); }
+}
+@keyframes sssIconGlow {
+    0% { filter: drop-shadow(0 0 15px rgba(255,215,0,0.7)) drop-shadow(0 0 8px rgba(255,82,82,0.4)); opacity: 1; }
+    100% { filter: drop-shadow(0 0 25px rgba(255,215,0,1)) drop-shadow(0 0 15px rgba(255,82,82,0.8)); opacity: 0.95; }
+}
+/* SSS+级icon动态效果 - 华丽尊贵 */
+.rarity-sssplus .skin-fallback {
+    animation: sssplusIconRoyal 2s ease-in-out infinite, sssplusIconDiamond 1.5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 30px rgba(255,215,0,1)) drop-shadow(0 0 20px rgba(255,105,180,0.8)) drop-shadow(0 0 10px rgba(255,255,255,0.6));
+}
+@keyframes sssplusIconRoyal {
+    0% { transform: scale(1) rotate(0deg) translateY(0); }
+    10% { transform: scale(1.08) rotate(5deg) translateY(-3px); }
+    20% { transform: scale(1.12) rotate(-3deg) translateY(-5px); }
+    30% { transform: scale(1.15) rotate(2deg) translateY(-4px); }
+    40% { transform: scale(1.18) rotate(-2deg) translateY(-6px); }
+    50% { transform: scale(1.2) rotate(0deg) translateY(-8px); }
+    60% { transform: scale(1.18) rotate(3deg) translateY(-6px); }
+    70% { transform: scale(1.15) rotate(-2deg) translateY(-5px); }
+    80% { transform: scale(1.12) rotate(2deg) translateY(-3px); }
+    90% { transform: scale(1.08) rotate(-3deg) translateY(-2px); }
+    100% { transform: scale(1) rotate(0deg) translateY(0); }
+}
+@keyframes sssplusIconDiamond {
+    0% { filter: drop-shadow(0 0 25px rgba(255,215,0,0.8)) drop-shadow(0 0 15px rgba(255,105,180,0.5)) drop-shadow(0 0 8px rgba(255,255,255,0.3)); opacity: 1; }
+    33% { filter: drop-shadow(0 0 35px rgba(255,215,0,1)) drop-shadow(0 0 25px rgba(255,105,180,0.7)) drop-shadow(0 0 15px rgba(255,255,255,0.5)); opacity: 0.98; }
+    66% { filter: drop-shadow(0 0 30px rgba(255,215,0,0.9)) drop-shadow(0 0 20px rgba(255,105,180,0.6)) drop-shadow(0 0 12px rgba(255,255,255,0.4)); opacity: 1; }
+    100% { filter: drop-shadow(0 0 40px rgba(255,215,0,1)) drop-shadow(0 0 30px rgba(255,105,180,0.9)) drop-shadow(0 0 20px rgba(255,255,255,0.7)); opacity: 0.96; }
+}
+/* 最新获得SSS级icon动态 */
+.latest-item.sss {
+    animation: sssLatestPulse 1s ease-in-out infinite;
+}
+.latest-item.sss::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #ff5252, #ffd700, #ff5252);
+    z-index: -1;
+    animation: sssRingGlow 2s linear infinite;
+}
+@keyframes sssLatestPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+    50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(255,215,0,0.8); }
+}
+@keyframes sssRingGlow {
+    0% { opacity: 0.6; transform: rotate(0deg); }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; transform: rotate(360deg); }
+}
 .rarity-badge { position: absolute; top: 8px; left: 8px; padding: 3px 10px; font-size: 11px; font-weight: bold; border-radius: 6px; z-index: 10; }
 .rarity-badge.c { background: rgba(255,255,255,0.9); color: #616161; }
 .rarity-badge.b { background: rgba(255,255,255,0.9); color: #2e7d32; }
@@ -406,12 +679,14 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .rarity-badge.s { background: rgba(255,255,255,0.9); color: #7b1fa2; }
 .rarity-badge.ss { background: #ff6f00; color: white; }
 .rarity-badge.sss { background: linear-gradient(90deg, var(--rarity-sss-start), var(--rarity-sss-end)); color: white; animation: badgeGlow 1s infinite alternate; }
+.rarity-badge.sssplus { background: linear-gradient(90deg, #1a0a2e 0%, #ff69b4 50%, #ffd700 100%); color: white; animation: sssplusBadgeGlow 0.8s infinite alternate; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+@keyframes sssplusBadgeGlow { from { box-shadow: 0 0 10px rgba(255,215,0,0.5); } to { box-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 30px rgba(255,105,180,0.4); } }
 @keyframes badgeGlow { from { box-shadow: 0 0 5px var(--gold); } to { box-shadow: 0 0 15px var(--gold); } }
 .skin-name-bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 25px 8px 8px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; font-size: 11px; font-weight: bold; text-align: center; }
 
 /* 统计和收集 */
 .stats-section { margin-bottom: 25px; }
-.stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.stats-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
 .stat-card { padding: 12px 5px; border-radius: 12px; text-align: center; }
 .stat-card.c { background: linear-gradient(180deg, var(--rarity-c-start), var(--rarity-c-end)); color: var(--text-dark); }
 .stat-card.b { background: linear-gradient(180deg, var(--rarity-b-start), var(--rarity-b-end)); color: white; }
@@ -419,12 +694,49 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .stat-card.s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); color: white; }
 .stat-card.ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); color: var(--text-dark); }
 .stat-card.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); color: white; }
+.stat-card.sssplus { background: linear-gradient(180deg, #1a0a2e 0%, #ff69b4 40%, #ffd700 100%); color: white; animation: sssplusStatGlow 1s infinite alternate; }
+@keyframes sssplusStatGlow { from { box-shadow: 0 0 8px rgba(255,215,0,0.3); } to { box-shadow: 0 0 15px rgba(255,215,0,0.6); } }
 .stat-label { font-size: 8px; font-weight: bold; }
 .stat-count { font-size: 18px; font-weight: bold; margin-top: 3px; }
 .stat-percent { font-size: 9px; opacity: 0.7; }
 .section-header { display: flex; justify-content: space-between; cursor: pointer; padding: 15px 20px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); border-radius: 12px; color: white; margin-bottom: 15px; }
-.collection-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
-.collection-item { padding: 10px 5px; border-radius: 10px; text-align: center; font-size: 10px; background: var(--bg-light); color: #adb5bd; }
+/* 皮肤收集等级标题栏 */
+.collection-rarity-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    margin: 15px 0 8px 0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+.collection-rarity-header.c { background: linear-gradient(90deg, var(--rarity-c-start), var(--rarity-c-end)); color: var(--text-dark); }
+.collection-rarity-header.b { background: linear-gradient(90deg, var(--rarity-b-start), var(--rarity-b-end)); }
+.collection-rarity-header.a { background: linear-gradient(90deg, var(--rarity-a-start), var(--rarity-a-end)); }
+.collection-rarity-header.s { background: linear-gradient(90deg, var(--rarity-s-start), var(--rarity-s-end)); }
+.collection-rarity-header.ss { background: linear-gradient(90deg, var(--rarity-ss-start), var(--rarity-ss-end)); color: var(--text-dark); animation: headerGoldGlow 1s infinite alternate; }
+.collection-rarity-header.sss { background: linear-gradient(90deg, var(--rarity-sss-start), var(--rarity-sss-mid)); animation: headerSssGlow 1s infinite alternate; }
+.collection-rarity-header.sssplus { background: linear-gradient(90deg, #1a0a2e, #ff69b4, #ffd700); animation: headerSssplusGlow 0.8s infinite alternate; }
+@keyframes headerGoldGlow { from { box-shadow: 0 0 10px rgba(255,215,0,0.4); } to { box-shadow: 0 0 20px rgba(255,215,0,0.7); } }
+@keyframes headerSssGlow { from { box-shadow: 0 0 12px rgba(255,82,82,0.4); } to { box-shadow: 0 0 25px rgba(255,215,0,0.6); } }
+@keyframes headerSssplusGlow { from { box-shadow: 0 0 15px rgba(255,215,0,0.5), 0 0 30px rgba(255,105,180,0.3); } to { box-shadow: 0 0 25px rgba(255,215,0,0.8), 0 0 50px rgba(255,105,180,0.5); } }
+.rarity-header-icon { font-size: 22px; }
+.rarity-header-info { flex: 1; display: flex; align-items: baseline; gap: 5px; }
+.rarity-header-name { font-size: 15px; }
+.rarity-header-charm { font-size: 12px; opacity: 0.8; }
+.rarity-header-progress { display: flex; align-items: center; gap: 10px; }
+.rarity-header-count { font-size: 13px; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 8px; }
+.rarity-progress-bar { width: 80px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; }
+.rarity-progress-fill { height: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); border-radius: 4px; transition: width 0.3s; }
+
+/* 皮肤收集网格（每个等级独立的网格） */
+.collection-rarity-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 10px; }
+.collection-item { padding: 12px 8px; border-radius: 12px; text-align: center; font-size: 11px; background: var(--bg-light); color: #adb5bd; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; min-height: 75px; }
+.collection-item:hover { transform: scale(1.08); }
 .collection-item.collected { color: var(--text-dark); }
 .collection-item.collected.c { background: linear-gradient(180deg, var(--rarity-c-start), var(--rarity-c-end)); color: var(--text-dark); }
 .collection-item.collected.b { background: linear-gradient(180deg, var(--rarity-b-start), var(--rarity-b-end)); color: white; }
@@ -432,8 +744,58 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .collection-item.collected.s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); color: white; }
 .collection-item.collected.ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); color: var(--text-dark); }
 .collection-item.collected.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); color: white; }
-.item-icon { font-size: 20px; margin-bottom: 3px; }
-.item-name { font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.collection-item.collected.sssplus { background: linear-gradient(180deg, #1a0a2e 0%, #ff69b4 40%, #ffd700 100%); color: white; animation: sssplusCollectionGlow 1.5s infinite alternate; }
+@keyframes sssplusCollectionGlow { from { box-shadow: 0 0 8px rgba(255,215,0,0.4); } to { box-shadow: 0 0 15px rgba(255,215,0,0.6); } }
+.item-icon { font-size: 28px; margin-bottom: 5px; }
+.item-name { font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+/* SSS+级皮肤选中特效 - 华丽尊贵（删除外边框放大） */
+.collection-item.selected-skin {
+    z-index: 10;
+}
+.collection-item.selected-skin.sssplus-selected {
+    animation: sssplusSelectedRoyal 1.5s ease-in-out infinite;
+    box-shadow: none;
+    position: relative;
+}
+/* 选中发光效果 */
+@keyframes sssplusSelectedRoyal {
+    0%, 100% { filter: brightness(1); box-shadow: 0 0 25px rgba(255,215,0,0.6), 0 0 50px rgba(255,105,180,0.4); }
+    50% { filter: brightness(1.2); box-shadow: 0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,105,180,0.6), 0 0 100px rgba(255,215,0,0.4); }
+}
+/* SSS+级选中icon动画 */
+.collection-item.selected-skin.sssplus-selected .item-icon {
+    animation: sssplusSelectedIcon 0.8s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255,215,0,0.8));
+}
+@keyframes sssplusSelectedIcon {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.15) rotate(5deg); }
+    50% { transform: scale(1.2) rotate(-3deg); }
+    75% { transform: scale(1.1) rotate(2deg); }
+}
+/* SSS+级选中名称动画 */
+.collection-item.selected-skin.sssplus-selected .item-name {
+    color: #ffd700;
+    animation: sssplusSelectedName 1s ease-in-out infinite alternate;
+    text-shadow: 0 0 5px rgba(255,215,0,0.5);
+}
+@keyframes sssplusSelectedName {
+    0% { text-shadow: 0 0 5px rgba(255,215,0,0.5); }
+    100% { text-shadow: 0 0 10px rgba(255,215,0,1), 0 0 15px rgba(255,105,180,0.6); }
+}
+/* SSS+级选中皇冠装饰 */
+.collection-item.selected-skin.sssplus-selected .crown-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 14px;
+    animation: crownBadgeFloat 1s ease-in-out infinite;
+    filter: drop-shadow(0 0 5px rgba(255,215,0,0.8));
+}
+@keyframes crownBadgeFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-3px) rotate(5deg); }
+}
 .hidden { display: none !important; }
 .message { padding: 12px 20px; margin: 15px 0; border-radius: 12px; text-align: center; font-size: 14px; font-weight: bold; }
 .message.success { background: linear-gradient(135deg, #a8e6cf, var(--success)); color: white; }
@@ -585,6 +947,11 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .latest-item.s { background: linear-gradient(180deg, var(--rarity-s-start), var(--rarity-s-end)); }
 .latest-item.ss { background: linear-gradient(180deg, var(--rarity-ss-start), var(--rarity-ss-end)); }
 .latest-item.sss { background: linear-gradient(180deg, var(--rarity-sss-start), var(--rarity-sss-mid)); }
+.latest-item.sssplus { background: linear-gradient(180deg, #1a0a2e 0%, #ff69b4 40%, #ffd700 100%); animation: sssplusLatestGlow 1.5s ease-in-out infinite; }
+@keyframes sssplusLatestGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(255,215,0,0.6), 0 0 20px rgba(255,105,180,0.4); }
+    50% { box-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,105,180,0.8), 0 0 60px rgba(255,215,0,0.5); }
+}
 .latest-hint { font-size: 12px; color: #999; white-space: nowrap; }
 
 /* 弹窗 */
@@ -866,10 +1233,13 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 }
 
 /* 抽卡动画遮罩 */
-.draw-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; }
+.draw-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; overflow: hidden; }
 .draw-overlay.active { display: flex; }
-.draw-card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; padding: 20px; }
-.draw-hint { position: fixed; bottom: 30px; color: rgba(255,255,255,0.6); font-size: 14px; cursor: pointer; }
+.draw-coins-display { position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #ffd700, #ff8c00); padding: 10px 20px; border-radius: 20px; color: #333; font-size: 18px; font-weight: bold; z-index: 10010; box-shadow: 0 4px 15px rgba(255,215,0,0.4); }
+.draw-coins-display::before { content: '🥚 '; font-size: 20px; }
+.draw-card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; padding: 20px; position: relative; z-index: 10000; }
+.draw-effect-layer { position: absolute; inset: 0; z-index: 10001; pointer-events: none; }
+.draw-hint { position: fixed; bottom: 30px; color: rgba(255,255,255,0.6); font-size: 14px; cursor: pointer; z-index: 10010; }
 .draw-btn-container { position: fixed; bottom: 40px; display: flex; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 .draw-btn-container.show { opacity: 1; pointer-events: auto; }
 .close-draw-btn { padding: 15px 40px; background: linear-gradient(135deg, var(--danger), #ee5a5a); color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(255,107,107,0.4); transition: all 0.3s; }
@@ -887,7 +1257,7 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .draw-card-back { transform: rotateY(180deg); position: relative; }
 
 /* 粒子效果 */
-.particle { position: absolute; border-radius: 50%; pointer-events: none; animation: particleFly 1s ease-out forwards; }
+.particle { position: fixed; border-radius: 50%; pointer-events: none; z-index: 10005; animation: particleFly 1s ease-out forwards; }
 @keyframes particleFly { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
 /* SS级光束特效 */
@@ -928,6 +1298,135 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .firework-flash { position: fixed; width: 20px; height: 20px; border-radius: 50%; pointer-events: none; z-index: 10003; animation: flashExpand 0.3s ease-out forwards; }
 @keyframes flashExpand { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
 .firework-trail { position: fixed; pointer-events: none; z-index: 10003; opacity: 0.8; }
+
+/* ===== SSS+级华丽尊贵特效 ===== */
+
+/* 旋转光环特效 - 多层光环围绕中心旋转 */
+.sssplus-halo-ring {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10004;
+    animation: haloRingRotate 3s linear infinite, haloRingPulse 1.5s ease-in-out infinite alternate;
+}
+@keyframes haloRingRotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes haloRingPulse {
+    0% { opacity: 0.5; filter: blur(2px); }
+    100% { opacity: 0.9; filter: blur(1px); }
+}
+
+/* 皇冠粒子飘落 - 尊贵的皇冠符号 */
+.crown-particle {
+    position: fixed;
+    font-size: 35px;
+    pointer-events: none;
+    z-index: 10005;
+    animation: crownFloat 4s ease-out forwards;
+    filter: drop-shadow(0 0 15px rgba(255,215,0,0.8));
+}
+@keyframes crownFloat {
+    0% { transform: translateY(-20vh) rotate(0deg) scale(1.2); opacity: 1; }
+    30% { transform: translateY(30vh) rotate(180deg) scale(1); opacity: 0.9; }
+    60% { transform: translateY(60vh) rotate(360deg) scale(0.8); opacity: 0.7; }
+    100% { transform: translateY(100vh) rotate(540deg) scale(0.3); opacity: 0; }
+}
+
+/* 钻石光芒闪烁 - 多点钻石闪耀 */
+.diamond-sparkle {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 10006;
+    animation: diamondShine 2s ease-out forwards;
+    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,215,0,0.8) 30%, transparent 70%);
+    filter: blur(1px);
+}
+@keyframes diamondShine {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; filter: blur(0); }
+    20% { transform: scale(2) rotate(45deg); opacity: 1; filter: blur(0); }
+    40% { transform: scale(1.5) rotate(90deg); opacity: 0.9; filter: blur(0.5px); }
+    60% { transform: scale(2.5) rotate(135deg); opacity: 1; filter: blur(0); }
+    80% { transform: scale(1.8) rotate(180deg); opacity: 0.7; filter: blur(1px); }
+    100% { transform: scale(0) rotate(225deg); opacity: 0; filter: blur(2px); }
+}
+
+/* 金色丝带飘舞 - 华丽的丝带效果 */
+.gold-ribbon {
+    position: fixed;
+    height: 8px;
+    pointer-events: none;
+    z-index: 10005;
+    animation: ribbonWave 3s ease-out forwards;
+    border-radius: 4px;
+    filter: drop-shadow(0 2px 8px rgba(255,215,0,0.6));
+}
+@keyframes ribbonWave {
+    0% { transform: translateY(-10vh) rotate(0deg) scaleX(0.5); opacity: 1; }
+    25% { transform: translateY(20vh) rotate(15deg) scaleX(1); opacity: 0.95; }
+    50% { transform: translateY(40vh) rotate(-10deg) scaleX(0.8); opacity: 0.85; }
+    75% { transform: translateY(70vh) rotate(20deg) scaleX(0.6); opacity: 0.6; }
+    100% { transform: translateY(100vh) rotate(0deg) scaleX(0.2); opacity: 0; }
+}
+
+/* 贵族光晕脉冲 - 多层旋转光晕 */
+.royal-aura {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10003;
+    animation: auraPulse 2s ease-out forwards;
+}
+@keyframes auraPulse {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+    50% { transform: translate(-50%, -50%) scale(2); opacity: 0.6; }
+    100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+}
+
+/* 尊贵徽章闪烁 */
+.royal-badge {
+    position: fixed;
+    font-size: 50px;
+    pointer-events: none;
+    z-index: 10006;
+    animation: badgeFloat 3s ease-out forwards;
+    filter: drop-shadow(0 0 20px rgba(255,215,0,1));
+}
+@keyframes badgeFloat {
+    0% { transform: translateY(-30vh) scale(0.5) rotate(-20deg); opacity: 0; }
+    30% { transform: translateY(-10vh) scale(1.3) rotate(10deg); opacity: 1; }
+    50% { transform: translateY(0vh) scale(1.5) rotate(0deg); opacity: 1; }
+    70% { transform: translateY(20vh) scale(1.2) rotate(-5deg); opacity: 0.8; }
+    100% { transform: translateY(50vh) scale(0.8) rotate(15deg); opacity: 0; }
+}
+
+/* SSS+级生肖图标漂浮动画 - 更华丽 */
+@keyframes sssplusIconFloat {
+    0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0; filter: drop-shadow(0 0 5px rgba(255,215,0,0.5)); }
+    20% { transform: translateY(-30px) scale(1.5) rotate(15deg); opacity: 1; filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)); }
+    40% { transform: translateY(-50px) scale(1.8) rotate(-10deg); opacity: 1; filter: drop-shadow(0 0 25px rgba(255,215,0,1)); }
+    60% { transform: translateY(-60px) scale(2) rotate(5deg); opacity: 0.9; filter: drop-shadow(0 0 30px rgba(255,215,0,1)); }
+    80% { transform: translateY(-40px) scale(1.5) rotate(-5deg); opacity: 0.7; filter: drop-shadow(0 0 20px rgba(255,215,0,0.7)); }
+    100% { transform: translateY(-20px) scale(1) rotate(0deg); opacity: 0; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
+}
+
+/* SSS+级华丽全屏闪光 */
+.sssplus-grand-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10001;
+    animation: grandFlash 1.5s ease-out forwards;
+}
+@keyframes grandFlash {
+    0% { opacity: 0; background: radial-gradient(circle at center, rgba(255,215,0,0.8) 0%, rgba(255,105,180,0.5) 20%, rgba(26,10,46,0.3) 40%, transparent 70%); }
+    30% { opacity: 1; background: radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(255,215,0,0.9) 15%, rgba(255,105,180,0.6) 30%, transparent 60%); }
+    60% { opacity: 0.8; background: radial-gradient(circle at center, rgba(255,215,0,0.7) 0%, rgba(255,105,180,0.4) 25%, transparent 50%); }
+    100% { opacity: 0; background: radial-gradient(circle at center, rgba(255,215,0,0.3) 0%, transparent 30%); }
+}
 
 /* 响应式布局 - 手机适配 */
 @media (max-width: 600px) {
@@ -1010,10 +1509,15 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 
     /* 收集区域 */
     .section-header { padding: 10px 12px; font-size: 13px; margin-bottom: 10px; }
-    .collection-grid { grid-template-columns: repeat(6, 1fr); gap: 6px; }
-    .collection-item { padding: 6px 3px; min-height: 40px; }
-    .item-icon { font-size: 16px; margin-bottom: 2px; }
-    .item-name { font-size: 8px; }
+    .collection-rarity-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .collection-item { padding: 8px 5px; min-height: 60px; }
+    .item-icon { font-size: 22px; margin-bottom: 3px; }
+    .item-name { font-size: 9px; }
+    .collection-rarity-header { padding: 10px 12px; margin: 12px 0 6px 0; font-size: 12px; gap: 8px; }
+    .rarity-header-icon { font-size: 18px; }
+    .rarity-header-name { font-size: 13px; }
+    .rarity-header-charm { font-size: 10px; }
+    .rarity-progress-bar { width: 60px; height: 6px; }
 
     /* 抽卡动画 */
     .draw-card { width: 100px; height: 140px; }
@@ -1103,6 +1607,20 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
     font-weight: bold;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+/* SSS+级称号展示 - 更华丽 */
+.egg-display-title.sssplus-title {
+    font-size: 17px;
+    color: #ffd700;
+    background: linear-gradient(135deg, #1a0a2e, #3d1a5e, #ff69b4);
+    padding: 8px 22px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(255,215,0,0.5), 0 0 30px rgba(255,105,180,0.3);
+    animation: sssplusTitleGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes sssplusTitleGlow {
+    0% { box-shadow: 0 0 15px rgba(255,215,0,0.5), 0 0 30px rgba(255,105,180,0.3); }
+    100% { box-shadow: 0 0 25px rgba(255,215,0,0.8), 0 0 50px rgba(255,105,180,0.5), 0 0 80px rgba(255,215,0,0.3); }
+}
 
 /* 难度选择 */
 .difficulty-options { display: flex; flex-direction: column; gap: 12px; padding: 20px 0; }
@@ -1151,12 +1669,14 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; background: var(--bg-light); cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.3s; }
 .tab-btn.active { background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; }
 .achievement-list { max-height: 400px; overflow-y: auto; }
-.achievement-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--bg-light); border-radius: 12px; margin-bottom: 10px; }
+.achievement-item { display: flex; align-items: center; gap: 12px; padding: 15px; background: var(--bg-light); border-radius: 12px; margin-bottom: 10px; }
 .achievement-item.unlocked { background: linear-gradient(135deg, #fff9e6, #ffecb3); border: 2px solid #ffd700; }
 .achievement-item.locked { opacity: 0.6; }
-.achievement-item-icon { font-size: 32px; }
-.achievement-item-info { flex: 1; }
+.achievement-item-icon { font-size: 32px; flex-shrink: 0; }
+.achievement-item-info { flex: 1; min-width: 0; }
+.achievement-item-name-row { display: flex; align-items: center; gap: 8px; }
 .achievement-item-name { font-weight: bold; color: var(--text-dark); }
+.achievement-item-reward-small { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: linear-gradient(135deg, #ffd700, #ff8c00); color: #333; font-weight: bold; }
 .achievement-item-desc { font-size: 12px; color: var(--text-gray); margin-top: 3px; }
 .achievement-item-status { font-size: 12px; padding: 5px 12px; border-radius: 15px; }
 .achievement-item-status.unlocked { background: #28a745; color: white; }
@@ -1169,5 +1689,5 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .title-item { cursor: pointer; transition: all 0.3s; }
 .title-item:hover { transform: scale(1.02); }
 .title-item.equipped { background: linear-gradient(135deg, #ffd700, #ff8c00) !important; border: 2px solid #ff6b6b !important; }
-.equip-btn { padding: 8px 15px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; }
+.equip-btn { padding: 8px 15px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark)); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; flex-shrink: 0; }
 .equip-btn.equipped { background: #28a745; }
