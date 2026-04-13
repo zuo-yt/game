@@ -734,7 +734,7 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 .rarity-progress-fill { height: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); border-radius: 4px; transition: width 0.3s; }
 
 /* 皮肤收集网格（每个等级独立的网格） */
-.collection-rarity-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 10px; }
+.collection-rarity-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 10px; }
 .collection-item { padding: 12px 8px; border-radius: 12px; text-align: center; font-size: 11px; background: var(--bg-light); color: #adb5bd; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; min-height: 75px; }
 .collection-item:hover { transform: scale(1.08); }
 .collection-item.collected { color: var(--text-dark); }
@@ -1509,7 +1509,7 @@ body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(1
 
     /* 收集区域 */
     .section-header { padding: 10px 12px; font-size: 13px; margin-bottom: 10px; }
-    .collection-rarity-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .collection-rarity-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
     .collection-item { padding: 8px 5px; min-height: 60px; }
     .item-icon { font-size: 22px; margin-bottom: 3px; }
     .item-name { font-size: 9px; }
